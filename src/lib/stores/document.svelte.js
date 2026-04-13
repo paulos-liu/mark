@@ -23,10 +23,18 @@ export async function loadDocument(content, filePath, fileName) {
   // Double rAF to ensure the spinner actually paints
   await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
 
-  documentState.content = content;
-  documentState.html = renderMarkdown(content);
-  documentState.headings = extractHeadings(content);
-  documentState.loading = false;
+  try {
+    documentState.content = content;
+    documentState.html = renderMarkdown(content);
+    documentState.headings = extractHeadings(content);
+  } catch (/** @type {any} */ err) {
+    console.error('Failed to process document:', err);
+    documentState.content = content;
+    documentState.html = `<p style="color: red;">Failed to render document: ${err?.message ?? 'Unknown error'}</p>`;
+    documentState.headings = [];
+  } finally {
+    documentState.loading = false;
+  }
 }
 
 export function clearDocument() {
