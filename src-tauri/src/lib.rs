@@ -126,7 +126,7 @@ fn install_cli() -> Result<String, String> {
         }
     }
 
-    let cli_path = installed_path.ok_or_else(|| {
+    let _ = installed_path.ok_or_else(|| {
         "Permission denied. Try running:\nsudo ln -sf \"$(which mark)\" /usr/local/bin/mark".to_string()
     })?;
 
