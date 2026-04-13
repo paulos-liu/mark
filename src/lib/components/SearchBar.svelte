@@ -63,7 +63,7 @@
     gap: 8px;
     padding: 6px 12px;
     background: var(--search-bg, #f8f8f8);
-    border-top: 1px solid var(--border, #e5e5e5);
+    border-bottom: 1px solid var(--border, #e5e5e5);
   }
 
   .search-input-wrap {

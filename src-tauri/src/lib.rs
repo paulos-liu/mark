@@ -62,10 +62,12 @@ fn bash_completion() -> &'static str {
 fn completion_targets() -> Result<(Vec<PathBuf>, Vec<PathBuf>), String> {
     let home = dirs::home_dir().ok_or_else(|| "Cannot determine home directory".to_string())?;
     let zsh = vec![
+        PathBuf::from("/opt/homebrew/share/zsh/site-functions/_mark"),
         PathBuf::from("/usr/local/share/zsh/site-functions/_mark"),
         home.join(".zsh/completions/_mark"),
     ];
     let bash = vec![
+        PathBuf::from("/opt/homebrew/etc/bash_completion.d/mark"),
         PathBuf::from("/usr/local/etc/bash_completion.d/mark"),
         home.join(".local/share/bash-completion/completions/mark"),
     ];
@@ -129,17 +131,12 @@ fn install_cli() -> Result<String, String> {
     })?;
 
     // Install shell completions (best-effort, don't fail the whole install)
-    let mut completions_note = String::new();
     if let Ok((zsh_targets, bash_targets)) = completion_targets() {
-        if install_completion(&zsh_targets, zsh_completion()).is_some() {
-            completions_note.push_str("\nTab completions installed for zsh.");
-        }
-        if install_completion(&bash_targets, bash_completion()).is_some() {
-            completions_note.push_str("\nTab completions installed for bash.");
-        }
+        let _ = install_completion(&zsh_targets, zsh_completion());
+        let _ = install_completion(&bash_targets, bash_completion());
     }
 
-    Ok(format!("{cli_path}{completions_note}"))
+    Ok("Installed `mark` to CLI".to_string())
 }
 
 #[tauri::command]

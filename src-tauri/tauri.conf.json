@@ -19,8 +19,7 @@
         "minHeight": 400,
         "titleBarStyle": "Transparent",
         "hiddenTitle": true,
-        "decorations": true,
-        "backgroundColor": [246, 248, 250, 255]
+        "decorations": true
       }
     ],
     "security": {

@@ -27,7 +27,7 @@
     cliError = '';
     try {
       const result = await invoke('install_cli');
-      cliStatus = `Installed to ${result}`;
+      cliStatus = String(result);
     } catch (err) {
       cliError = String(err);
     }

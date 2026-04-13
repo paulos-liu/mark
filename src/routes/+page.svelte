@@ -22,12 +22,17 @@
 
   let showSettings = $state(false);
   let systemDark = $state(false);
+  let sidebarWidth = $state(260);
+  let isResizing = $state(false);
 
   let effectiveTheme = $derived(resolveTheme(systemDark));
 
-  // Apply theme to document
+  // Apply theme to document and native window titlebar
   $effect(() => {
     document.documentElement.setAttribute('data-theme', effectiveTheme);
+    import('@tauri-apps/api/window').then(({ getCurrentWindow }) => {
+      getCurrentWindow().setTheme(effectiveTheme).catch(() => {});
+    }).catch(() => {});
   });
 
   // Recompute matches when search text or content changes
@@ -65,6 +70,27 @@
     } else {
       uiState.showSearch = true;
     }
+  }
+
+  function startResize(e) {
+    e.preventDefault();
+    isResizing = true;
+    const startX = e.clientX;
+    const startWidth = sidebarWidth;
+
+    function onMouseMove(e) {
+      const newWidth = Math.min(480, Math.max(180, startWidth + e.clientX - startX));
+      sidebarWidth = newWidth;
+    }
+
+    function onMouseUp() {
+      isResizing = false;
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onMouseUp);
+    }
+
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onMouseUp);
   }
 
   const FONT_SIZES = [14, 16, 18, 20, 24];
@@ -233,9 +259,10 @@
 
 <svelte:window onkeydown={handleKeydown} />
 
-<div class="app-layout">
+<!-- svelte-ignore a11y_no_static_element_interactions -->
+<div class="app-layout" class:resizing={isResizing}>
   {#if uiState.showTOC}
-    <aside class="sidebar" transition:slide={{ axis: 'x', duration: 200 }}>
+    <aside class="sidebar" style="width: {sidebarWidth}px" transition:slide={{ axis: 'x', duration: 200 }}>
       <TableOfContents
         headings={documentState.headings}
         onselect={scrollToHeading}
@@ -243,9 +270,21 @@
         onsettings={() => (showSettings = true)}
       />
     </aside>
+    <div class="resize-handle" onmousedown={startResize} role="separator" aria-label="Resize sidebar"></div>
   {/if}
 
   <main class="content">
+    {#if uiState.showSearch}
+      <SearchBar
+        bind:searchText={searchState.searchText}
+        matchCount={searchState.matches.length}
+        currentIndex={searchState.currentMatchIndex}
+        onnext={nextMatch}
+        onprev={prevMatch}
+        onclose={closeSearch}
+      />
+    {/if}
+
     {#if documentState.loading}
       <div class="loading-state" role="status" aria-live="polite">
         <div class="spinner" aria-hidden="true"></div>
@@ -271,17 +310,6 @@
           <p class="shortcut">or drag and drop a <code>.md</code> file here</p>
         </div>
       </div>
-    {/if}
-
-    {#if uiState.showSearch}
-      <SearchBar
-        bind:searchText={searchState.searchText}
-        matchCount={searchState.matches.length}
-        currentIndex={searchState.currentMatchIndex}
-        onnext={nextMatch}
-        onprev={prevMatch}
-        onclose={closeSearch}
-      />
     {/if}
   </main>
 </div>
@@ -346,14 +374,31 @@
   }
 
   .sidebar {
-    width: 260px;
-    min-width: 200px;
-    max-width: 320px;
     height: 100%;
     background: var(--sidebar-bg);
     border-right: 1px solid var(--border);
     overflow: hidden;
     flex-shrink: 0;
+  }
+
+  .resize-handle {
+    width: 4px;
+    margin-left: -4px;
+    cursor: col-resize;
+    flex-shrink: 0;
+    z-index: 10;
+    position: relative;
+  }
+
+  .resize-handle:hover,
+  .resizing .resize-handle {
+    background: var(--accent, #0969da);
+    opacity: 0.5;
+  }
+
+  .resizing {
+    user-select: none;
+    cursor: col-resize;
   }
 
   .content {
