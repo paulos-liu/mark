@@ -18,6 +18,8 @@
   } from '$lib/stores/search.svelte.js';
   import { openMarkdownFile, readFile } from '$lib/utils/fileHandler.js';
 
+  const ALLOWED_EXTENSIONS = ['.md', '.markdown', '.txt'];
+
   let showSettings = $state(false);
   let systemDark = $state(false);
 
@@ -44,17 +46,24 @@
     try {
       const result = await openMarkdownFile();
       if (result) {
-        loadDocument(result.content, result.filePath, result.fileName);
+        await loadDocument(result.content, result.filePath, result.fileName);
       }
     } catch (err) {
       console.error('Failed to open file:', err);
     }
   }
 
+  /** Centralized search close -- single source of truth for cleanup */
+  function closeSearch() {
+    uiState.showSearch = false;
+    searchState.searchText = '';
+  }
+
   function toggleSearch() {
-    uiState.showSearch = !uiState.showSearch;
-    if (!uiState.showSearch) {
-      searchState.searchText = '';
+    if (uiState.showSearch) {
+      closeSearch();
+    } else {
+      uiState.showSearch = true;
     }
   }
 
@@ -71,8 +80,7 @@
       if (showSettings) {
         showSettings = false;
       } else if (uiState.showSearch) {
-        uiState.showSearch = false;
-        searchState.searchText = '';
+        closeSearch();
       }
     }
     if ((e.metaKey || e.ctrlKey) && e.key === ',') {
@@ -81,69 +89,92 @@
     }
   }
 
-  function closeSearch() {
-    uiState.showSearch = false;
-    searchState.searchText = '';
+  /** Check if a file path has an allowed markdown extension */
+  function isAllowedFile(filePath) {
+    const lower = filePath.toLowerCase();
+    return ALLOWED_EXTENSIONS.some((ext) => lower.endsWith(ext));
   }
 
   onMount(() => {
+    let destroyed = false;
+
     // Track system dark mode preference
     const mq = window.matchMedia('(prefers-color-scheme: dark)');
     systemDark = mq.matches;
     const handler = (e) => (systemDark = e.matches);
     mq.addEventListener('change', handler);
 
-    // Listen for Tauri events
-    let unlisten;
+    // Store the unlisten promise so cleanup can await it
+    let unlistenPromise = null;
+
     (async () => {
       try {
         const { invoke } = await import('@tauri-apps/api/core');
         const { getCurrentWebviewWindow } = await import('@tauri-apps/api/webviewWindow');
 
         // Check if a file was passed via CLI args
-        const pendingFile = await invoke('get_pending_file');
-        if (pendingFile) {
-          try {
-            const result = await readFile(pendingFile);
-            loadDocument(result.content, result.filePath, result.fileName);
-          } catch (err) {
-            console.error('Failed to open file from CLI:', err);
+        if (!destroyed) {
+          const pendingFile = await invoke('get_pending_file');
+          if (pendingFile && !destroyed) {
+            try {
+              const result = await readFile(pendingFile);
+              if (!destroyed) {
+                await loadDocument(result.content, result.filePath, result.fileName);
+              }
+            } catch (err) {
+              console.error('Failed to open file from CLI:', err);
+            }
           }
         }
 
-        const appWindow = getCurrentWebviewWindow();
-        unlisten = await appWindow.onDragDropEvent(async (event) => {
-          if (event.payload.type === 'drop' && event.payload.paths?.length > 0) {
-            const path = event.payload.paths[0];
-            if (path.endsWith('.md') || path.endsWith('.markdown') || path.endsWith('.txt')) {
-              try {
-                const result = await readFile(path);
-                loadDocument(result.content, result.filePath, result.fileName);
-              } catch (err) {
-                console.error('Failed to read dropped file:', err);
+        // Set up drag-drop listener
+        if (!destroyed) {
+          const appWindow = getCurrentWebviewWindow();
+          unlistenPromise = appWindow.onDragDropEvent(async (event) => {
+            if (destroyed) return;
+            if (event.payload.type === 'drop' && event.payload.paths?.length > 0) {
+              const path = event.payload.paths[0];
+              if (isAllowedFile(path)) {
+                try {
+                  const result = await readFile(path);
+                  if (!destroyed) {
+                    await loadDocument(result.content, result.filePath, result.fileName);
+                  }
+                } catch (err) {
+                  console.error('Failed to read dropped file:', err);
+                }
               }
             }
-          }
-        });
+          });
+        }
       } catch (err) {
-        console.log('Tauri drag-drop not available');
+        console.error('Tauri API initialization failed:', err);
       }
 
-      const params = new URLSearchParams(window.location.search);
-      const filePath = params.get('file');
-      if (filePath) {
-        try {
-          const result = await readFile(filePath);
-          loadDocument(result.content, result.filePath, result.fileName);
-        } catch (err) {
-          console.error('Failed to load file from params:', err);
+      // Check URL query params (works outside Tauri too, e.g. dev mode)
+      if (!destroyed) {
+        const params = new URLSearchParams(window.location.search);
+        const filePath = params.get('file');
+        if (filePath && isAllowedFile(filePath)) {
+          try {
+            const result = await readFile(filePath);
+            if (!destroyed) {
+              await loadDocument(result.content, result.filePath, result.fileName);
+            }
+          } catch (err) {
+            console.error('Failed to load file from params:', err);
+          }
         }
       }
     })();
 
     return () => {
+      destroyed = true;
       mq.removeEventListener('change', handler);
-      if (unlisten) unlisten();
+      // Await the unlisten promise in case it resolved after mount cleanup
+      if (unlistenPromise) {
+        unlistenPromise.then((unlisten) => unlisten());
+      }
     };
   });
 </script>
@@ -166,8 +197,8 @@
 
   <main class="content">
     {#if documentState.loading}
-      <div class="loading-state">
-        <div class="spinner"></div>
+      <div class="loading-state" role="status" aria-live="polite">
+        <div class="spinner" aria-hidden="true"></div>
         <p>Loading {documentState.fileName || 'file'}...</p>
       </div>
     {:else if documentState.content}
@@ -185,7 +216,7 @@
           <h2>Mark</h2>
           <p>Open a markdown file to get started</p>
           <p class="shortcut">
-            <kbd>{navigator.platform?.includes('Mac') ? '\u2318' : 'Ctrl'}+O</kbd> to open a file
+            <kbd>&#8984;+O</kbd> to open a file
           </p>
           <p class="shortcut">or drag and drop a <code>.md</code> file here</p>
         </div>
