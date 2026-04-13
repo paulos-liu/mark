@@ -1,4 +1,4 @@
-<div class="titlebar" data-tauri-drag-region></div>
+<div class="titlebar" data-tauri-drag-region aria-hidden="true"></div>
 
 <style>
   .titlebar {

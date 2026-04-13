@@ -9,29 +9,52 @@
   } = $props();
   let viewerEl;
 
+  // Clear highlights whenever html changes (new document loaded)
+  // and re-apply if there's an active search
   $effect(() => {
-    if (!viewerEl || !searchText || matches.length === 0) return;
-    highlightMatches();
+    // Track html to re-run when document changes
+    html;
+    if (!viewerEl) return;
+    clearHighlights();
   });
 
-  function highlightMatches() {
+  // Apply/update highlights when search state changes.
+  // Reading searchText, matches.length, and currentMatchIndex ensures
+  // this effect re-runs when any of those change (Svelte 5 fine-grained tracking).
+  $effect(() => {
+    const _text = searchText;
+    const _matchCount = matches.length;
+    const _currentIdx = currentMatchIndex;
+
     if (!viewerEl) return;
 
-    // Clear existing highlights
+    clearHighlights();
+
+    if (!_text || _matchCount === 0) return;
+
+    applyHighlights(_text, _currentIdx);
+  });
+
+  function clearHighlights() {
+    if (!viewerEl) return;
     viewerEl.querySelectorAll('mark.search-hl').forEach((el) => {
       const parent = el.parentNode;
-      parent.replaceChild(document.createTextNode(el.textContent), el);
-      parent.normalize();
+      if (parent) {
+        parent.replaceChild(document.createTextNode(el.textContent), el);
+        parent.normalize();
+      }
     });
+  }
 
-    if (!searchText || matches.length === 0) return;
+  function applyHighlights(query, activeIndex) {
+    if (!viewerEl) return;
 
     // Walk text nodes and wrap matches
     const walker = document.createTreeWalker(viewerEl, NodeFilter.SHOW_TEXT);
     const textNodes = [];
     while (walker.nextNode()) textNodes.push(walker.currentNode);
 
-    const query = searchText.toLowerCase();
+    const lowerQuery = query.toLowerCase();
     let globalMatchIdx = 0;
 
     for (const node of textNodes) {
@@ -39,7 +62,7 @@
       const lower = text.toLowerCase();
       let lastIdx = 0;
       const parts = [];
-      let pos = lower.indexOf(query, 0);
+      let pos = lower.indexOf(lowerQuery, 0);
 
       while (pos !== -1) {
         if (pos > lastIdx) {
@@ -47,12 +70,12 @@
         }
         parts.push({
           type: 'match',
-          value: text.slice(pos, pos + searchText.length),
-          isCurrent: globalMatchIdx === currentMatchIndex,
+          value: text.slice(pos, pos + query.length),
+          isCurrent: globalMatchIdx === activeIndex,
         });
         globalMatchIdx++;
-        lastIdx = pos + searchText.length;
-        pos = lower.indexOf(query, lastIdx);
+        lastIdx = pos + query.length;
+        pos = lower.indexOf(lowerQuery, lastIdx);
       }
 
       if (parts.length === 0) continue;

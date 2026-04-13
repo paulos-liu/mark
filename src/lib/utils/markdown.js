@@ -1,9 +1,11 @@
 import { Marked } from 'marked';
+import DOMPurify from 'dompurify';
 import { slugify } from './headings.js';
 
 const marked = new Marked();
 
 // Track duplicate anchors per render to make them unique
+/** @type {Record<string, number>} */
 let anchorCounts = {};
 
 marked.use({
@@ -26,14 +28,20 @@ marked.use({
   },
   gfm: true,
   breaks: false,
+  async: false,
 });
 
 /**
- * Render markdown string to HTML.
+ * Render markdown string to sanitized HTML.
+ * Uses DOMPurify to prevent XSS from malicious markdown content.
  * @param {string} content
  * @returns {string}
  */
 export function renderMarkdown(content) {
   anchorCounts = {};
-  return marked.parse(content);
+  const rawHtml = /** @type {string} */ (marked.parse(content));
+  return DOMPurify.sanitize(rawHtml, {
+    ADD_ATTR: ['id'],         // Allow id attributes (needed for heading anchors)
+    ADD_TAGS: ['mark'],       // Allow mark elements (used by search highlighting)
+  });
 }
