@@ -19,9 +19,12 @@
     </ul>
   </details>
 {:else}
-  <button class="heading-btn leaf" onclick={() => onselect(heading.anchor)}>
-    {heading.text}
-  </button>
+  <div class="leaf-row">
+    <span class="arrow-spacer"></span>
+    <button class="heading-btn leaf" onclick={() => onselect(heading.anchor)}>
+      {heading.text}
+    </button>
+  </div>
 {/if}
 
 <style>
@@ -79,5 +82,16 @@
 
   .children li {
     margin: 0;
+  }
+
+  .leaf-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .arrow-spacer {
+    width: 8px;
+    flex-shrink: 0;
   }
 </style>
