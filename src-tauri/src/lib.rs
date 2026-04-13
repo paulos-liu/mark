@@ -48,10 +48,60 @@ fn cli_targets() -> Result<Vec<PathBuf>, String> {
     ])
 }
 
+/// Zsh completion script for the `mark` command.
+fn zsh_completion() -> &'static str {
+    "#compdef mark\n_arguments '1:file:_files'\n"
+}
+
+/// Bash completion script for the `mark` command.
+fn bash_completion() -> &'static str {
+    "complete -f -o default mark\n"
+}
+
+/// Returns candidate paths for installing shell completions.
+fn completion_targets() -> Result<(Vec<PathBuf>, Vec<PathBuf>), String> {
+    let home = dirs::home_dir().ok_or_else(|| "Cannot determine home directory".to_string())?;
+    let zsh = vec![
+        PathBuf::from("/usr/local/share/zsh/site-functions/_mark"),
+        home.join(".zsh/completions/_mark"),
+    ];
+    let bash = vec![
+        PathBuf::from("/usr/local/etc/bash_completion.d/mark"),
+        home.join(".local/share/bash-completion/completions/mark"),
+    ];
+    Ok((zsh, bash))
+}
+
+/// Try to install a completion script to the first writable target path.
+fn install_completion(targets: &[PathBuf], content: &str) -> Option<PathBuf> {
+    for target in targets {
+        if let Some(parent) = target.parent() {
+            if !parent.exists() {
+                let _ = fs::create_dir_all(parent);
+            }
+        }
+        if fs::write(target, content).is_ok() {
+            return Some(target.clone());
+        }
+    }
+    None
+}
+
+/// Remove completion files from all known target paths.
+fn remove_completions(targets: &[PathBuf]) {
+    for target in targets {
+        if target.exists() {
+            let _ = fs::remove_file(target);
+        }
+    }
+}
+
 #[tauri::command]
 fn install_cli() -> Result<String, String> {
     let script = make_cli_script()?;
     let targets = cli_targets()?;
+
+    let mut installed_path: Option<String> = None;
 
     for target in &targets {
         if let Some(parent) = target.parent() {
@@ -67,18 +117,40 @@ fn install_cli() -> Result<String, String> {
                     fs::set_permissions(target, fs::Permissions::from_mode(0o755))
                         .map_err(|e| format!("Installed to {} but failed to set permissions: {e}", target.display()))?;
                 }
-                return Ok(target.to_string_lossy().to_string());
+                installed_path = Some(target.to_string_lossy().to_string());
+                break;
             }
             Err(_) => continue,
         }
     }
 
-    Err("Permission denied. Try running:\nsudo ln -sf \"$(which mark)\" /usr/local/bin/mark".to_string())
+    let cli_path = installed_path.ok_or_else(|| {
+        "Permission denied. Try running:\nsudo ln -sf \"$(which mark)\" /usr/local/bin/mark".to_string()
+    })?;
+
+    // Install shell completions (best-effort, don't fail the whole install)
+    let mut completions_note = String::new();
+    if let Ok((zsh_targets, bash_targets)) = completion_targets() {
+        if install_completion(&zsh_targets, zsh_completion()).is_some() {
+            completions_note.push_str("\nTab completions installed for zsh.");
+        }
+        if install_completion(&bash_targets, bash_completion()).is_some() {
+            completions_note.push_str("\nTab completions installed for bash.");
+        }
+    }
+
+    Ok(format!("{cli_path}{completions_note}"))
 }
 
 #[tauri::command]
 fn uninstall_cli() -> Result<String, String> {
     let targets = cli_targets()?;
+
+    // Remove shell completions
+    if let Ok((zsh_targets, bash_targets)) = completion_targets() {
+        remove_completions(&zsh_targets);
+        remove_completions(&bash_targets);
+    }
 
     for target in &targets {
         if target.exists() {
