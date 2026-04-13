@@ -13,9 +13,7 @@
     {
       "identifier": "fs:scope",
       "allow": [
-        { "path": "**" },
-        { "path": "$HOME/**" },
-        { "path": "/**" }
+        { "path": "$HOME/**" }
       ]
     }
   ]

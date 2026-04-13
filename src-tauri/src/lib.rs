@@ -1,42 +1,54 @@
 use std::fs;
-use std::os::unix::fs::PermissionsExt;
 use std::path::PathBuf;
 use std::sync::Mutex;
-use tauri::Manager;
+
+#[cfg(unix)]
+use std::os::unix::fs::PermissionsExt;
 
 struct PendingFile(Mutex<Option<String>>);
 
-fn make_cli_script() -> String {
-    let exe = std::env::current_exe().unwrap_or_default();
+/// Build a CLI launcher script. Escapes the path for safe shell embedding.
+fn make_cli_script() -> Result<String, String> {
+    let exe = std::env::current_exe().map_err(|e| format!("Cannot determine executable path: {e}"))?;
     let exe_str = exe.to_string_lossy();
 
+    // Shell-escape by replacing single quotes: ' -> '\''
+    let escape_for_shell = |s: &str| -> String {
+        s.replace('\'', "'\\''")
+    };
+
     let app_path = if let Some(pos) = exe_str.find(".app/") {
-        Some(&exe_str[..pos + 4])
+        Some(exe_str[..pos + 4].to_string())
     } else {
         None
     };
 
     if let Some(app) = app_path {
-        format!(
-            "#!/bin/sh\nif [ $# -eq 0 ]; then\n  open \"{app}\"\nelse\n  open \"{app}\" --args \"$@\"\nfi\n"
-        )
+        let escaped = escape_for_shell(&app);
+        Ok(format!(
+            "#!/bin/sh\nif [ $# -eq 0 ]; then\n  open '{escaped}'\nelse\n  open '{escaped}' --args \"$@\"\nfi\n"
+        ))
     } else {
-        format!(
-            "#!/bin/sh\n\"{exe_str}\" \"$@\" &\n"
-        )
+        let escaped = escape_for_shell(&exe_str);
+        Ok(format!(
+            "#!/bin/sh\n'{escaped}' \"$@\" &\n"
+        ))
     }
+}
+
+/// Returns the list of CLI install target paths, with home_dir validated.
+fn cli_targets() -> Result<Vec<PathBuf>, String> {
+    let home = dirs::home_dir().ok_or_else(|| "Cannot determine home directory".to_string())?;
+    Ok(vec![
+        PathBuf::from("/usr/local/bin/mark"),
+        home.join(".local/bin/mark"),
+    ])
 }
 
 #[tauri::command]
 fn install_cli() -> Result<String, String> {
-    let script = make_cli_script();
-
-    let targets: Vec<PathBuf> = vec![
-        PathBuf::from("/usr/local/bin/mark"),
-        dirs::home_dir()
-            .unwrap_or_default()
-            .join(".local/bin/mark"),
-    ];
+    let script = make_cli_script()?;
+    let targets = cli_targets()?;
 
     for target in &targets {
         if let Some(parent) = target.parent() {
@@ -47,7 +59,11 @@ fn install_cli() -> Result<String, String> {
 
         match fs::write(target, &script) {
             Ok(_) => {
-                let _ = fs::set_permissions(target, fs::Permissions::from_mode(0o755));
+                #[cfg(unix)]
+                {
+                    fs::set_permissions(target, fs::Permissions::from_mode(0o755))
+                        .map_err(|e| format!("Installed to {} but failed to set permissions: {e}", target.display()))?;
+                }
                 return Ok(target.to_string_lossy().to_string());
             }
             Err(_) => continue,
@@ -59,12 +75,7 @@ fn install_cli() -> Result<String, String> {
 
 #[tauri::command]
 fn uninstall_cli() -> Result<String, String> {
-    let targets: Vec<PathBuf> = vec![
-        PathBuf::from("/usr/local/bin/mark"),
-        dirs::home_dir()
-            .unwrap_or_default()
-            .join(".local/bin/mark"),
-    ];
+    let targets = cli_targets()?;
 
     for target in &targets {
         if target.exists() {
@@ -78,27 +89,40 @@ fn uninstall_cli() -> Result<String, String> {
     Ok("Not installed".to_string())
 }
 
-/// Called by the frontend on mount to check if a file was passed via CLI
+/// Called by the frontend on mount to check if a file was passed via CLI.
+/// Returns None if no file was passed or the mutex is poisoned.
 #[tauri::command]
 fn get_pending_file(state: tauri::State<PendingFile>) -> Option<String> {
-    state.0.lock().unwrap().take()
+    state.0.lock().unwrap_or_else(|e| e.into_inner()).take()
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    // Check CLI args for a file path before building the app
+    // Check CLI args for a file path before building the app.
+    // Skip arguments that look like flags (start with '-').
     let pending: Option<String> = {
         let args: Vec<String> = std::env::args().collect();
         if args.len() > 1 {
             let file_path = &args[1];
-            let path = std::path::Path::new(file_path);
-            let abs_path = if path.is_absolute() {
-                path.to_path_buf()
-            } else {
-                std::env::current_dir().unwrap_or_default().join(path)
-            };
 
-            Some(abs_path.to_string_lossy().to_string())
+            // Skip flags/options -- only treat as a file if it doesn't start with '-'
+            if file_path.starts_with('-') {
+                None
+            } else {
+                let path = std::path::Path::new(file_path);
+                let abs_path = if path.is_absolute() {
+                    path.to_path_buf()
+                } else {
+                    std::env::current_dir().unwrap_or_default().join(path)
+                };
+
+                // Only accept paths that actually exist and are files
+                if abs_path.is_file() {
+                    Some(abs_path.to_string_lossy().to_string())
+                } else {
+                    None
+                }
+            }
         } else {
             None
         }
