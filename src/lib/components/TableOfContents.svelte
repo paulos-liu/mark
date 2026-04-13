@@ -55,7 +55,7 @@
     display: flex;
     flex-direction: column;
     height: 100%;
-    padding-top: 36px;
+    padding-top: 8px;
     box-sizing: border-box;
   }
 

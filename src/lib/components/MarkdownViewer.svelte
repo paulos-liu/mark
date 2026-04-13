@@ -120,7 +120,7 @@
   .markdown-viewer {
     flex: 1;
     overflow-y: auto;
-    padding: 28px 48px 48px;
+    padding: 16px 48px 48px;
   }
 
   .markdown-body {

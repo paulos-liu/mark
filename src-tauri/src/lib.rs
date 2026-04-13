@@ -1,6 +1,8 @@
 use std::fs;
 use std::path::PathBuf;
 use std::sync::Mutex;
+use tauri::Emitter;
+use tauri::menu::{MenuBuilder, SubmenuBuilder, PredefinedMenuItem, MenuItemBuilder};
 
 #[cfg(unix)]
 use std::os::unix::fs::PermissionsExt;
@@ -26,7 +28,7 @@ fn make_cli_script() -> Result<String, String> {
     if let Some(app) = app_path {
         let escaped = escape_for_shell(&app);
         Ok(format!(
-            "#!/bin/sh\nif [ $# -eq 0 ]; then\n  open '{escaped}'\nelse\n  open '{escaped}' --args \"$@\"\nfi\n"
+            "#!/bin/sh\nif [ $# -eq 0 ]; then\n  open '{escaped}'\nelse\n  open -a '{escaped}' \"$@\"\nfi\n"
         ))
     } else {
         let escaped = escape_for_shell(&exe_str);
@@ -96,6 +98,93 @@ fn get_pending_file(state: tauri::State<PendingFile>) -> Option<String> {
     state.0.lock().unwrap_or_else(|e| e.into_inner()).take()
 }
 
+fn setup_menu(app: &tauri::App) -> Result<(), Box<dyn std::error::Error>> {
+    // Custom menu items (emit events to frontend)
+    let preferences = MenuItemBuilder::with_id("preferences", "Preferences...")
+        .accelerator("CmdOrCtrl+,")
+        .build(app)?;
+    let open_file = MenuItemBuilder::with_id("open-file", "Open...")
+        .accelerator("CmdOrCtrl+O")
+        .build(app)?;
+    let toggle_sidebar = MenuItemBuilder::with_id("toggle-sidebar", "Toggle Sidebar")
+        .accelerator("CmdOrCtrl+\\")
+        .build(app)?;
+    let find = MenuItemBuilder::with_id("find", "Find...")
+        .accelerator("CmdOrCtrl+F")
+        .build(app)?;
+    let zoom_in = MenuItemBuilder::with_id("zoom-in", "Zoom In")
+        .accelerator("CmdOrCtrl+=")
+        .build(app)?;
+    let zoom_out = MenuItemBuilder::with_id("zoom-out", "Zoom Out")
+        .accelerator("CmdOrCtrl+-")
+        .build(app)?;
+    let actual_size = MenuItemBuilder::with_id("actual-size", "Actual Size")
+        .accelerator("CmdOrCtrl+0")
+        .build(app)?;
+
+    // App menu (Mark)
+    let app_menu = SubmenuBuilder::new(app, "Mark")
+        .item(&PredefinedMenuItem::about(app, Some("About Mark"), None)?)
+        .separator()
+        .item(&preferences)
+        .separator()
+        .item(&PredefinedMenuItem::hide(app, Some("Hide Mark"))?)
+        .item(&PredefinedMenuItem::hide_others(app, Some("Hide Others"))?)
+        .item(&PredefinedMenuItem::show_all(app, Some("Show All"))?)
+        .separator()
+        .item(&PredefinedMenuItem::quit(app, Some("Quit Mark"))?)
+        .build()?;
+
+    // File menu
+    let file_menu = SubmenuBuilder::new(app, "File")
+        .item(&open_file)
+        .separator()
+        .item(&PredefinedMenuItem::close_window(app, Some("Close Window"))?)
+        .build()?;
+
+    // View menu
+    let view_menu = SubmenuBuilder::new(app, "View")
+        .item(&toggle_sidebar)
+        .separator()
+        .item(&find)
+        .separator()
+        .item(&zoom_in)
+        .item(&zoom_out)
+        .item(&actual_size)
+        .separator()
+        .item(&PredefinedMenuItem::fullscreen(app, Some("Enter Full Screen"))?)
+        .build()?;
+
+    // Window menu
+    let window_menu = SubmenuBuilder::new(app, "Window")
+        .item(&PredefinedMenuItem::minimize(app, None)?)
+        .item(&PredefinedMenuItem::maximize(app, Some("Zoom"))?)
+        .build()?;
+
+    let menu = MenuBuilder::new(app)
+        .item(&app_menu)
+        .item(&file_menu)
+        .item(&view_menu)
+        .item(&window_menu)
+        .build()?;
+
+    app.set_menu(menu)?;
+
+    // Handle custom menu events by emitting to frontend
+    app.on_menu_event(move |app_handle, event| {
+        let id = event.id().as_ref();
+        match id {
+            "open-file" | "preferences" | "toggle-sidebar" | "find"
+            | "zoom-in" | "zoom-out" | "actual-size" => {
+                let _ = app_handle.emit("menu-event", id);
+            }
+            _ => {}
+        }
+    });
+
+    Ok(())
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     // Check CLI args for a file path before building the app.
@@ -128,12 +217,28 @@ pub fn run() {
         }
     };
 
-    tauri::Builder::default()
+    let app = tauri::Builder::default()
         .manage(PendingFile(Mutex::new(pending)))
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())
         .invoke_handler(tauri::generate_handler![install_cli, uninstall_cli, get_pending_file])
-        .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+        .setup(|app| {
+            setup_menu(app)?;
+            Ok(())
+        })
+        .build(tauri::generate_context!())
+        .expect("error while building tauri application");
+
+    app.run(|app_handle, event| {
+        if let tauri::RunEvent::Opened { urls } = event {
+            for url in &urls {
+                if let Ok(path) = url.to_file_path() {
+                    if path.is_file() {
+                        let _ = app_handle.emit("open-file", path.to_string_lossy().to_string());
+                    }
+                }
+            }
+        }
+    });
 }

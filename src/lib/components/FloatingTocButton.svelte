@@ -29,44 +29,27 @@
     height: 40px;
     border-radius: 50%;
     border: none;
-    background: rgba(0, 0, 0, 0.7);
-    color: white;
+    background: var(--text, #1f2328);
+    color: var(--bg, #ffffff);
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.2s ease;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.08);
   }
 
   .fab:hover {
-    background: rgba(0, 0, 0, 0.85);
     transform: scale(1.05);
+    opacity: 0.9;
   }
 
   .fab.active {
-    background: rgba(9, 105, 218, 0.85);
+    background: var(--accent, #0969da);
+    color: #ffffff;
   }
 
   .fab.active:hover {
-    background: rgba(9, 105, 218, 1);
-  }
-
-  @media (prefers-color-scheme: dark) {
-    .fab {
-      background: rgba(255, 255, 255, 0.2);
-    }
-
-    .fab:hover {
-      background: rgba(255, 255, 255, 0.3);
-    }
-
-    .fab.active {
-      background: rgba(56, 139, 253, 0.6);
-    }
-
-    .fab.active:hover {
-      background: rgba(56, 139, 253, 0.8);
-    }
+    opacity: 0.9;
   }
 </style>

@@ -9,7 +9,7 @@
   import SettingsDialog from '$lib/components/SettingsDialog.svelte';
   import { documentState, loadDocument } from '$lib/stores/document.svelte.js';
   import { uiState } from '$lib/stores/ui.svelte.js';
-  import { settings, resolveTheme } from '$lib/stores/settings.svelte.js';
+  import { settings, updateSetting, resolveTheme } from '$lib/stores/settings.svelte.js';
   import {
     searchState,
     computeMatches,
@@ -67,6 +67,18 @@
     }
   }
 
+  const FONT_SIZES = [14, 16, 18, 20, 24];
+
+  function handleZoomIn() {
+    const next = FONT_SIZES.find((s) => s > settings.fontSize) ?? FONT_SIZES[FONT_SIZES.length - 1];
+    updateSetting('fontSize', next);
+  }
+
+  function handleZoomOut() {
+    const prev = [...FONT_SIZES].reverse().find((s) => s < settings.fontSize) ?? FONT_SIZES[0];
+    updateSetting('fontSize', prev);
+  }
+
   function handleKeydown(e) {
     if ((e.metaKey || e.ctrlKey) && e.key === 'o') {
       e.preventDefault();
@@ -104,13 +116,51 @@
     const handler = (e) => (systemDark = e.matches);
     mq.addEventListener('change', handler);
 
-    // Store the unlisten promise so cleanup can await it
+    // Store unlisten functions so cleanup can call them
     let unlistenPromise = null;
+    let unlistenOpenFile = null;
+    let unlistenMenu = null;
 
     (async () => {
       try {
         const { invoke } = await import('@tauri-apps/api/core');
+        const { listen } = await import('@tauri-apps/api/event');
         const { getCurrentWebviewWindow } = await import('@tauri-apps/api/webviewWindow');
+
+        // Listen for files opened via macOS file association / open command
+        if (!destroyed) {
+          unlistenOpenFile = await listen('open-file', async (event) => {
+            if (destroyed) return;
+            const path = /** @type {string} */ (event.payload);
+            if (isAllowedFile(path)) {
+              try {
+                const result = await readFile(path);
+                if (!destroyed) {
+                  await loadDocument(result.content, result.filePath, result.fileName);
+                }
+              } catch (err) {
+                console.error('Failed to open file from event:', err);
+              }
+            }
+          });
+        }
+
+        // Listen for native macOS menu events
+        if (!destroyed) {
+          unlistenMenu = await listen('menu-event', (event) => {
+            if (destroyed) return;
+            const action = /** @type {string} */ (event.payload);
+            switch (action) {
+              case 'open-file': handleOpenFile(); break;
+              case 'preferences': showSettings = !showSettings; break;
+              case 'toggle-sidebar': uiState.showTOC = !uiState.showTOC; break;
+              case 'find': toggleSearch(); break;
+              case 'zoom-in': handleZoomIn(); break;
+              case 'zoom-out': handleZoomOut(); break;
+              case 'actual-size': updateSetting('fontSize', 16); break;
+            }
+          });
+        }
 
         // Check if a file was passed via CLI args
         if (!destroyed) {
@@ -171,6 +221,8 @@
     return () => {
       destroyed = true;
       mq.removeEventListener('change', handler);
+      if (unlistenOpenFile) unlistenOpenFile();
+      if (unlistenMenu) unlistenMenu();
       // Await the unlisten promise in case it resolved after mount cleanup
       if (unlistenPromise) {
         unlistenPromise.then((unlisten) => unlisten());
@@ -181,12 +233,13 @@
 
 <svelte:window onkeydown={handleKeydown} />
 
-<Titlebar />
-
 <div class="app-layout">
-  {#if uiState.showTOC}
-    <aside class="sidebar" transition:slide={{ axis: 'x', duration: 200 }}>
-      <TableOfContents
+  <Titlebar />
+
+  <div class="main-area">
+    {#if uiState.showTOC}
+      <aside class="sidebar" transition:slide={{ axis: 'x', duration: 200 }}>
+        <TableOfContents
         headings={documentState.headings}
         onselect={scrollToHeading}
         onsearch={toggleSearch}
@@ -234,6 +287,7 @@
       />
     {/if}
   </main>
+  </div>
 </div>
 
 <FloatingTocButton
@@ -289,15 +343,22 @@
 
   .app-layout {
     display: flex;
+    flex-direction: column;
     height: 100vh;
     width: 100vw;
+  }
+
+  .main-area {
+    display: flex;
+    flex: 1;
+    min-height: 0;
   }
 
   .sidebar {
     width: 260px;
     min-width: 200px;
     max-width: 320px;
-    height: 100vh;
+    height: 100%;
     background: var(--sidebar-bg);
     border-right: 1px solid var(--border);
     overflow: hidden;
