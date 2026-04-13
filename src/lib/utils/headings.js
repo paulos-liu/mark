@@ -14,7 +14,8 @@
 
 /**
  * Convert heading text to URL-safe anchor.
- * "My Heading (v2.0)" -> "my-heading-v2-0"
+ * Supports unicode characters (CJK, accented letters, etc.)
+ * "My Heading (v2.0)" -> "my-heading-v20"
  * @param {string} text
  * @returns {string}
  */
@@ -22,12 +23,21 @@ export function slugify(text) {
   return text
     .toLowerCase()
     .trim()
-    .replace(/[^a-z0-9]+/g, '-')
+    // Remove HTML tags that may appear in heading text
+    .replace(/<[^>]*>/g, '')
+    // Replace whitespace and separator chars with hyphens
+    .replace(/[\s\-_]+/g, '-')
+    // Remove characters that are not word chars, hyphens, or unicode letters/numbers
+    .replace(/[^\p{L}\p{N}\-]/gu, '')
+    // Collapse multiple hyphens
+    .replace(/-{2,}/g, '-')
+    // Strip leading/trailing hyphens
     .replace(/^-|-$/g, '');
 }
 
 /**
  * Extract headings from raw markdown and build hierarchical tree.
+ * Ignores headings inside fenced code blocks.
  * @param {string} markdown
  * @returns {Heading[]}
  */
@@ -35,9 +45,18 @@ export function extractHeadings(markdown) {
   const roots = [];
   const stack = [];
   const lines = markdown.split('\n');
+  let inCodeBlock = false;
 
   for (const line of lines) {
     const trimmed = line.trim();
+
+    // Track fenced code blocks (``` or ~~~)
+    if (trimmed.startsWith('```') || trimmed.startsWith('~~~')) {
+      inCodeBlock = !inCodeBlock;
+      continue;
+    }
+    if (inCodeBlock) continue;
+
     if (!trimmed.startsWith('#')) continue;
 
     // Count heading level

@@ -1,3 +1,4 @@
+import DOMPurify from 'dompurify';
 import { Marked } from 'marked';
 import { slugify } from './headings.js';
 
@@ -29,11 +30,18 @@ marked.use({
 });
 
 /**
- * Render markdown string to HTML.
+ * Render markdown string to sanitized HTML.
+ * Uses DOMPurify to prevent XSS from malicious markdown files.
  * @param {string} content
  * @returns {string}
  */
 export function renderMarkdown(content) {
   anchorCounts = {};
-  return marked.parse(content);
+  const rawHtml = marked.parse(content);
+  return DOMPurify.sanitize(rawHtml, {
+    // Allow id attributes for heading anchor scroll-to
+    ADD_ATTR: ['id'],
+    // Allow standard markdown HTML elements
+    ADD_TAGS: ['mark'],
+  });
 }

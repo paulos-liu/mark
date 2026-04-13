@@ -24,11 +24,22 @@ export async function openMarkdownFile() {
 
 /**
  * Read a file by its path.
+ * Validates the path is non-empty and handles read errors with descriptive messages.
  * @param {string} filePath
  * @returns {Promise<{content: string, filePath: string, fileName: string}>}
  */
 export async function readFile(filePath) {
-  const content = await readTextFile(filePath);
+  if (!filePath || typeof filePath !== 'string') {
+    throw new Error('Invalid file path');
+  }
+
+  let content;
+  try {
+    content = await readTextFile(filePath);
+  } catch (/** @type {any} */ err) {
+    throw new Error(`Could not read file "${filePath}": ${err?.message ?? err}`);
+  }
+
   const fileName = filePath.split('/').pop() || 'Untitled';
   return { content, filePath, fileName };
 }
