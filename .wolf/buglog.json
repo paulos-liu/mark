@@ -1,0 +1,437 @@
+{
+  "version": 1,
+  "bugs": [
+    {
+      "id": "bug-001",
+      "timestamp": "2026-04-10T23:07:34.743Z",
+      "error_message": "Significant refactor of ",
+      "file": "../../.claude/plans/refactored-jumping-scott.md",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 38→49 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-04-10T23:07:34.743Z"
+    },
+    {
+      "id": "bug-002",
+      "timestamp": "2026-04-10T23:10:10.728Z",
+      "error_message": "Significant refactor of ",
+      "file": "Mark/project.yml",
+      "root_cause": "4 lines replaced/restructured",
+      "fix": "Rewrote 15→11 lines (4 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "yml"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-04-10T23:10:10.728Z"
+    },
+    {
+      "id": "bug-003",
+      "timestamp": "2026-04-10T23:10:36.274Z",
+      "error_message": "Null/undefined access in ",
+      "file": "Mark/Mark/Models/MarkdownProcessor.swift",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "swift"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-04-10T23:10:36.274Z"
+    },
+    {
+      "id": "bug-004",
+      "timestamp": "2026-04-10T23:11:25.583Z",
+      "error_message": "Significant refactor of ",
+      "file": "Mark/Mark/MarkApp.swift",
+      "root_cause": "19 lines replaced/restructured",
+      "fix": "Rewrote 38→12 lines (19 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "swift"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-04-10T23:11:25.583Z"
+    },
+    {
+      "id": "bug-005",
+      "timestamp": "2026-04-10T23:11:51.876Z",
+      "error_message": "Significant refactor of ",
+      "file": "Mark/Mark/Views/TableOfContentsView.swift",
+      "root_cause": "23 lines replaced/restructured",
+      "fix": "Rewrote 95→65 lines (23 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "swift"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-04-10T23:11:51.876Z"
+    },
+    {
+      "id": "bug-006",
+      "timestamp": "2026-04-10T23:23:04.441Z",
+      "error_message": "Wrong reference: sidebar should be plain",
+      "file": "Mark/Mark/Views/TableOfContentsView.swift",
+      "root_cause": "Used \"sidebar\" instead of \"plain\"",
+      "fix": "Changed sidebar → plain",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "swift"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-04-10T23:23:04.441Z"
+    },
+    {
+      "id": "bug-007",
+      "timestamp": "2026-04-10T23:31:24.133Z",
+      "error_message": "Function not marked async",
+      "file": "Mark/Mark/Views/MarkdownEditorView.swift",
+      "root_cause": "Function uses await but wasn't declared async",
+      "fix": "Added async modifier",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "swift"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-04-10T23:31:24.133Z"
+    },
+    {
+      "id": "bug-008",
+      "timestamp": "2026-04-10T23:34:28.974Z",
+      "error_message": "Significant refactor of ",
+      "file": "Mark/Mark/Views/MarkdownEditorView.swift",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 12→15 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "swift"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-04-10T23:34:28.974Z"
+    },
+    {
+      "id": "bug-009",
+      "timestamp": "2026-04-10T23:46:19.642Z",
+      "error_message": "Significant refactor of ",
+      "file": "Mark/Mark/Views/TableOfContentsView.swift",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 22→27 lines (2 removed) | Also: ScrollView {; VStack(alignment: .leading, spacing: 0) {",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "swift"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-04-10T23:47:09.506Z"
+    },
+    {
+      "id": "bug-010",
+      "timestamp": "2026-04-10T23:58:46.085Z",
+      "error_message": "Significant refactor of ",
+      "file": "Mark/Mark/Views/TableOfContentsView.swift",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 19→37 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "swift"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-04-10T23:58:46.085Z"
+    },
+    {
+      "id": "bug-011",
+      "timestamp": "2026-04-11T00:00:17.496Z",
+      "error_message": "Wrong return value",
+      "file": "Mark/Mark/Views/TableOfContentsView.swift",
+      "root_cause": "Was returning: TableOfContentsView(headings: sampleHeadings, sele",
+      "fix": "Now returns: TableOfContentsView(headings: sampleHeadings, sele",
+      "tags": [
+        "auto-detected",
+        "return-value",
+        "swift"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-04-11T00:00:17.496Z"
+    },
+    {
+      "id": "bug-012",
+      "timestamp": "2026-04-11T00:01:53.600Z",
+      "error_message": "Null/undefined access in ",
+      "file": "Mark/Mark/Views/MarkdownEditorView.swift",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "swift"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-04-11T00:01:53.600Z"
+    },
+    {
+      "id": "bug-013",
+      "timestamp": "2026-04-11T00:06:53.969Z",
+      "error_message": "Significant refactor of ",
+      "file": "Mark/Mark/Views/MarkdownEditorView.swift",
+      "root_cause": "4 lines replaced/restructured",
+      "fix": "Rewrote 19→15 lines (4 removed) | Also: // Overlay: Right controls (search field); HStack(spacing: 6) {",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "swift"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-04-11T00:10:00.543Z"
+    },
+    {
+      "id": "bug-014",
+      "timestamp": "2026-04-11T00:12:16.404Z",
+      "error_message": "Function not marked async",
+      "file": "../../.claude/plans/refactored-jumping-scott.md",
+      "root_cause": "Function uses await but wasn't declared async",
+      "fix": "Added async modifier",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-04-11T00:12:16.404Z"
+    },
+    {
+      "id": "bug-015",
+      "timestamp": "2026-04-11T00:16:38.430Z",
+      "error_message": "Significant refactor of ",
+      "file": "Mark/Mark/Views/MarkdownEditorView.swift",
+      "root_cause": "38 lines replaced/restructured",
+      "fix": "Rewrote 48→3 lines (38 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "swift"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-04-11T00:16:38.430Z"
+    },
+    {
+      "id": "bug-016",
+      "timestamp": "2026-04-13T18:29:42.570Z",
+      "error_message": "Incorrect value in code",
+      "file": "../../.config/goose/config.yaml",
+      "root_cause": "Had 'false'",
+      "fix": "Changed to 'true'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "yaml"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-04-13T18:29:42.570Z"
+    },
+    {
+      "id": "bug-017",
+      "timestamp": "2026-04-13T18:36:59.347Z",
+      "error_message": "Significant refactor of ",
+      "file": "src-tauri/tauri.conf.json",
+      "root_cause": "7 lines replaced/restructured",
+      "fix": "Rewrote 35→48 lines (7 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-04-13T18:36:59.347Z"
+    },
+    {
+      "id": "bug-018",
+      "timestamp": "2026-04-13T18:37:04.595Z",
+      "error_message": "Significant refactor of ",
+      "file": "src-tauri/Cargo.toml",
+      "root_cause": "8 lines replaced/restructured",
+      "fix": "Rewrote 24→21 lines (8 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "toml"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-04-13T18:37:04.595Z"
+    },
+    {
+      "id": "bug-019",
+      "timestamp": "2026-04-13T18:37:08.110Z",
+      "error_message": "Wrong reference: mark_temp_lib should be mark_lib",
+      "file": "src-tauri/src/main.rs",
+      "root_cause": "Used \"mark_temp_lib\" instead of \"mark_lib\"",
+      "fix": "Changed mark_temp_lib → mark_lib",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "rs"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-04-13T18:37:08.110Z"
+    },
+    {
+      "id": "bug-020",
+      "timestamp": "2026-04-13T18:55:00.496Z",
+      "error_message": "Wrong reference: start should be end",
+      "file": "src/lib/components/TableOfContents.svelte",
+      "root_cause": "Used \"start\" instead of \"end\"",
+      "fix": "Changed start → end",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "svelte"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-04-13T18:55:00.496Z"
+    },
+    {
+      "id": "bug-021",
+      "timestamp": "2026-04-13T18:56:56.805Z",
+      "error_message": "Wrong reference: bottom should be top",
+      "file": "src/lib/components/SearchBar.svelte",
+      "root_cause": "Used \"bottom\" instead of \"top\"",
+      "fix": "Changed bottom → top",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "svelte"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-04-13T18:56:56.805Z"
+    },
+    {
+      "id": "bug-022",
+      "timestamp": "2026-04-13T18:59:33.178Z",
+      "error_message": "Missing error handling in handleBackdropClick",
+      "file": "src/lib/components/SettingsDialog.svelte",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "svelte"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-04-13T18:59:33.178Z"
+    },
+    {
+      "id": "bug-023",
+      "timestamp": "2026-04-13T19:05:07.577Z",
+      "error_message": "Missing error handling in unknown",
+      "file": "src/routes/+page.svelte",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "svelte"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-04-13T19:05:07.577Z"
+    },
+    {
+      "id": "bug-024",
+      "timestamp": "2026-04-13T19:07:05.869Z",
+      "error_message": "Missing import: @tauri-apps/api/core",
+      "file": "src/routes/+page.svelte",
+      "root_cause": "Module(s) not imported: @tauri-apps/api/core",
+      "fix": "Added import(s) for @tauri-apps/api/core",
+      "tags": [
+        "auto-detected",
+        "missing-import",
+        "svelte"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-04-13T19:07:05.869Z"
+    },
+    {
+      "id": "bug-025",
+      "timestamp": "2026-04-13T19:09:43.529Z",
+      "error_message": "Significant refactor of ",
+      "file": "src-tauri/src/lib.rs",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 21→35 lines (2 removed) | Also: // Debug log; let debug_log = dirs::home_dir().unwrap_or_default",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "rs"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-04-13T19:14:23.907Z"
+    },
+    {
+      "id": "bug-026",
+      "timestamp": "2026-04-13T19:18:59.435Z",
+      "error_message": "Significant refactor of ",
+      "file": "src/lib/stores/document.svelte.js",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 7→12 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-04-13T19:18:59.435Z"
+    },
+    {
+      "id": "bug-027",
+      "timestamp": "2026-04-13T19:19:51.959Z",
+      "error_message": "Wrong reference: TableOfContents should be transition",
+      "file": "src/routes/+page.svelte",
+      "root_cause": "Used \"TableOfContents\" instead of \"transition\"",
+      "fix": "Changed TableOfContents → transition",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "svelte"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-04-13T19:19:57.095Z"
+    }
+  ]
+}

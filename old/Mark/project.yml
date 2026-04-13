@@ -1,0 +1,38 @@
+name: Mark
+options:
+  bundleIdPrefix: com.mark
+
+settings:
+  MARKETING_VERSION: 1.0
+  CURRENT_PROJECT_VERSION: 1
+
+targets:
+  Mark:
+    type: application
+    platform: macOS
+    deploymentTarget: "14.0"
+
+    settings:
+      PRODUCT_NAME: Mark
+      BUNDLE_ID: com.mark.app
+      CODE_SIGN_IDENTITY: "-"
+
+    sources:
+      - path: Mark
+        excludes:
+          - Info.plist
+
+    resources:
+      - path: Mark/Info.plist
+
+    dependencies:
+      - package: MarkdownUI
+
+    scheme:
+      testTargets: []
+      gatherCoverageData: false
+
+packages:
+  MarkdownUI:
+    url: https://github.com/gonzalezreal/MarkdownUI.git
+    from: 2.1.0
