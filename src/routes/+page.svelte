@@ -234,12 +234,9 @@
 <svelte:window onkeydown={handleKeydown} />
 
 <div class="app-layout">
-  <Titlebar />
-
-  <div class="main-area">
-    {#if uiState.showTOC}
-      <aside class="sidebar" transition:slide={{ axis: 'x', duration: 200 }}>
-        <TableOfContents
+  {#if uiState.showTOC}
+    <aside class="sidebar" transition:slide={{ axis: 'x', duration: 200 }}>
+      <TableOfContents
         headings={documentState.headings}
         onselect={scrollToHeading}
         onsearch={toggleSearch}
@@ -287,7 +284,6 @@
       />
     {/if}
   </main>
-  </div>
 </div>
 
 <FloatingTocButton
@@ -343,15 +339,10 @@
 
   .app-layout {
     display: flex;
-    flex-direction: column;
     height: 100vh;
     width: 100vw;
-  }
-
-  .main-area {
-    display: flex;
-    flex: 1;
-    min-height: 0;
+    border-top: 1px solid var(--border);
+    box-sizing: border-box;
   }
 
   .sidebar {

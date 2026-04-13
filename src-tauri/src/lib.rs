@@ -2,6 +2,7 @@ use std::fs;
 use std::path::PathBuf;
 use std::sync::Mutex;
 use tauri::Emitter;
+use tauri::Manager;
 use tauri::menu::{MenuBuilder, SubmenuBuilder, PredefinedMenuItem, MenuItemBuilder};
 
 #[cfg(unix)]
@@ -235,7 +236,13 @@ pub fn run() {
             for url in &urls {
                 if let Ok(path) = url.to_file_path() {
                     if path.is_file() {
-                        let _ = app_handle.emit("open-file", path.to_string_lossy().to_string());
+                        let path_str = path.to_string_lossy().to_string();
+                        // Emit for already-loaded frontend
+                        let _ = app_handle.emit("open-file", &path_str);
+                        // Also store in PendingFile for frontend that hasn't loaded yet
+                        if let Ok(mut pending) = app_handle.state::<PendingFile>().0.lock() {
+                            *pending = Some(path_str);
+                        }
                     }
                 }
             }
