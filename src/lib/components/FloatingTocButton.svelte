@@ -2,8 +2,15 @@
   let { active = false, onclick } = $props();
 </script>
 
-<button class="fab" class:active onclick={onclick} title="Toggle Table of Contents">
-  <svg viewBox="0 0 16 16" width="16" height="16">
+<button
+  class="fab"
+  class:active
+  onclick={onclick}
+  title="Toggle Table of Contents"
+  aria-label={active ? 'Hide table of contents' : 'Show table of contents'}
+  aria-pressed={active}
+>
+  <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
     {#if active}
       <path fill="currentColor" d="M1 2.75A.75.75 0 0 1 1.75 2h12.5a.75.75 0 0 1 0 1.5H1.75A.75.75 0 0 1 1 2.75Zm0 5A.75.75 0 0 1 1.75 7H6.5a.75.75 0 0 1 0 1.5H1.75A.75.75 0 0 1 1 7.75Zm0 5A.75.75 0 0 1 1.75 12H6.5a.75.75 0 0 1 0 1.5H1.75a.75.75 0 0 1-.75-.75Z"/>
     {:else}

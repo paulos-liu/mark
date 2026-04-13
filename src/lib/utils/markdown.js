@@ -5,6 +5,7 @@ import { slugify } from './headings.js';
 const marked = new Marked();
 
 // Track duplicate anchors per render to make them unique
+/** @type {Record<string, number>} */
 let anchorCounts = {};
 
 marked.use({
@@ -27,6 +28,7 @@ marked.use({
   },
   gfm: true,
   breaks: false,
+  async: false,
 });
 
 /**
@@ -37,11 +39,9 @@ marked.use({
  */
 export function renderMarkdown(content) {
   anchorCounts = {};
-  const rawHtml = marked.parse(content);
+  const rawHtml = /** @type {string} */ (marked.parse(content));
   return DOMPurify.sanitize(rawHtml, {
-    // Allow id attributes for heading anchor scroll-to
-    ADD_ATTR: ['id'],
-    // Allow standard markdown HTML elements
-    ADD_TAGS: ['mark'],
+    ADD_ATTR: ['id'],    // Allow id attributes for heading anchor scroll-to
+    ADD_TAGS: ['mark'],  // Allow mark elements for search highlighting
   });
 }

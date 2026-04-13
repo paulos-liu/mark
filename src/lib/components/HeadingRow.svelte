@@ -3,7 +3,7 @@
   let { heading, onselect, depth = 0 } = $props();
 </script>
 
-{#if heading.children.length > 0}
+{#if heading.children?.length > 0}
   <details open>
     <summary>
       <button class="heading-btn" onclick={() => onselect(heading.anchor)}>
