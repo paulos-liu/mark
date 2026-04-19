@@ -4,6 +4,7 @@ const defaults = {
   theme: 'system',    // 'system' | 'light' | 'dark'
   fontSize: 16,       // px
   contentWidth: 860,  // px max-width
+  showCopyButton: true, // show copy button on code blocks
 };
 
 function load() {

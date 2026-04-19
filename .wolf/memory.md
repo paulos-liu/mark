@@ -3,6 +3,14 @@
 > Chronological action log. Hooks and AI append to this file automatically.
 > Old sessions are consolidated by the daemon weekly.
 
+| Time | Description | File(s) | Outcome | ~Tokens |
+|------|-------------|---------|---------|---------|
+| 2026-04-13 | Added resizable TOC sidebar with drag handle | +page.svelte | Working resize 180-480px | ~500 |
+
+| Time | Description | Files | Outcome | ~Tokens |
+|------|------------|-------|---------|---------|
+| 2026-04-13 | Add edit mode: editor store, editor component, write capability, TOC edit button, page wiring | editor.svelte.js, MarkdownEditor.svelte, fileHandler.js, default.json, TableOfContents.svelte, +page.svelte | Build passes | ~200 |
+
 ## Session: 2026-04-10 15:46
 
 | Time | Action | File(s) | Outcome | ~Tokens |
@@ -286,3 +294,180 @@
 | 12:20 | Edited src/routes/+page.svelte | 12→10 lines | ~80 |
 | 12:20 | Session end: 73 writes across 24 files (config.yaml, luminous-stirring-bengio.md, package.json, tauri.conf.json, Cargo.toml) | 37 reads | ~38781 tok |
 | 12:21 | Edited .gitignore | expanded (+7 lines) | ~58 |
+| 12:21 | Session end: 74 writes across 25 files (config.yaml, luminous-stirring-bengio.md, package.json, tauri.conf.json, Cargo.toml) | 38 reads | ~38843 tok |
+
+## Session: 2026-04-13 12:22
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-04-13 12:22
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 12:30 | Created src/lib/utils/markdown.js | — | ~371 |
+
+| 19:30 | Parallel code review: 4 worktree agents reviewed components, stores/utils, main page, Tauri backend | all src/ and src-tauri/ files | 25 issues found & fixed, merged all 4 branches into main | ~200k |
+| 12:31 | Session end: 1 writes across 1 files (markdown.js) | 44 reads | ~28112 tok |
+| 12:41 | Session end: 1 writes across 1 files (markdown.js) | 44 reads | ~28112 tok |
+| 12:41 | Session end: 1 writes across 1 files (markdown.js) | 44 reads | ~28112 tok |
+| 12:42 | Session end: 1 writes across 1 files (markdown.js) | 45 reads | ~28354 tok |
+| 12:43 | Session end: 1 writes across 1 files (markdown.js) | 45 reads | ~28354 tok |
+| 12:43 | Session end: 1 writes across 1 files (markdown.js) | 45 reads | ~28354 tok |
+| 12:45 | Session end: 1 writes across 1 files (markdown.js) | 45 reads | ~28354 tok |
+| 12:46 | Edited src/lib/components/HeadingRow.svelte | 4→7 lines | ~52 |
+| 12:46 | Edited src/lib/components/HeadingRow.svelte | expanded (+11 lines) | ~46 |
+| 12:46 | Session end: 3 writes across 2 files (markdown.js, HeadingRow.svelte) | 45 reads | ~28459 tok |
+| 12:49 | Session end: 3 writes across 2 files (markdown.js, HeadingRow.svelte) | 45 reads | ~28459 tok |
+
+## Session: 2026-04-13 12:51
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 12:55 | Created ../../.claude/plans/ticklish-spinning-dongarra.md | — | ~959 |
+| 12:56 | Created src/lib/stores/editor.svelte.js | — | ~151 |
+| 12:56 | Edited src-tauri/capabilities/default.json | 1→2 lines | ~18 |
+| 12:56 | Edited src/lib/utils/fileHandler.js | inline fix | ~20 |
+| 12:56 | Created src/lib/components/MarkdownEditor.svelte | — | ~426 |
+| 12:56 | Edited src/lib/utils/fileHandler.js | added error handling | ~152 |
+| 12:56 | Edited src/lib/components/TableOfContents.svelte | inline fix | ~26 |
+| 12:57 | Edited src/lib/components/TableOfContents.svelte | 1→6 lines | ~212 |
+| 12:57 | Edited src/lib/components/TableOfContents.svelte | 4→9 lines | ~59 |
+| 12:57 | Edited src/routes/+page.svelte | added 2 import(s) | ~106 |
+| 12:57 | Edited src/routes/+page.svelte | inline fix | ~23 |
+| 12:57 | Edited src/routes/+page.svelte | added 8 condition(s) | ~320 |
+| 12:57 | Edited src/routes/+page.svelte | added 2 condition(s) | ~89 |
+| 12:57 | Edited src/routes/+page.svelte | 6→8 lines | ~71 |
+| 12:57 | Edited src/routes/+page.svelte | expanded (+8 lines) | ~153 |
+| 12:58 | Edited src/lib/stores/editor.svelte.js | modified enterEditMode() | ~21 |
+| 12:58 | Edited src/lib/components/MarkdownEditor.svelte | modified handleKeydown() | ~17 |
+| 12:58 | Edited src/lib/components/MarkdownEditor.svelte | inline fix | ~19 |
+| 12:58 | Session end: 18 writes across 7 files (ticklish-spinning-dongarra.md, editor.svelte.js, default.json, fileHandler.js, MarkdownEditor.svelte) | 22 reads | ~16641 tok |
+| 13:00 | Session end: 18 writes across 7 files (ticklish-spinning-dongarra.md, editor.svelte.js, default.json, fileHandler.js, MarkdownEditor.svelte) | 22 reads | ~16641 tok |
+| 13:02 | Session end: 18 writes across 7 files (ticklish-spinning-dongarra.md, editor.svelte.js, default.json, fileHandler.js, MarkdownEditor.svelte) | 22 reads | ~16641 tok |
+| 13:04 | Session end: 18 writes across 7 files (ticklish-spinning-dongarra.md, editor.svelte.js, default.json, fileHandler.js, MarkdownEditor.svelte) | 22 reads | ~16641 tok |
+| 13:09 | Edited src-tauri/src/lib.rs | added 1 import(s) | ~35 |
+| 13:09 | Edited src-tauri/src/lib.rs | modified to_file_path() | ~216 |
+| 13:09 | Edited src/routes/+page.svelte | added error handling | ~283 |
+| 13:09 | Edited src/routes/+page.svelte | added 1 condition(s) | ~58 |
+| 13:10 | Session end: 22 writes across 8 files (ticklish-spinning-dongarra.md, editor.svelte.js, default.json, fileHandler.js, MarkdownEditor.svelte) | 22 reads | ~17985 tok |
+| 13:12 | Session end: 22 writes across 8 files (ticklish-spinning-dongarra.md, editor.svelte.js, default.json, fileHandler.js, MarkdownEditor.svelte) | 22 reads | ~17985 tok |
+| 13:12 | Session end: 22 writes across 8 files (ticklish-spinning-dongarra.md, editor.svelte.js, default.json, fileHandler.js, MarkdownEditor.svelte) | 22 reads | ~17985 tok |
+| 13:12 | Session end: 22 writes across 8 files (ticklish-spinning-dongarra.md, editor.svelte.js, default.json, fileHandler.js, MarkdownEditor.svelte) | 22 reads | ~17985 tok |
+| 13:15 | Edited src-tauri/src/lib.rs | 11→11 lines | ~98 |
+| 13:15 | Session end: 23 writes across 8 files (ticklish-spinning-dongarra.md, editor.svelte.js, default.json, fileHandler.js, MarkdownEditor.svelte) | 22 reads | ~18090 tok |
+| 13:16 | Session end: 23 writes across 8 files (ticklish-spinning-dongarra.md, editor.svelte.js, default.json, fileHandler.js, MarkdownEditor.svelte) | 22 reads | ~18090 tok |
+| 13:24 | Edited ../../.claude/plans/ticklish-spinning-dongarra.md | modified that() | ~1064 |
+| 13:26 | Edited ../../.claude/plans/ticklish-spinning-dongarra.md | removed 4 lines | ~2 |
+| 13:26 | Edited src/lib/components/Titlebar.svelte | inline fix | ~5 |
+| 13:26 | Edited src/lib/components/TableOfContents.svelte | inline fix | ~6 |
+| 13:26 | Edited src/lib/components/MarkdownViewer.svelte | inline fix | ~8 |
+| 13:27 | Edited src-tauri/src/lib.rs | added 2 import(s) | ~63 |
+| 13:27 | Edited src-tauri/src/lib.rs | modified setup_menu() | ~833 |
+| 13:27 | Edited src-tauri/src/lib.rs | 8→12 lines | ~134 |
+| 13:27 | Edited src/routes/+page.svelte | inline fix | ~24 |
+| 13:27 | Edited src/routes/+page.svelte | added nullish coalescing | ~110 |
+| 13:27 | Edited src/routes/+page.svelte | 2→3 lines | ~25 |
+| 13:27 | Edited src/routes/+page.svelte | added 2 condition(s) | ~213 |
+| 13:28 | Edited src/routes/+page.svelte | added 1 condition(s) | ~24 |
+| 13:28 | Edited src-tauri/src/lib.rs | 2→1 lines | ~23 |
+| 13:28 | Edited src-tauri/src/lib.rs | 7→5 lines | ~58 |
+| 13:29 | Session end: 38 writes across 10 files (ticklish-spinning-dongarra.md, editor.svelte.js, default.json, fileHandler.js, MarkdownEditor.svelte) | 24 reads | ~21956 tok |
+| 13:30 | Edited src/lib/components/Titlebar.svelte | inline fix | ~5 |
+| 13:30 | Edited src/lib/components/TableOfContents.svelte | inline fix | ~6 |
+| 13:30 | Edited src/lib/components/MarkdownViewer.svelte | inline fix | ~8 |
+| 13:31 | Edited src/lib/components/Titlebar.svelte | 13→14 lines | ~72 |
+| 13:32 | Session end: 42 writes across 10 files (ticklish-spinning-dongarra.md, editor.svelte.js, default.json, fileHandler.js, MarkdownEditor.svelte) | 24 reads | ~22070 tok |
+| 13:37 | Edited src/lib/components/Titlebar.svelte | 14→10 lines | ~51 |
+| 13:37 | Edited src/routes/+page.svelte | 6→7 lines | ~52 |
+| 13:38 | Edited src/routes/+page.svelte | 5→6 lines | ~15 |
+| 13:38 | Edited src/routes/+page.svelte | expanded (+6 lines) | ~67 |
+| 13:38 | Edited src/routes/+page.svelte | 4→5 lines | ~37 |
+| 13:38 | Edited src/lib/components/TableOfContents.svelte | inline fix | ~6 |
+| 13:38 | Edited src/lib/components/MarkdownViewer.svelte | inline fix | ~8 |
+| 13:38 | Edited src/lib/components/FloatingTocButton.svelte | reduced (-17 lines) | ~125 |
+| 13:39 | Session end: 50 writes across 11 files (ticklish-spinning-dongarra.md, editor.svelte.js, default.json, fileHandler.js, MarkdownEditor.svelte) | 24 reads | ~22466 tok |
+| 13:41 | Session end: 50 writes across 11 files (ticklish-spinning-dongarra.md, editor.svelte.js, default.json, fileHandler.js, MarkdownEditor.svelte) | 24 reads | ~22466 tok |
+| 13:46 | Edited src/lib/components/Titlebar.svelte | added error handling | ~123 |
+| 13:47 | Session end: 51 writes across 11 files (ticklish-spinning-dongarra.md, editor.svelte.js, default.json, fileHandler.js, MarkdownEditor.svelte) | 24 reads | ~22598 tok |
+| 13:49 | Edited src/lib/components/Titlebar.svelte | modified handleMouseDown() | ~158 |
+| 13:50 | Session end: 52 writes across 11 files (ticklish-spinning-dongarra.md, editor.svelte.js, default.json, fileHandler.js, MarkdownEditor.svelte) | 24 reads | ~22767 tok |
+| 13:53 | Edited src-tauri/tauri.conf.json | removed 4 lines | ~8 |
+| 13:53 | Edited src/lib/components/Titlebar.svelte | removed 28 lines | ~20 |
+| 13:54 | Edited src/routes/+page.svelte | 56→52 lines | ~427 |
+| 13:54 | Edited src/routes/+page.svelte | reduced (-7 lines) | ~55 |
+| 13:55 | Session end: 56 writes across 12 files (ticklish-spinning-dongarra.md, editor.svelte.js, default.json, fileHandler.js, MarkdownEditor.svelte) | 24 reads | ~23340 tok |
+| 13:56 | Edited src-tauri/tauri.conf.json | 1→3 lines | ~28 |
+| 13:56 | Edited src-tauri/src/lib.rs | modified get_webview_window() | ~93 |
+| 13:57 | Edited src-tauri/src/lib.rs | reduced (-6 lines) | ~22 |
+| 13:57 | Edited src-tauri/tauri.conf.json | 3→4 lines | ~42 |
+| 13:58 | Session end: 60 writes across 12 files (ticklish-spinning-dongarra.md, editor.svelte.js, default.json, fileHandler.js, MarkdownEditor.svelte) | 24 reads | ~24360 tok |
+| 13:59 | Edited src/routes/+page.svelte | 5→7 lines | ~39 |
+| 13:59 | Session end: 61 writes across 12 files (ticklish-spinning-dongarra.md, editor.svelte.js, default.json, fileHandler.js, MarkdownEditor.svelte) | 24 reads | ~24402 tok |
+| 14:02 | Edited src-tauri/src/lib.rs | modified to_file_path() | ~215 |
+| 14:02 | Edited src-tauri/src/lib.rs | added 1 import(s) | ~34 |
+| 14:03 | Edited src-tauri/src/lib.rs | modified lock() | ~103 |
+| 14:03 | Edited src-tauri/src/lib.rs | modified lock() | ~71 |
+| 14:04 | Session end: 65 writes across 12 files (ticklish-spinning-dongarra.md, editor.svelte.js, default.json, fileHandler.js, MarkdownEditor.svelte) | 24 reads | ~24832 tok |
+| 14:07 | Session end: 65 writes across 12 files (ticklish-spinning-dongarra.md, editor.svelte.js, default.json, fileHandler.js, MarkdownEditor.svelte) | 24 reads | ~24832 tok |
+| 14:09 | Edited src/routes/+page.svelte | expanded (+6 lines) | ~129 |
+| 14:10 | Session end: 66 writes across 12 files (ticklish-spinning-dongarra.md, editor.svelte.js, default.json, fileHandler.js, MarkdownEditor.svelte) | 24 reads | ~24970 tok |
+
+## Session: 2026-04-13 14:18
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 14:19 | Edited src-tauri/capabilities/default.json | 1→2 lines | ~22 |
+| 14:19 | Session end: 1 writes across 1 files (default.json) | 5 reads | ~7245 tok |
+| 14:20 | Edited .claude/worktrees/cli-autocomplete/src-tauri/src/lib.rs | modified cli_targets() | ~488 |
+| 14:20 | Edited .claude/worktrees/cli-autocomplete/src-tauri/src/lib.rs | modified install_cli() | ~431 |
+| 14:20 | Edited .claude/worktrees/cli-autocomplete/src-tauri/src/lib.rs | modified uninstall_cli() | ~153 |
+| 14:21 | Session end: 4 writes across 2 files (default.json, lib.rs) | 5 reads | ~8393 tok |
+| 14:21 | Edited .claude/worktrees/cli-autocomplete/src/lib/components/SettingsDialog.svelte | 2→2 lines | ~25 |
+| 14:21 | Session end: 5 writes across 3 files (default.json, lib.rs, SettingsDialog.svelte) | 5 reads | ~9065 tok |
+| 14:22 | Edited src/routes/+page.svelte | setBackgroundColor() → setTheme() | ~84 |
+| 14:22 | Edited src-tauri/capabilities/default.json | "core:window:allow-set-bac" → "core:window:allow-set-the" | ~10 |
+| 14:23 | Session end: 7 writes across 4 files (default.json, lib.rs, SettingsDialog.svelte, +page.svelte) | 5 reads | ~9165 tok |
+| 14:27 | Session end: 7 writes across 4 files (default.json, lib.rs, SettingsDialog.svelte, +page.svelte) | 5 reads | ~9165 tok |
+| 14:34 | Edited src-tauri/tauri.conf.json | 4→3 lines | ~28 |
+| 14:34 | Edited src/routes/+page.svelte | 7→5 lines | ~20 |
+| 14:35 | Session end: 9 writes across 5 files (default.json, lib.rs, SettingsDialog.svelte, +page.svelte, tauri.conf.json) | 5 reads | ~9215 tok |
+| 14:35 | Session end: 9 writes across 5 files (default.json, lib.rs, SettingsDialog.svelte, +page.svelte, tauri.conf.json) | 5 reads | ~9215 tok |
+| 14:37 | Session end: 9 writes across 5 files (default.json, lib.rs, SettingsDialog.svelte, +page.svelte, tauri.conf.json) | 5 reads | ~9215 tok |
+| 14:37 | Edited src/routes/+page.svelte | 5→7 lines | ~39 |
+| 14:38 | Session end: 10 writes across 5 files (default.json, lib.rs, SettingsDialog.svelte, +page.svelte, tauri.conf.json) | 5 reads | ~9257 tok |
+| 14:40 | Edited src/routes/+page.svelte | 39→39 lines | ~335 |
+| 14:41 | Edited src/lib/components/SearchBar.svelte | inline fix | ~14 |
+| 14:41 | Session end: 12 writes across 6 files (default.json, lib.rs, SettingsDialog.svelte, +page.svelte, tauri.conf.json) | 7 reads | ~13953 tok |
+| 14:43 | Session end: 12 writes across 6 files (default.json, lib.rs, SettingsDialog.svelte, +page.svelte, tauri.conf.json) | 7 reads | ~13953 tok |
+| 14:43 | Edited src-tauri/src/lib.rs | 8→10 lines | ~117 |
+| 14:44 | Session end: 13 writes across 6 files (default.json, lib.rs, SettingsDialog.svelte, +page.svelte, tauri.conf.json) | 7 reads | ~14078 tok |
+| 14:45 | Session end: 13 writes across 6 files (default.json, lib.rs, SettingsDialog.svelte, +page.svelte, tauri.conf.json) | 7 reads | ~14078 tok |
+| 14:48 | Edited src-tauri/src/lib.rs | modified completion_targets() | ~90 |
+| 14:48 | Edited src/lib/components/SettingsDialog.svelte | inline fix | ~9 |
+| 14:48 | Session end: 15 writes across 6 files (default.json, lib.rs, SettingsDialog.svelte, +page.svelte, tauri.conf.json) | 8 reads | ~17207 tok |
+| 14:49 | Session end: 15 writes across 6 files (default.json, lib.rs, SettingsDialog.svelte, +page.svelte, tauri.conf.json) | 8 reads | ~17207 tok |
+| 14:57 | Session end: 15 writes across 6 files (default.json, lib.rs, SettingsDialog.svelte, +page.svelte, tauri.conf.json) | 8 reads | ~17207 tok |
+
+## Session: 2026-04-13 15:32
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 15:33 | Edited src/routes/+page.svelte | 2→4 lines | ~37 |
+| 15:33 | Edited src/routes/+page.svelte | modified startResize() | ~167 |
+| 15:33 | Edited src/routes/+page.svelte | 13→15 lines | ~158 |
+| 15:33 | Edited src/routes/+page.svelte | expanded (+17 lines) | ~133 |
+| 15:33 | Session end: 4 writes across 1 files (+page.svelte) | 2 reads | ~4931 tok |
+| 15:34 | Session end: 4 writes across 1 files (+page.svelte) | 2 reads | ~4931 tok |
+| 15:34 | Session end: 4 writes across 1 files (+page.svelte) | 3 reads | ~4931 tok |
+| 15:34 | Session end: 4 writes across 1 files (+page.svelte) | 3 reads | ~4931 tok |
+| 15:38 | Session end: 4 writes across 1 files (+page.svelte) | 3 reads | ~4931 tok |
+| 15:39 | Edited src-tauri/src/lib.rs | inline fix | ~12 |
+| 15:39 | Session end: 5 writes across 2 files (+page.svelte, lib.rs) | 4 reads | ~7816 tok |
+| 15:40 | Session end: 5 writes across 2 files (+page.svelte, lib.rs) | 4 reads | ~7816 tok |
+
+## Session: 2026-04-18
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 00:00 | Fixed code block copy button: wrong CSS selector + bad positioning | MarkdownViewer.svelte | Button now visible on hover, stays fixed while code scrolls | ~300 |

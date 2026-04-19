@@ -139,6 +139,23 @@
         </div>
       </div>
 
+      <div class="setting-group" role="group" aria-labelledby="copybutton-label">
+        <!-- svelte-ignore a11y_label_has_associated_control -->
+        <label class="setting-label" id="copybutton-label">Code Blocks</label>
+        <label class="toggle-row">
+          <span class="toggle-text">Show copy button</span>
+          <button
+            class="toggle"
+            class:active={settings.showCopyButton}
+            role="switch"
+            aria-checked={settings.showCopyButton}
+            onclick={() => updateSetting('showCopyButton', !settings.showCopyButton)}
+          >
+            <span class="toggle-knob"></span>
+          </button>
+        </label>
+      </div>
+
       <div class="setting-group">
         <!-- svelte-ignore a11y_label_has_associated_control -->
         <label class="setting-label" id="cli-label">Command Line</label>
@@ -335,5 +352,49 @@
 
   .cli-msg.error {
     color: #cf222e;
+  }
+
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+  }
+
+  .toggle-text {
+    font-size: 13px;
+    color: var(--text);
+  }
+
+  .toggle {
+    position: relative;
+    width: 36px;
+    height: 20px;
+    border: none;
+    border-radius: 10px;
+    background: var(--border);
+    cursor: pointer;
+    padding: 0;
+    transition: background 0.2s ease;
+  }
+
+  .toggle.active {
+    background: var(--accent, #0969da);
+  }
+
+  .toggle-knob {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: white;
+    transition: transform 0.2s ease;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  }
+
+  .toggle.active .toggle-knob {
+    transform: translateX(16px);
   }
 </style>

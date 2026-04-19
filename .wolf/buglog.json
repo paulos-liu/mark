@@ -432,6 +432,498 @@
       "related_bugs": [],
       "occurrences": 2,
       "last_seen": "2026-04-13T19:19:57.095Z"
+    },
+    {
+      "id": "bug-028",
+      "timestamp": "2026-04-13T19:56:49.083Z",
+      "error_message": "Missing error handling in function",
+      "file": "src/lib/utils/fileHandler.js",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-04-13T19:56:49.083Z"
+    },
+    {
+      "id": "bug-029",
+      "timestamp": "2026-04-13T19:56:50.492Z",
+      "error_message": "Wrong reference: $props should be onedit",
+      "file": "src/lib/components/TableOfContents.svelte",
+      "root_cause": "Used \"$props\" instead of \"onedit\"",
+      "fix": "Changed $props → onedit",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "svelte"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-04-13T19:56:50.492Z"
+    },
+    {
+      "id": "bug-030",
+      "timestamp": "2026-04-13T19:57:34.189Z",
+      "error_message": "Missing guard clause",
+      "file": "src/routes/+page.svelte",
+      "root_cause": "No early return/throw for edge case: !documentState.content",
+      "fix": "Added guard clause: if (!documentState.content)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "svelte"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-04-13T19:57:34.189Z"
+    },
+    {
+      "id": "bug-031",
+      "timestamp": "2026-04-13T20:09:23.365Z",
+      "error_message": "Significant refactor of ",
+      "file": "src-tauri/src/lib.rs",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 9→21 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "rs"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-04-13T20:09:23.365Z"
+    },
+    {
+      "id": "bug-032",
+      "timestamp": "2026-04-13T20:09:34.008Z",
+      "error_message": "Missing error handling in unknown",
+      "file": "src/routes/+page.svelte",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "svelte"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-04-13T20:09:34.008Z"
+    },
+    {
+      "id": "bug-033",
+      "timestamp": "2026-04-13T20:09:38.537Z",
+      "error_message": "Wrong condition in logic",
+      "file": "src/routes/+page.svelte",
+      "root_cause": "Condition was: if (unlistenPromise)",
+      "fix": "Changed to: if (unlistenOpenFile)",
+      "tags": [
+        "auto-detected",
+        "logic-fix",
+        "svelte"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-04-13T20:09:38.537Z"
+    },
+    {
+      "id": "bug-034",
+      "timestamp": "2026-04-13T20:26:31.504Z",
+      "error_message": "Wrong reference: 28px should be 52px",
+      "file": "src/lib/components/Titlebar.svelte",
+      "root_cause": "Used \"28px\" instead of \"52px\"",
+      "fix": "Changed 28px → 52px",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "svelte"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-04-13T20:30:31.116Z"
+    },
+    {
+      "id": "bug-035",
+      "timestamp": "2026-04-13T20:26:47.745Z",
+      "error_message": "Wrong reference: 36px should be 60px",
+      "file": "src/lib/components/TableOfContents.svelte",
+      "root_cause": "Used \"36px\" instead of \"60px\"",
+      "fix": "Changed 36px → 60px",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "svelte"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-04-13T20:30:32.612Z"
+    },
+    {
+      "id": "bug-036",
+      "timestamp": "2026-04-13T20:26:48.409Z",
+      "error_message": "Wrong reference: 28px should be 52px",
+      "file": "src/lib/components/MarkdownViewer.svelte",
+      "root_cause": "Used \"28px\" instead of \"52px\"",
+      "fix": "Changed 28px → 52px",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "svelte"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-04-13T20:30:33.585Z"
+    },
+    {
+      "id": "bug-037",
+      "timestamp": "2026-04-13T20:27:42.369Z",
+      "error_message": "Null/undefined access in ",
+      "file": "src/routes/+page.svelte",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "svelte"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-04-13T20:27:42.369Z"
+    },
+    {
+      "id": "bug-038",
+      "timestamp": "2026-04-13T20:27:57.451Z",
+      "error_message": "Missing guard clause",
+      "file": "src/routes/+page.svelte",
+      "root_cause": "No early return/throw for edge case: !destroyed",
+      "fix": "Added guard clause: if (!destroyed)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "svelte"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-04-13T20:27:57.451Z"
+    },
+    {
+      "id": "bug-039",
+      "timestamp": "2026-04-13T20:38:18.868Z",
+      "error_message": "Wrong reference: 36px should be 8px",
+      "file": "src/lib/components/TableOfContents.svelte",
+      "root_cause": "Used \"36px\" instead of \"8px\"",
+      "fix": "Changed 36px → 8px",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "svelte"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-04-13T20:38:18.868Z"
+    },
+    {
+      "id": "bug-040",
+      "timestamp": "2026-04-13T20:38:23.062Z",
+      "error_message": "Wrong reference: 28px should be 16px",
+      "file": "src/lib/components/MarkdownViewer.svelte",
+      "root_cause": "Used \"28px\" instead of \"16px\"",
+      "fix": "Changed 28px → 16px",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "svelte"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-04-13T20:38:23.062Z"
+    },
+    {
+      "id": "bug-041",
+      "timestamp": "2026-04-13T20:38:35.832Z",
+      "error_message": "Significant refactor of ",
+      "file": "src/lib/components/FloatingTocButton.svelte",
+      "root_cause": "12 lines replaced/restructured",
+      "fix": "Rewrote 40→23 lines (12 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "svelte"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-04-13T20:38:35.832Z"
+    },
+    {
+      "id": "bug-042",
+      "timestamp": "2026-04-13T20:46:42.464Z",
+      "error_message": "Missing error handling in function",
+      "file": "src/lib/components/Titlebar.svelte",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "svelte"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-04-13T20:46:42.464Z"
+    },
+    {
+      "id": "bug-043",
+      "timestamp": "2026-04-13T20:54:08.450Z",
+      "error_message": "Significant refactor of ",
+      "file": "src/routes/+page.svelte",
+      "root_cause": "4 lines replaced/restructured",
+      "fix": "Rewrote 19→12 lines (4 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "svelte"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-04-13T20:54:08.450Z"
+    },
+    {
+      "id": "bug-044",
+      "timestamp": "2026-04-13T20:56:11.315Z",
+      "error_message": "Incorrect value in code",
+      "file": "src-tauri/tauri.conf.json",
+      "root_cause": "Had \"decorations\"",
+      "fix": "Changed to \"titleBarStyle\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-04-13T20:56:11.315Z"
+    },
+    {
+      "id": "bug-045",
+      "timestamp": "2026-04-13T20:57:02.802Z",
+      "error_message": "Significant refactor of ",
+      "file": "src-tauri/src/lib.rs",
+      "root_cause": "4 lines replaced/restructured",
+      "fix": "Rewrote 10→4 lines (4 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "rs"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-04-13T20:57:02.802Z"
+    },
+    {
+      "id": "bug-046",
+      "timestamp": "2026-04-13T21:03:34.749Z",
+      "error_message": "Significant refactor of ",
+      "file": "src-tauri/src/lib.rs",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 7→4 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "rs"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-04-13T21:03:34.749Z"
+    },
+    {
+      "id": "bug-047",
+      "timestamp": "2026-04-13T21:09:26.668Z",
+      "error_message": "Missing error handling in unknown",
+      "file": "src/routes/+page.svelte",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "svelte"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-04-13T21:09:26.668Z"
+    },
+    {
+      "id": "bug-048",
+      "timestamp": "2026-04-13T21:20:33.466Z",
+      "error_message": "Significant refactor of ",
+      "file": ".claude/worktrees/cli-autocomplete/src-tauri/src/lib.rs",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 27→45 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "rs"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-04-13T21:20:33.466Z"
+    },
+    {
+      "id": "bug-049",
+      "timestamp": "2026-04-13T21:21:28.162Z",
+      "error_message": "Incorrect value in code",
+      "file": ".claude/worktrees/cli-autocomplete/src/lib/components/SettingsDialog.svelte",
+      "root_cause": "Had `Installed to ${path}`",
+      "fix": "Changed to `Installed to ${result}`",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "svelte"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-04-13T21:21:28.162Z"
+    },
+    {
+      "id": "bug-050",
+      "timestamp": "2026-04-13T21:22:18.228Z",
+      "error_message": "Significant refactor of ",
+      "file": "src/routes/+page.svelte",
+      "root_cause": "5 lines replaced/restructured",
+      "fix": "Rewrote 10→7 lines (5 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "svelte"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-04-13T21:22:18.228Z"
+    },
+    {
+      "id": "bug-051",
+      "timestamp": "2026-04-13T21:22:23.303Z",
+      "error_message": "Incorrect value in code",
+      "file": "src-tauri/capabilities/default.json",
+      "root_cause": "Had \"core:window:allow-set-background-color\"",
+      "fix": "Changed to \"core:window:allow-set-theme\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-04-13T21:22:23.303Z"
+    },
+    {
+      "id": "bug-052",
+      "timestamp": "2026-04-13T21:34:51.361Z",
+      "error_message": "Significant refactor of ",
+      "file": "src-tauri/tauri.conf.json",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 4→3 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-04-13T21:34:51.362Z"
+    },
+    {
+      "id": "bug-053",
+      "timestamp": "2026-04-13T21:34:58.098Z",
+      "error_message": "Significant refactor of ",
+      "file": "src/routes/+page.svelte",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 7→5 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "svelte"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-04-13T21:34:58.098Z"
+    },
+    {
+      "id": "bug-054",
+      "timestamp": "2026-04-13T21:41:39.388Z",
+      "error_message": "Wrong reference: top should be bottom",
+      "file": "src/lib/components/SearchBar.svelte",
+      "root_cause": "Used \"top\" instead of \"bottom\"",
+      "fix": "Changed top → bottom",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "svelte"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-04-13T21:41:39.388Z"
+    },
+    {
+      "id": "bug-055",
+      "timestamp": "2026-04-13T21:48:13.928Z",
+      "error_message": "Significant refactor of ",
+      "file": "src-tauri/src/lib.rs",
+      "root_cause": "6 lines replaced/restructured",
+      "fix": "Rewrote 12→7 lines (6 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "rs"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-04-13T21:48:13.928Z"
+    },
+    {
+      "id": "bug-056",
+      "timestamp": "2026-04-13T22:33:17.666Z",
+      "error_message": "Significant refactor of ",
+      "file": "src/routes/+page.svelte",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 13→15 lines (2 removed) | Also: width: 260px;; min-width: 200px;",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "svelte"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-04-13T22:33:24.171Z"
+    },
+    {
+      "id": "bug-057",
+      "timestamp": "2026-04-13T22:39:54.199Z",
+      "error_message": "Wrong reference: cli_path should be _",
+      "file": "src-tauri/src/lib.rs",
+      "root_cause": "Used \"cli_path\" instead of \"_\"",
+      "fix": "Changed cli_path → _",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "rs"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-04-13T22:39:54.199Z"
+    },
+    {
+      "id": "bug-058",
+      "timestamp": "2026-04-18T00:00:00.000Z",
+      "error_message": "Code block copy button invisible — hover never triggers opacity change",
+      "file": "src/lib/components/MarkdownViewer.svelte",
+      "root_cause": "CSS hover selector used `pre:hover .code-copy-btn` but button is a sibling of pre (inside wrapper), not a child. Also used `position: sticky` + flex-row layout which didn't position the button reliably.",
+      "fix": "Changed wrapper to `position: relative`, button to `position: absolute; right: 8px; top: 8px`, and hover selector to `.code-block-wrapper:hover .code-copy-btn`",
+      "tags": ["css", "copy-button", "code-block", "svelte", "selector-mismatch"],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-04-18T00:00:00.000Z"
     }
   ]
 }

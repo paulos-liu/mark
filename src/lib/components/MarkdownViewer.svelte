@@ -6,21 +6,24 @@
     currentMatchIndex = 0,
     fontSize = 16,
     contentWidth = 860,
+    showCopyButton = true,
   } = $props();
   let viewerEl;
 
-  // Clear highlights whenever html changes (new document loaded)
-  // and re-apply if there's an active search
+  // Inject copy buttons into <pre> blocks and clear highlights when html changes
   $effect(() => {
-    // Track html to re-run when document changes
     html;
+    showCopyButton;
     if (!viewerEl) return;
     clearHighlights();
+    if (showCopyButton) {
+      injectCopyButtons();
+    } else {
+      removeCopyButtons();
+    }
   });
 
   // Apply/update highlights when search state changes.
-  // Reading searchText, matches.length, and currentMatchIndex ensures
-  // this effect re-runs when any of those change (Svelte 5 fine-grained tracking).
   $effect(() => {
     const _text = searchText;
     const _matchCount = matches.length;
@@ -34,6 +37,49 @@
 
     applyHighlights(_text, _currentIdx);
   });
+
+  function removeCopyButtons() {
+    if (!viewerEl) return;
+    viewerEl.querySelectorAll('.code-copy-btn').forEach((b) => b.remove());
+    viewerEl.querySelectorAll('.code-block-wrapper').forEach((w) => {
+      const pre = w.querySelector('pre');
+      if (pre) w.replaceWith(pre);
+    });
+  }
+
+  function injectCopyButtons() {
+    if (!viewerEl) return;
+    removeCopyButtons();
+
+    const pres = viewerEl.querySelectorAll('pre');
+    for (const pre of pres) {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'code-block-wrapper';
+      pre.parentNode?.insertBefore(wrapper, pre);
+      wrapper.appendChild(pre);
+
+      const btn = document.createElement('button');
+      btn.className = 'code-copy-btn';
+      btn.setAttribute('aria-label', 'Copy code');
+      btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"/><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"/></svg>`;
+
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const code = pre.querySelector('code');
+        const text = (code || pre).textContent;
+        navigator.clipboard.writeText(text).then(() => {
+          btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.75.75 0 0 1 1.06-1.06L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"/></svg>`;
+          btn.classList.add('copied');
+          setTimeout(() => {
+            btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"/><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"/></svg>`;
+            btn.classList.remove('copied');
+          }, 1500);
+        });
+      });
+
+      wrapper.appendChild(btn);
+    }
+  }
 
   function clearHighlights() {
     if (!viewerEl) return;
@@ -49,7 +95,6 @@
   function applyHighlights(query, activeIndex) {
     if (!viewerEl) return;
 
-    // Walk text nodes and wrap matches
     const walker = document.createTreeWalker(viewerEl, NodeFilter.SHOW_TEXT);
     const textNodes = [];
     while (walker.nextNode()) textNodes.push(walker.currentNode);
@@ -99,7 +144,6 @@
       node.parentNode.replaceChild(frag, node);
     }
 
-    // Scroll current match into view
     const current = viewerEl.querySelector('mark.search-hl.current');
     if (current) {
       current.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -162,8 +206,10 @@
   }
 
   .markdown-body :global(pre) {
+    position: relative;
     margin: 0 0 16px;
     padding: 16px;
+    padding-right: 40px;
     overflow-x: auto;
     background: var(--input-bg);
     border-radius: 8px;
@@ -174,6 +220,47 @@
     padding: 0;
     background: none;
     font-size: 85%;
+  }
+
+  /* Code block wrapper - positions copy button outside the scroll context */
+  .markdown-body :global(.code-block-wrapper) {
+    position: relative;
+  }
+
+  /* Copy button - absolutely positioned in the wrapper, not the pre */
+  .markdown-body :global(.code-copy-btn) {
+    position: absolute;
+    right: 8px;
+    top: 8px;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: none;
+    border-radius: 4px;
+    background: var(--input-bg);
+    color: var(--text-muted);
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.15s, background 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+  }
+
+  .markdown-body :global(.code-block-wrapper:hover .code-copy-btn),
+  .markdown-body :global(.code-copy-btn:focus) {
+    opacity: 1;
+  }
+
+  .markdown-body :global(.code-copy-btn:hover) {
+    background: var(--border);
+    color: var(--text);
+  }
+
+  .markdown-body :global(.code-copy-btn.copied) {
+    opacity: 1;
+    color: #22c55e;
   }
 
   .markdown-body :global(table) {

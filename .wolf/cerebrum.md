@@ -26,6 +26,8 @@
 
 ## Do-Not-Repeat
 
+- [2026-04-18] **CSS child vs sibling selectors**: When injecting DOM elements as siblings (e.g., copy button next to `<pre>` inside a wrapper), the hover selector must target the common parent (`.wrapper:hover .btn`), NOT the sibling (`pre:hover .btn`). Also, for non-scrolling overlays on scrollable content, use `position: absolute` on the wrapper (not `sticky` inside flex).
+
 <!-- Mistakes made and corrected. Each entry prevents the same mistake recurring. -->
 <!-- Format: [YYYY-MM-DD] Description of what went wrong and what to do instead. -->
 

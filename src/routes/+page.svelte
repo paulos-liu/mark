@@ -114,6 +114,17 @@
       e.preventDefault();
       toggleSearch();
     }
+    if ((e.metaKey || e.ctrlKey) && e.key === 'a') {
+      e.preventDefault();
+      const viewer = document.querySelector('.markdown-viewer');
+      if (viewer) {
+        const range = document.createRange();
+        range.selectNodeContents(viewer);
+        const selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
+      }
+    }
     if (e.key === 'Escape') {
       if (showSettings) {
         showSettings = false;
@@ -298,6 +309,7 @@
         currentMatchIndex={searchState.currentMatchIndex}
         fontSize={settings.fontSize}
         contentWidth={settings.contentWidth}
+        showCopyButton={settings.showCopyButton}
       />
     {:else}
       <div class="empty-state">
