@@ -9,7 +9,8 @@
   onMount(async () => {
     const m = await import('mermaid');
     mermaid = m.default;
-    mermaid.initialize({ startOnLoad: false, theme: 'neutral' });
+    // Use current effectiveTheme — the theme $effect may have already fired while mermaid was loading
+    mermaid.initialize({ startOnLoad: false, theme: effectiveTheme === 'dark' ? 'dark' : 'neutral' });
     // Render any blocks already in the DOM (html was set before mermaid loaded)
     renderMermaid();
   });
