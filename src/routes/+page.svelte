@@ -312,6 +312,7 @@
         showCopyButton={settings.showCopyButton}
         frontmatter={documentState.frontmatter}
         showFrontmatter={settings.showFrontmatter}
+        filePath={documentState.filePath}
       />
     {:else}
       <div class="empty-state">

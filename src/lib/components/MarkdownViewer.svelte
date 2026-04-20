@@ -1,4 +1,6 @@
 <script>
+  import { getScrollPosition, saveScrollPosition } from '$lib/stores/scrollMemory.js';
+
   let {
     html = '',
     searchText = '',
@@ -9,6 +11,7 @@
     showCopyButton = true,
     frontmatter = /** @type {Record<string, string>} */ ({}),
     showFrontmatter = true,
+    filePath = '',
   } = $props();
 
   let frontmatterOpen = $state(true);
@@ -26,7 +29,24 @@
     } else {
       removeCopyButtons();
     }
+    // Restore scroll position after DOM settles
+    const path = filePath;
+    if (path) {
+      requestAnimationFrame(() => {
+        if (viewerEl) viewerEl.scrollTop = getScrollPosition(path);
+      });
+    }
   });
+
+  // Persist scroll position on scroll (debounced 200ms)
+  let _scrollTimer;
+  function handleScroll() {
+    if (!filePath) return;
+    clearTimeout(_scrollTimer);
+    _scrollTimer = setTimeout(() => {
+      if (viewerEl) saveScrollPosition(filePath, viewerEl.scrollTop);
+    }, 200);
+  }
 
   // Apply/update highlights when search state changes.
   $effect(() => {
@@ -156,7 +176,7 @@
   }
 </script>
 
-<div class="markdown-viewer" bind:this={viewerEl}>
+<div class="markdown-viewer" bind:this={viewerEl} onscroll={handleScroll}>
   <div
     class="markdown-body"
     style="font-size: {fontSize}px; max-width: {contentWidth}px;"
