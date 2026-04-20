@@ -1,5 +1,6 @@
 <script>
   import { onMount } from 'svelte';
+  import 'katex/dist/katex.min.css';
   import { slide, fly } from 'svelte/transition';
   import Titlebar from '$lib/components/Titlebar.svelte';
   import MarkdownViewer from '$lib/components/MarkdownViewer.svelte';

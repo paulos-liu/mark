@@ -47,4 +47,14 @@ describe('renderMarkdown', () => {
     expect(html).toContain('id="foo"');
     expect(html).toContain('id="foo-1"');
   });
+
+  it('renders inline math with KaTeX', () => {
+    const html = renderMarkdown('Euler: $e^{i\\pi} + 1 = 0$');
+    expect(html).toContain('katex');
+  });
+
+  it('renders block math with KaTeX', () => {
+    const html = renderMarkdown('$$\n\\int_0^\\infty x^2 dx\n$$');
+    expect(html).toContain('katex');
+  });
 });
