@@ -12,7 +12,7 @@ use tauri::Manager;
 use std::os::unix::fs::PermissionsExt;
 
 struct PendingFile(Mutex<Option<String>>);
-struct PendingWatch(Mutex<bool>);
+struct PendingWatch(Mutex<Option<bool>>);
 struct PendingDirectory(Mutex<Option<Vec<String>>>);
 struct ActiveWatcher(Mutex<Option<Debouncer<RecommendedWatcher>>>);
 
@@ -189,10 +189,10 @@ fn get_pending_file(state: tauri::State<PendingFile>) -> Option<String> {
     state.0.lock().unwrap_or_else(|e| e.into_inner()).take()
 }
 
-/// Returns true if the -w/--watch flag was passed via CLI.
+/// Returns true if the -w/--watch flag was passed via CLI (one-shot, like get_pending_file).
 #[tauri::command]
 fn get_pending_watch(state: tauri::State<PendingWatch>) -> bool {
-    *state.0.lock().unwrap_or_else(|e| e.into_inner())
+    state.0.lock().unwrap_or_else(|e| e.into_inner()).take().unwrap_or(false)
 }
 
 /// Returns list of .md/.markdown files if a directory was passed via CLI.
@@ -217,7 +217,7 @@ fn start_watch(
     let app_handle = app.clone();
     let emit_path = path.clone();
 
-    let debouncer = new_debouncer(
+    let mut debouncer = new_debouncer(
         Duration::from_millis(300),
         move |res: DebounceEventResult| {
             if res.is_ok() {
@@ -227,17 +227,14 @@ fn start_watch(
     )
     .map_err(|e| format!("Failed to create watcher: {e}"))?;
 
-    // Borrow the watcher to add the watch path, then store it
-    let mut guard = watcher_state.0.lock().unwrap_or_else(|e| e.into_inner());
-    // Drop the old watcher by replacing it (this stops the old watch)
-    *guard = Some(debouncer);
+    // Add the watch path BEFORE storing so we don't leave a bad state if watch() fails
+    debouncer
+        .watcher()
+        .watch(&watch_path, RecursiveMode::NonRecursive)
+        .map_err(|e| format!("Failed to watch file: {e}"))?;
 
-    // Re-borrow to add the path
-    if let Some(ref mut d) = *guard {
-        d.watcher()
-            .watch(&watch_path, RecursiveMode::NonRecursive)
-            .map_err(|e| format!("Failed to watch file: {e}"))?;
-    }
+    let mut guard = watcher_state.0.lock().unwrap_or_else(|e| e.into_inner());
+    *guard = Some(debouncer);
 
     Ok(())
 }
@@ -425,7 +422,7 @@ pub fn run() {
 
     let app = tauri::Builder::default()
         .manage(PendingFile(Mutex::new(pending)))
-        .manage(PendingWatch(Mutex::new(pending_watch_flag)))
+        .manage(PendingWatch(Mutex::new(Some(pending_watch_flag))))
         .manage(PendingDirectory(Mutex::new(resolve_directory(pending_dir))))
         .manage(ActiveWatcher(Mutex::new(None)))
         .plugin(tauri_plugin_opener::init())

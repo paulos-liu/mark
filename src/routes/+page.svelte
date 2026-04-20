@@ -1,8 +1,7 @@
 <script>
   import { onMount } from 'svelte';
   import 'katex/dist/katex.min.css';
-  import { slide, fly } from 'svelte/transition';
-  import Titlebar from '$lib/components/Titlebar.svelte';
+  import { slide } from 'svelte/transition';
   import MarkdownViewer from '$lib/components/MarkdownViewer.svelte';
   import TableOfContents from '$lib/components/TableOfContents.svelte';
   import SearchBar from '$lib/components/SearchBar.svelte';
@@ -69,7 +68,9 @@
   /** Wrapper around loadDocument that also tracks recents */
   async function openFile(content, filePath, fileName) {
     await loadDocument(content, filePath, fileName);
-    if (filePath && filePath !== 'stdin') addRecent(filePath);
+    // Don't add stdin temp files (mark_stdin_*.md) to recents — they're deleted after use
+    const basename = filePath ? (filePath.split('/').pop() ?? '') : '';
+    if (filePath && !basename.startsWith('mark_stdin_')) addRecent(filePath);
   }
 
   async function startWatchingFile(filePath) {
@@ -95,6 +96,7 @@
       const result = await openMarkdownFile();
       if (result) {
         await stopWatchingFile();
+        directoryFiles = null;
         await openFile(result.content, result.filePath, result.fileName);
       }
     } catch (err) {
@@ -211,6 +213,7 @@
     let unlistenPromise = null;
     let unlistenOpenFile = null;
     let unlistenMenu = null;
+    let unlistenFileChanged = null;
 
     (async () => {
       try {
@@ -227,6 +230,8 @@
               try {
                 const result = await readFile(path);
                 if (!destroyed) {
+                  await stopWatchingFile();
+                  directoryFiles = null;
                   await openFile(result.content, result.filePath, result.fileName);
                 }
               } catch (err) {
@@ -263,7 +268,6 @@
         }
 
         // Listen for file-changed events (from the file watcher)
-        let unlistenFileChanged = null;
         if (!destroyed) {
           unlistenFileChanged = await listen('file-changed', async (event) => {
             if (destroyed) return;
@@ -271,7 +275,8 @@
             try {
               const result = await readFile(path);
               if (!destroyed) {
-                await openFile(result.content, result.filePath, result.fileName);
+                // Use loadDocument directly — auto-reload should not add to recents
+                await loadDocument(result.content, result.filePath, result.fileName);
               }
             } catch (err) {
               console.error('Failed to reload changed file:', err);
@@ -323,6 +328,8 @@
                 try {
                   const result = await readFile(path);
                   if (!destroyed) {
+                    await stopWatchingFile();
+                    directoryFiles = null;
                     await openFile(result.content, result.filePath, result.fileName);
                   }
                 } catch (err) {
@@ -362,6 +369,7 @@
       if (unlistenPromise) {
         unlistenPromise.then((unlisten) => unlisten());
       }
+      if (unlistenFileChanged) unlistenFileChanged();
     };
   });
 </script>

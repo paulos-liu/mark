@@ -34,10 +34,13 @@ export function saveScrollPosition(filePath, scrollTop) {
   if (!filePath) return;
   const map = load();
 
-  // Evict oldest entries if over the limit
-  const keys = Object.keys(map);
-  if (keys.length >= MAX_ENTRIES && !(filePath in map)) {
-    delete map[keys[0]];
+  // Delete before reinserting so the key moves to the end (most recently used).
+  // This keeps Object.keys() order as LRU — keys[0] is always the least recently used.
+  if (filePath in map) {
+    delete map[filePath];
+  } else if (Object.keys(map).length >= MAX_ENTRIES) {
+    // Evict the least recently used entry
+    delete map[Object.keys(map)[0]];
   }
 
   map[filePath] = scrollTop;

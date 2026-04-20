@@ -12,7 +12,7 @@
     <span class="browser-title">Files</span>
     <span class="browser-count">{files.length}</span>
   </div>
-  <ul class="file-list">
+  <ul class="file-list" role="listbox" aria-label="Files">
     {#each files as file}
       <!-- svelte-ignore a11y_click_events_have_key_events -->
       <li

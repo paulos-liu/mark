@@ -7,9 +7,10 @@
   let selectedIndex = $state(0);
   let inputEl;
 
+  let trimmedQuery = $derived(query.trim());
   let filtered = $derived(
-    query.trim()
-      ? recentFiles.filter((p) => p.toLowerCase().includes(query.toLowerCase()))
+    trimmedQuery
+      ? recentFiles.filter((p) => p.toLowerCase().includes(trimmedQuery.toLowerCase()))
       : recentFiles
   );
 

@@ -175,8 +175,8 @@
           class="css-textarea"
           rows="5"
           placeholder=".markdown-body { font-family: Georgia, serif; }"
-          value={settings.customCSS}
-          oninput={(e) => updateSetting('customCSS', e.currentTarget.value)}
+          bind:value={settings.customCSS}
+          oninput={() => updateSetting('customCSS', settings.customCSS)}
           spellcheck="false"
           autocomplete="off"
         ></textarea>

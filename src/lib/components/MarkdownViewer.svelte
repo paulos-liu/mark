@@ -3,6 +3,9 @@
   import { getScrollPosition, saveScrollPosition } from '$lib/stores/scrollMemory.js';
 
   let mermaid;
+  /** @type {Map<Element, string>} Maps each rendered .mermaid-diagram wrapper to its source */
+  const mermaidSources = new Map();
+
   onMount(async () => {
     const m = await import('mermaid');
     mermaid = m.default;
@@ -26,12 +29,12 @@
   let frontmatterOpen = $state(true);
   let hasFrontmatter = $derived(showFrontmatter && Object.keys(frontmatter).length > 0);
 
-  // Re-initialize mermaid and re-render when theme changes
+  // Re-initialize mermaid with new theme and re-render existing diagrams
   $effect(() => {
     const theme = effectiveTheme;
     if (!mermaid) return;
     mermaid.initialize({ startOnLoad: false, theme: theme === 'dark' ? 'dark' : 'neutral' });
-    renderMermaid();
+    rerenderMermaidTheme();
   });
   let viewerEl;
 
@@ -46,7 +49,8 @@
     } else {
       removeCopyButtons();
     }
-    // Render Mermaid diagrams (post-DOMPurify, safe to inject SVG directly)
+    // New document: clear stored sources, then render any mermaid blocks
+    mermaidSources.clear();
     if (mermaid) {
       renderMermaid();
     }
@@ -74,9 +78,25 @@
         wrapper.className = 'mermaid-diagram';
         wrapper.innerHTML = svg;
         pre.replaceWith(wrapper);
+        mermaidSources.set(wrapper, source);
       } catch {
         pre.dataset.mermaidRendered = 'error';
       }
+    }
+  }
+
+  async function rerenderMermaidTheme() {
+    if (!mermaid || mermaidSources.size === 0) return;
+    for (const [wrapper, source] of mermaidSources) {
+      if (!wrapper.isConnected) {
+        mermaidSources.delete(wrapper);
+        continue;
+      }
+      try {
+        const id = `mermaid-${Math.random().toString(36).slice(2)}`;
+        const { svg } = await mermaid.render(id, source);
+        wrapper.innerHTML = svg;
+      } catch {}
     }
   }
 
