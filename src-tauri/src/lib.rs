@@ -1,9 +1,9 @@
 use std::fs;
 use std::path::PathBuf;
 use std::sync::Mutex;
+use tauri::menu::{MenuBuilder, MenuItemBuilder, PredefinedMenuItem, SubmenuBuilder};
 use tauri::Emitter;
 use tauri::Manager;
-use tauri::menu::{MenuBuilder, SubmenuBuilder, PredefinedMenuItem, MenuItemBuilder};
 
 #[cfg(unix)]
 use std::os::unix::fs::PermissionsExt;
@@ -12,13 +12,12 @@ struct PendingFile(Mutex<Option<String>>);
 
 /// Build a CLI launcher script. Escapes the path for safe shell embedding.
 fn make_cli_script() -> Result<String, String> {
-    let exe = std::env::current_exe().map_err(|e| format!("Cannot determine executable path: {e}"))?;
+    let exe =
+        std::env::current_exe().map_err(|e| format!("Cannot determine executable path: {e}"))?;
     let exe_str = exe.to_string_lossy();
 
     // Shell-escape by replacing single quotes: ' -> '\''
-    let escape_for_shell = |s: &str| -> String {
-        s.replace('\'', "'\\''")
-    };
+    let escape_for_shell = |s: &str| -> String { s.replace('\'', "'\\''") };
 
     let app_path = if let Some(pos) = exe_str.find(".app/") {
         Some(exe_str[..pos + 4].to_string())
@@ -33,9 +32,7 @@ fn make_cli_script() -> Result<String, String> {
         ))
     } else {
         let escaped = escape_for_shell(&exe_str);
-        Ok(format!(
-            "#!/bin/sh\n'{escaped}' \"$@\" &\n"
-        ))
+        Ok(format!("#!/bin/sh\n'{escaped}' \"$@\" &\n"))
     }
 }
 
@@ -116,8 +113,14 @@ fn install_cli() -> Result<String, String> {
             Ok(_) => {
                 #[cfg(unix)]
                 {
-                    fs::set_permissions(target, fs::Permissions::from_mode(0o755))
-                        .map_err(|e| format!("Installed to {} but failed to set permissions: {e}", target.display()))?;
+                    fs::set_permissions(target, fs::Permissions::from_mode(0o755)).map_err(
+                        |e| {
+                            format!(
+                                "Installed to {} but failed to set permissions: {e}",
+                                target.display()
+                            )
+                        },
+                    )?;
                 }
                 installed_path = Some(target.to_string_lossy().to_string());
                 break;
@@ -127,7 +130,8 @@ fn install_cli() -> Result<String, String> {
     }
 
     let _ = installed_path.ok_or_else(|| {
-        "Permission denied. Try running:\nsudo ln -sf \"$(which mark)\" /usr/local/bin/mark".to_string()
+        "Permission denied. Try running:\nsudo ln -sf \"$(which mark)\" /usr/local/bin/mark"
+            .to_string()
     })?;
 
     // Install shell completions (best-effort, don't fail the whole install)
@@ -191,6 +195,9 @@ fn setup_menu(app: &tauri::App) -> Result<(), Box<dyn std::error::Error>> {
     let actual_size = MenuItemBuilder::with_id("actual-size", "Actual Size")
         .accelerator("CmdOrCtrl+0")
         .build(app)?;
+    let export_pdf = MenuItemBuilder::with_id("export-pdf", "Export as PDF...")
+        .accelerator("CmdOrCtrl+Shift+E")
+        .build(app)?;
 
     // App menu (Mark)
     let app_menu = SubmenuBuilder::new(app, "Mark")
@@ -209,7 +216,19 @@ fn setup_menu(app: &tauri::App) -> Result<(), Box<dyn std::error::Error>> {
     let file_menu = SubmenuBuilder::new(app, "File")
         .item(&open_file)
         .separator()
-        .item(&PredefinedMenuItem::close_window(app, Some("Close Window"))?)
+        .item(&export_pdf)
+        .separator()
+        .item(&PredefinedMenuItem::close_window(
+            app,
+            Some("Close Window"),
+        )?)
+        .build()?;
+
+    // Edit menu (Copy + Select All for the read-only viewer)
+    let edit_menu = SubmenuBuilder::new(app, "Edit")
+        .item(&PredefinedMenuItem::copy(app, Some("Copy"))?)
+        .separator()
+        .item(&PredefinedMenuItem::select_all(app, Some("Select All"))?)
         .build()?;
 
     // View menu
@@ -222,7 +241,10 @@ fn setup_menu(app: &tauri::App) -> Result<(), Box<dyn std::error::Error>> {
         .item(&zoom_out)
         .item(&actual_size)
         .separator()
-        .item(&PredefinedMenuItem::fullscreen(app, Some("Enter Full Screen"))?)
+        .item(&PredefinedMenuItem::fullscreen(
+            app,
+            Some("Enter Full Screen"),
+        )?)
         .build()?;
 
     // Window menu
@@ -234,6 +256,7 @@ fn setup_menu(app: &tauri::App) -> Result<(), Box<dyn std::error::Error>> {
     let menu = MenuBuilder::new(app)
         .item(&app_menu)
         .item(&file_menu)
+        .item(&edit_menu)
         .item(&view_menu)
         .item(&window_menu)
         .build()?;
@@ -244,8 +267,8 @@ fn setup_menu(app: &tauri::App) -> Result<(), Box<dyn std::error::Error>> {
     app.on_menu_event(move |app_handle, event| {
         let id = event.id().as_ref();
         match id {
-            "open-file" | "preferences" | "toggle-sidebar" | "find"
-            | "zoom-in" | "zoom-out" | "actual-size" => {
+            "open-file" | "preferences" | "toggle-sidebar" | "find" | "zoom-in" | "zoom-out"
+            | "actual-size" | "export-pdf" => {
                 let _ = app_handle.emit("menu-event", id);
             }
             _ => {}
@@ -292,7 +315,11 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())
-        .invoke_handler(tauri::generate_handler![install_cli, uninstall_cli, get_pending_file])
+        .invoke_handler(tauri::generate_handler![
+            install_cli,
+            uninstall_cli,
+            get_pending_file
+        ])
         .setup(|app| {
             setup_menu(app)?;
             Ok(())

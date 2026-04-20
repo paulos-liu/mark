@@ -136,6 +136,10 @@
       e.preventDefault();
       showSettings = !showSettings;
     }
+    if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === 'e') {
+      e.preventDefault();
+      if (documentState.content) window.print();
+    }
   }
 
   /** Check if a file path has an allowed markdown extension */
@@ -195,6 +199,7 @@
               case 'zoom-in': handleZoomIn(); break;
               case 'zoom-out': handleZoomOut(); break;
               case 'actual-size': updateSetting('fontSize', 16); break;
+              case 'export-pdf': if (documentState.content) window.print(); break;
             }
           });
         }
@@ -497,5 +502,38 @@
 
   @keyframes spin {
     to { transform: rotate(360deg); }
+  }
+
+  @media print {
+    .sidebar,
+    .resize-handle,
+    :global(.floating-toc-btn),
+    :global(.search-bar),
+    :global(.settings-dialog),
+    :global(.code-copy-btn) {
+      display: none !important;
+    }
+
+    :global(body) {
+      overflow: visible;
+      height: auto;
+    }
+
+    .app-layout {
+      height: auto;
+    }
+
+    .content {
+      overflow: visible;
+    }
+
+    :global(.markdown-viewer) {
+      overflow: visible;
+      padding: 0;
+    }
+
+    :global(.markdown-body) {
+      max-width: none !important;
+    }
   }
 </style>
