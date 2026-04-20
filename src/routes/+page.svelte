@@ -9,6 +9,7 @@
   import FloatingTocButton from '$lib/components/FloatingTocButton.svelte';
   import SettingsDialog from '$lib/components/SettingsDialog.svelte';
   import QuickOpen from '$lib/components/QuickOpen.svelte';
+  import DirectoryBrowser from '$lib/components/DirectoryBrowser.svelte';
   import { documentState, loadDocument } from '$lib/stores/document.svelte.js';
   import { addRecent } from '$lib/stores/recents.svelte.js';
   import { uiState } from '$lib/stores/ui.svelte.js';
@@ -29,6 +30,7 @@
   let sidebarWidth = $state(260);
   let isResizing = $state(false);
   let watchEnabled = $state(false);
+  let directoryFiles = $state(/** @type {string[] | null} */ (null));
 
   let effectiveTheme = $derived(resolveTheme(systemDark));
 
@@ -283,6 +285,21 @@
           }
         }
 
+        // Check if a directory was passed via CLI (mark .)
+        if (!destroyed) {
+          const dirFiles = await invoke('get_pending_directory');
+          if (dirFiles && dirFiles.length > 0 && !destroyed) {
+            directoryFiles = dirFiles;
+            uiState.showTOC = true;
+            try {
+              const result = await readFile(dirFiles[0]);
+              if (!destroyed) await openFile(result.content, result.filePath, result.fileName);
+            } catch (err) {
+              console.error('Failed to open first directory file:', err);
+            }
+          }
+        }
+
         // Set up drag-drop listener
         if (!destroyed) {
           const appWindow = getCurrentWebviewWindow();
@@ -343,12 +360,27 @@
 <div class="app-layout" class:resizing={isResizing}>
   {#if uiState.showTOC}
     <aside class="sidebar" style="width: {sidebarWidth}px" transition:slide={{ axis: 'x', duration: 200 }}>
-      <TableOfContents
-        headings={documentState.headings}
-        onselect={scrollToHeading}
-        onsearch={toggleSearch}
-        onsettings={() => (showSettings = true)}
-      />
+      {#if directoryFiles}
+        <DirectoryBrowser
+          files={directoryFiles}
+          activeFile={documentState.filePath}
+          onopen={async (filePath) => {
+            try {
+              const result = await readFile(filePath);
+              await openFile(result.content, result.filePath, result.fileName);
+            } catch (err) {
+              console.error('Failed to open file from directory browser:', err);
+            }
+          }}
+        />
+      {:else}
+        <TableOfContents
+          headings={documentState.headings}
+          onselect={scrollToHeading}
+          onsearch={toggleSearch}
+          onsettings={() => (showSettings = true)}
+        />
+      {/if}
     </aside>
     <div class="resize-handle" onmousedown={startResize} role="separator" aria-label="Resize sidebar"></div>
   {/if}
