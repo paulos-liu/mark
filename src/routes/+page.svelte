@@ -25,6 +25,7 @@
   let systemDark = $state(false);
   let sidebarWidth = $state(260);
   let isResizing = $state(false);
+  let watchEnabled = $state(false);
 
   let effectiveTheme = $derived(resolveTheme(systemDark));
 
@@ -48,10 +49,29 @@
     }
   }
 
+  async function startWatchingFile(filePath) {
+    try {
+      const { invoke } = await import('@tauri-apps/api/core');
+      await invoke('start_watch', { path: filePath });
+      watchEnabled = true;
+    } catch (err) {
+      console.error('Failed to start watching:', err);
+    }
+  }
+
+  async function stopWatchingFile() {
+    try {
+      const { invoke } = await import('@tauri-apps/api/core');
+      await invoke('stop_watch');
+      watchEnabled = false;
+    } catch {}
+  }
+
   async function handleOpenFile() {
     try {
       const result = await openMarkdownFile();
       if (result) {
+        await stopWatchingFile();
         await loadDocument(result.content, result.filePath, result.fileName);
       }
     } catch (err) {
@@ -201,6 +221,30 @@
               case 'zoom-out': handleZoomOut(); break;
               case 'actual-size': updateSetting('fontSize', 16); break;
               case 'export-pdf': if (documentState.content) window.print(); break;
+              case 'toggle-watch':
+                if (watchEnabled) {
+                  stopWatchingFile();
+                } else if (documentState.filePath) {
+                  startWatchingFile(documentState.filePath);
+                }
+                break;
+            }
+          });
+        }
+
+        // Listen for file-changed events (from the file watcher)
+        let unlistenFileChanged = null;
+        if (!destroyed) {
+          unlistenFileChanged = await listen('file-changed', async (event) => {
+            if (destroyed) return;
+            const path = /** @type {string} */ (event.payload);
+            try {
+              const result = await readFile(path);
+              if (!destroyed) {
+                await loadDocument(result.content, result.filePath, result.fileName);
+              }
+            } catch (err) {
+              console.error('Failed to reload changed file:', err);
             }
           });
         }
@@ -213,6 +257,9 @@
               const result = await readFile(pendingFile);
               if (!destroyed) {
                 await loadDocument(result.content, result.filePath, result.fileName);
+                // Check if -w flag was set
+                const pendingWatch = await invoke('get_pending_watch');
+                if (pendingWatch) await startWatchingFile(pendingFile);
               }
             } catch (err) {
               console.error('Failed to open file from CLI:', err);

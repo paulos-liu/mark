@@ -1,6 +1,9 @@
 use std::fs;
 use std::path::PathBuf;
 use std::sync::Mutex;
+use std::time::Duration;
+use notify_debouncer_mini::{new_debouncer, notify::RecursiveMode, DebounceEventResult, Debouncer};
+use notify_debouncer_mini::notify::RecommendedWatcher;
 use tauri::menu::{MenuBuilder, MenuItemBuilder, PredefinedMenuItem, SubmenuBuilder};
 use tauri::Emitter;
 use tauri::Manager;
@@ -9,6 +12,8 @@ use tauri::Manager;
 use std::os::unix::fs::PermissionsExt;
 
 struct PendingFile(Mutex<Option<String>>);
+struct PendingWatch(Mutex<bool>);
+struct ActiveWatcher(Mutex<Option<Debouncer<RecommendedWatcher>>>);
 
 /// Build a CLI launcher script. Escapes the path for safe shell embedding.
 fn make_cli_script() -> Result<String, String> {
@@ -172,6 +177,60 @@ fn get_pending_file(state: tauri::State<PendingFile>) -> Option<String> {
     state.0.lock().unwrap_or_else(|e| e.into_inner()).take()
 }
 
+/// Returns true if the -w/--watch flag was passed via CLI.
+#[tauri::command]
+fn get_pending_watch(state: tauri::State<PendingWatch>) -> bool {
+    *state.0.lock().unwrap_or_else(|e| e.into_inner())
+}
+
+/// Start watching a file for changes. Replaces any existing watcher.
+/// Emits "file-changed" with the file path when a change is detected.
+#[tauri::command]
+fn start_watch(
+    path: String,
+    app: tauri::AppHandle,
+    watcher_state: tauri::State<ActiveWatcher>,
+) -> Result<(), String> {
+    let watch_path = PathBuf::from(&path);
+    if !watch_path.is_file() {
+        return Err(format!("Not a file: {path}"));
+    }
+
+    let app_handle = app.clone();
+    let emit_path = path.clone();
+
+    let debouncer = new_debouncer(
+        Duration::from_millis(300),
+        move |res: DebounceEventResult| {
+            if res.is_ok() {
+                let _ = app_handle.emit("file-changed", &emit_path);
+            }
+        },
+    )
+    .map_err(|e| format!("Failed to create watcher: {e}"))?;
+
+    // Borrow the watcher to add the watch path, then store it
+    let mut guard = watcher_state.0.lock().unwrap_or_else(|e| e.into_inner());
+    // Drop the old watcher by replacing it (this stops the old watch)
+    *guard = Some(debouncer);
+
+    // Re-borrow to add the path
+    if let Some(ref mut d) = *guard {
+        d.watcher()
+            .watch(&watch_path, RecursiveMode::NonRecursive)
+            .map_err(|e| format!("Failed to watch file: {e}"))?;
+    }
+
+    Ok(())
+}
+
+/// Stop file watching.
+#[tauri::command]
+fn stop_watch(watcher_state: tauri::State<ActiveWatcher>) {
+    let mut guard = watcher_state.0.lock().unwrap_or_else(|e| e.into_inner());
+    *guard = None;
+}
+
 fn setup_menu(app: &tauri::App) -> Result<(), Box<dyn std::error::Error>> {
     // Custom menu items (emit events to frontend)
     let preferences = MenuItemBuilder::with_id("preferences", "Preferences...")
@@ -198,6 +257,9 @@ fn setup_menu(app: &tauri::App) -> Result<(), Box<dyn std::error::Error>> {
     let export_pdf = MenuItemBuilder::with_id("export-pdf", "Export as PDF...")
         .accelerator("CmdOrCtrl+Shift+E")
         .build(app)?;
+    let toggle_watch = MenuItemBuilder::with_id("toggle-watch", "Toggle Auto-Reload")
+        .accelerator("CmdOrCtrl+Shift+R")
+        .build(app)?;
 
     // App menu (Mark)
     let app_menu = SubmenuBuilder::new(app, "Mark")
@@ -215,6 +277,7 @@ fn setup_menu(app: &tauri::App) -> Result<(), Box<dyn std::error::Error>> {
     // File menu
     let file_menu = SubmenuBuilder::new(app, "File")
         .item(&open_file)
+        .item(&toggle_watch)
         .separator()
         .item(&export_pdf)
         .separator()
@@ -268,7 +331,7 @@ fn setup_menu(app: &tauri::App) -> Result<(), Box<dyn std::error::Error>> {
         let id = event.id().as_ref();
         match id {
             "open-file" | "preferences" | "toggle-sidebar" | "find" | "zoom-in" | "zoom-out"
-            | "actual-size" | "export-pdf" => {
+            | "actual-size" | "export-pdf" | "toggle-watch" => {
                 let _ = app_handle.emit("menu-event", id);
             }
             _ => {}
@@ -312,13 +375,18 @@ pub fn run() {
 
     let app = tauri::Builder::default()
         .manage(PendingFile(Mutex::new(pending)))
+        .manage(PendingWatch(Mutex::new(false)))
+        .manage(ActiveWatcher(Mutex::new(None)))
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())
         .invoke_handler(tauri::generate_handler![
             install_cli,
             uninstall_cli,
-            get_pending_file
+            get_pending_file,
+            get_pending_watch,
+            start_watch,
+            stop_watch,
         ])
         .setup(|app| {
             setup_menu(app)?;
