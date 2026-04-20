@@ -13,6 +13,7 @@ use std::os::unix::fs::PermissionsExt;
 
 struct PendingFile(Mutex<Option<String>>);
 struct PendingWatch(Mutex<bool>);
+struct PendingDirectory(Mutex<Option<Vec<String>>>);
 struct ActiveWatcher(Mutex<Option<Debouncer<RecommendedWatcher>>>);
 
 /// Build a CLI launcher script. Escapes the path for safe shell embedding.
@@ -33,7 +34,18 @@ fn make_cli_script() -> Result<String, String> {
     if let Some(app) = app_path {
         let escaped = escape_for_shell(&app);
         Ok(format!(
-            "#!/bin/sh\nif [ $# -eq 0 ]; then\n  open '{escaped}'\nelse\n  open -a '{escaped}' \"$@\"\nfi\n"
+            r#"#!/bin/sh
+# Detect piped stdin: write to a temp file and pass it to the app
+if [ ! -t 0 ] && [ "$1" = "-" -o $# -eq 0 ]; then
+  _tmp=$(mktemp /tmp/mark_stdin_XXXXXX.md)
+  cat > "$_tmp"
+  open -a '{escaped}' "$_tmp" --args --stdin-tmp "$_tmp"
+elif [ $# -eq 0 ]; then
+  open '{escaped}'
+else
+  open -a '{escaped}' "$@"
+fi
+"#
         ))
     } else {
         let escaped = escape_for_shell(&exe_str);
@@ -183,6 +195,12 @@ fn get_pending_watch(state: tauri::State<PendingWatch>) -> bool {
     *state.0.lock().unwrap_or_else(|e| e.into_inner())
 }
 
+/// Returns list of .md/.markdown files if a directory was passed via CLI.
+#[tauri::command]
+fn get_pending_directory(state: tauri::State<PendingDirectory>) -> Option<Vec<String>> {
+    state.0.lock().unwrap_or_else(|e| e.into_inner()).take()
+}
+
 /// Start watching a file for changes. Replaces any existing watcher.
 /// Emits "file-changed" with the file path when a change is detected.
 #[tauri::command]
@@ -229,6 +247,28 @@ fn start_watch(
 fn stop_watch(watcher_state: tauri::State<ActiveWatcher>) {
     let mut guard = watcher_state.0.lock().unwrap_or_else(|e| e.into_inner());
     *guard = None;
+}
+
+/// Read all .md/.markdown files from a directory, sorted alphabetically.
+/// Returns None if dir_path is None or the directory can't be read.
+fn resolve_directory(dir_path: Option<String>) -> Option<Vec<String>> {
+    let dir = dir_path?;
+    let read = fs::read_dir(&dir).ok()?;
+    let mut files: Vec<String> = read
+        .filter_map(|e| e.ok())
+        .filter_map(|e| {
+            let path = e.path();
+            if path.is_file() {
+                let ext = path.extension()?.to_string_lossy().to_lowercase();
+                if ext == "md" || ext == "markdown" {
+                    return Some(path.to_string_lossy().to_string());
+                }
+            }
+            None
+        })
+        .collect();
+    files.sort();
+    if files.is_empty() { None } else { Some(files) }
 }
 
 fn setup_menu(app: &tauri::App) -> Result<(), Box<dyn std::error::Error>> {
@@ -347,14 +387,24 @@ fn setup_menu(app: &tauri::App) -> Result<(), Box<dyn std::error::Error>> {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    // Parse CLI args: optional -w/--watch flag and a file/directory path.
-    let (pending, pending_watch_flag) = {
+    // Parse CLI args: optional -w/--watch flag, --stdin-tmp <path>, and a file/directory path.
+    let (pending, pending_watch_flag, pending_dir) = {
         let args: Vec<String> = std::env::args().skip(1).collect();
 
         let watch_flag = args.iter().any(|a| a == "-w" || a == "--watch");
-        let file_arg = args.iter().find(|a| !a.starts_with('-')).cloned();
 
-        let resolved = file_arg.and_then(|file_path| {
+        // --stdin-tmp <file>: temp file written by the shell script from piped stdin
+        let stdin_tmp = args.windows(2).find_map(|w| {
+            if w[0] == "--stdin-tmp" { Some(w[1].clone()) } else { None }
+        });
+
+        let file_arg = if stdin_tmp.is_some() {
+            stdin_tmp
+        } else {
+            args.iter().find(|a| !a.starts_with('-')).cloned()
+        };
+
+        let (resolved_file, resolved_dir) = file_arg.map_or((None, None), |file_path| {
             let path = std::path::Path::new(&file_path);
             let abs_path = if path.is_absolute() {
                 path.to_path_buf()
@@ -362,19 +412,21 @@ pub fn run() {
                 std::env::current_dir().unwrap_or_default().join(path)
             };
             if abs_path.is_file() {
-                Some(abs_path.to_string_lossy().to_string())
+                (Some(abs_path.to_string_lossy().to_string()), None)
+            } else if abs_path.is_dir() {
+                (None, Some(abs_path.to_string_lossy().to_string()))
             } else {
-                None
+                (None, None)
             }
         });
 
-        (resolved, watch_flag)
+        (resolved_file, watch_flag, resolved_dir)
     };
-    let pending = pending; // for clarity
 
     let app = tauri::Builder::default()
         .manage(PendingFile(Mutex::new(pending)))
         .manage(PendingWatch(Mutex::new(pending_watch_flag)))
+        .manage(PendingDirectory(Mutex::new(resolve_directory(pending_dir))))
         .manage(ActiveWatcher(Mutex::new(None)))
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_dialog::init())
@@ -384,6 +436,7 @@ pub fn run() {
             uninstall_cli,
             get_pending_file,
             get_pending_watch,
+            get_pending_directory,
             start_watch,
             stop_watch,
         ])
