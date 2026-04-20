@@ -319,6 +319,7 @@
         frontmatter={documentState.frontmatter}
         showFrontmatter={settings.showFrontmatter}
         filePath={documentState.filePath}
+        effectiveTheme={effectiveTheme}
       />
     {:else}
       <div class="empty-state">

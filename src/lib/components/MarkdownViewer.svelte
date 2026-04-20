@@ -1,5 +1,13 @@
 <script>
+  import { onMount } from 'svelte';
   import { getScrollPosition, saveScrollPosition } from '$lib/stores/scrollMemory.js';
+
+  let mermaid;
+  onMount(async () => {
+    const m = await import('mermaid');
+    mermaid = m.default;
+    mermaid.initialize({ startOnLoad: false, theme: 'neutral' });
+  });
 
   let {
     html = '',
@@ -12,10 +20,19 @@
     frontmatter = /** @type {Record<string, string>} */ ({}),
     showFrontmatter = true,
     filePath = '',
+    effectiveTheme = 'light',
   } = $props();
 
   let frontmatterOpen = $state(true);
   let hasFrontmatter = $derived(showFrontmatter && Object.keys(frontmatter).length > 0);
+
+  // Re-initialize mermaid and re-render when theme changes
+  $effect(() => {
+    const theme = effectiveTheme;
+    if (!mermaid) return;
+    mermaid.initialize({ startOnLoad: false, theme: theme === 'dark' ? 'dark' : 'neutral' });
+    renderMermaid();
+  });
   let viewerEl;
 
   // Inject copy buttons into <pre> blocks and clear highlights when html changes
@@ -29,6 +46,11 @@
     } else {
       removeCopyButtons();
     }
+    // Render Mermaid diagrams (post-DOMPurify, safe to inject SVG directly)
+    if (mermaid) {
+      renderMermaid();
+    }
+
     // Restore scroll position after DOM settles
     const path = filePath;
     if (path) {
@@ -37,6 +59,26 @@
       });
     }
   });
+
+  async function renderMermaid() {
+    if (!viewerEl || !mermaid) return;
+    const blocks = viewerEl.querySelectorAll('pre > code.language-mermaid');
+    for (const code of blocks) {
+      const pre = code.parentElement;
+      if (!pre || pre.dataset.mermaidRendered) continue;
+      const source = code.textContent ?? '';
+      try {
+        const id = `mermaid-${Math.random().toString(36).slice(2)}`;
+        const { svg } = await mermaid.render(id, source);
+        const wrapper = document.createElement('div');
+        wrapper.className = 'mermaid-diagram';
+        wrapper.innerHTML = svg;
+        pre.replaceWith(wrapper);
+      } catch {
+        pre.dataset.mermaidRendered = 'error';
+      }
+    }
+  }
 
   // Persist scroll position on scroll (debounced 200ms)
   let _scrollTimer;
@@ -344,6 +386,17 @@
   :global(mark.search-hl.current) {
     background: #ff9800;
     color: white;
+  }
+
+  /* Mermaid diagrams */
+  .markdown-body :global(.mermaid-diagram) {
+    margin: 0 0 16px;
+    overflow-x: auto;
+  }
+
+  .markdown-body :global(.mermaid-diagram svg) {
+    max-width: 100%;
+    height: auto;
   }
 
   /* Frontmatter block */
