@@ -10,6 +10,8 @@
     const m = await import('mermaid');
     mermaid = m.default;
     mermaid.initialize({ startOnLoad: false, theme: 'neutral' });
+    // Render any blocks already in the DOM (html was set before mermaid loaded)
+    renderMermaid();
   });
 
   let {
