@@ -7,7 +7,12 @@
     fontSize = 16,
     contentWidth = 860,
     showCopyButton = true,
+    frontmatter = /** @type {Record<string, string>} */ ({}),
+    showFrontmatter = true,
   } = $props();
+
+  let frontmatterOpen = $state(true);
+  let hasFrontmatter = $derived(showFrontmatter && Object.keys(frontmatter).length > 0);
   let viewerEl;
 
   // Inject copy buttons into <pre> blocks and clear highlights when html changes
@@ -156,6 +161,19 @@
     class="markdown-body"
     style="font-size: {fontSize}px; max-width: {contentWidth}px;"
   >
+    {#if hasFrontmatter}
+      <details class="frontmatter-block" bind:open={frontmatterOpen}>
+        <summary class="frontmatter-summary">Frontmatter</summary>
+        <dl class="frontmatter-list">
+          {#each Object.entries(frontmatter) as [key, value]}
+            <div class="frontmatter-row">
+              <dt class="frontmatter-key">{key}</dt>
+              <dd class="frontmatter-value">{value}</dd>
+            </div>
+          {/each}
+        </dl>
+      </details>
+    {/if}
     {@html html}
   </div>
 </div>
@@ -306,6 +324,71 @@
   :global(mark.search-hl.current) {
     background: #ff9800;
     color: white;
+  }
+
+  /* Frontmatter block */
+  .frontmatter-block {
+    margin-bottom: 24px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    font-size: 85%;
+  }
+
+  .frontmatter-summary {
+    padding: 8px 12px;
+    background: var(--input-bg);
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    user-select: none;
+    list-style: none;
+  }
+
+  .frontmatter-summary::-webkit-details-marker { display: none; }
+
+  .frontmatter-summary::before {
+    content: '▶';
+    display: inline-block;
+    margin-right: 6px;
+    font-size: 9px;
+    transition: transform 0.15s;
+  }
+
+  .frontmatter-block[open] .frontmatter-summary::before {
+    transform: rotate(90deg);
+  }
+
+  .frontmatter-list {
+    margin: 0;
+    padding: 8px 12px;
+  }
+
+  .frontmatter-row {
+    display: flex;
+    gap: 12px;
+    padding: 3px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .frontmatter-row:last-child {
+    border-bottom: none;
+  }
+
+  .frontmatter-key {
+    font-weight: 600;
+    color: var(--text-muted);
+    min-width: 100px;
+    flex-shrink: 0;
+  }
+
+  .frontmatter-value {
+    color: var(--text);
+    margin: 0;
+    word-break: break-word;
   }
 
   /* Task list checkboxes */

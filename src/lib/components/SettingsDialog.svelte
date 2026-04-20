@@ -139,9 +139,9 @@
         </div>
       </div>
 
-      <div class="setting-group" role="group" aria-labelledby="copybutton-label">
+      <div class="setting-group" role="group" aria-labelledby="display-label">
         <!-- svelte-ignore a11y_label_has_associated_control -->
-        <label class="setting-label" id="copybutton-label">Code Blocks</label>
+        <label class="setting-label" id="display-label">Display</label>
         <label class="toggle-row">
           <span class="toggle-text">Show copy button</span>
           <button
@@ -150,6 +150,18 @@
             role="switch"
             aria-checked={settings.showCopyButton}
             onclick={() => updateSetting('showCopyButton', !settings.showCopyButton)}
+          >
+            <span class="toggle-knob"></span>
+          </button>
+        </label>
+        <label class="toggle-row">
+          <span class="toggle-text">Show frontmatter</span>
+          <button
+            class="toggle"
+            class:active={settings.showFrontmatter}
+            role="switch"
+            aria-checked={settings.showFrontmatter}
+            onclick={() => updateSetting('showFrontmatter', !settings.showFrontmatter)}
           >
             <span class="toggle-knob"></span>
           </button>

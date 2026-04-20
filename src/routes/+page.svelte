@@ -310,6 +310,8 @@
         fontSize={settings.fontSize}
         contentWidth={settings.contentWidth}
         showCopyButton={settings.showCopyButton}
+        frontmatter={documentState.frontmatter}
+        showFrontmatter={settings.showFrontmatter}
       />
     {:else}
       <div class="empty-state">

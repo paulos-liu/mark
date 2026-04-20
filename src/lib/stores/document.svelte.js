@@ -1,5 +1,6 @@
 import { extractHeadings } from '../utils/headings.js';
 import { renderMarkdown } from '../utils/markdown.js';
+import { parseFrontmatter } from '../utils/frontmatter.js';
 
 export const documentState = $state({
   content: '',
@@ -8,6 +9,7 @@ export const documentState = $state({
   filePath: '',
   fileName: '',
   loading: false,
+  frontmatter: /** @type {Record<string, string>} */ ({}),
 });
 
 export async function loadDocument(content, filePath, fileName) {
@@ -24,9 +26,11 @@ export async function loadDocument(content, filePath, fileName) {
   await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
 
   try {
-    documentState.content = content;
-    documentState.html = renderMarkdown(content);
-    documentState.headings = extractHeadings(content);
+    const { meta, body } = parseFrontmatter(content);
+    documentState.frontmatter = meta;
+    documentState.content = body;
+    documentState.html = renderMarkdown(body);
+    documentState.headings = extractHeadings(body);
   } catch (/** @type {any} */ err) {
     console.error('Failed to process document:', err);
     documentState.content = content;
@@ -44,4 +48,5 @@ export function clearDocument() {
   documentState.filePath = '';
   documentState.fileName = '';
   documentState.loading = false;
+  documentState.frontmatter = {};
 }
