@@ -8,7 +8,9 @@
   import SearchBar from '$lib/components/SearchBar.svelte';
   import FloatingTocButton from '$lib/components/FloatingTocButton.svelte';
   import SettingsDialog from '$lib/components/SettingsDialog.svelte';
+  import QuickOpen from '$lib/components/QuickOpen.svelte';
   import { documentState, loadDocument } from '$lib/stores/document.svelte.js';
+  import { addRecent } from '$lib/stores/recents.svelte.js';
   import { uiState } from '$lib/stores/ui.svelte.js';
   import { settings, updateSetting, resolveTheme } from '$lib/stores/settings.svelte.js';
   import {
@@ -22,6 +24,7 @@
   const ALLOWED_EXTENSIONS = ['.md', '.markdown', '.txt'];
 
   let showSettings = $state(false);
+  let showQuickOpen = $state(false);
   let systemDark = $state(false);
   let sidebarWidth = $state(260);
   let isResizing = $state(false);
@@ -49,6 +52,12 @@
     }
   }
 
+  /** Wrapper around loadDocument that also tracks recents */
+  async function openFile(content, filePath, fileName) {
+    await loadDocument(content, filePath, fileName);
+    if (filePath && filePath !== 'stdin') addRecent(filePath);
+  }
+
   async function startWatchingFile(filePath) {
     try {
       const { invoke } = await import('@tauri-apps/api/core');
@@ -72,7 +81,7 @@
       const result = await openMarkdownFile();
       if (result) {
         await stopWatchingFile();
-        await loadDocument(result.content, result.filePath, result.fileName);
+        await openFile(result.content, result.filePath, result.fileName);
       }
     } catch (err) {
       console.error('Failed to open file:', err);
@@ -147,7 +156,9 @@
       }
     }
     if (e.key === 'Escape') {
-      if (showSettings) {
+      if (showQuickOpen) {
+        showQuickOpen = false;
+      } else if (showSettings) {
         showSettings = false;
       } else if (uiState.showSearch) {
         closeSearch();
@@ -160,6 +171,10 @@
     if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === 'e') {
       e.preventDefault();
       if (documentState.content) window.print();
+    }
+    if ((e.metaKey || e.ctrlKey) && e.key === 'p') {
+      e.preventDefault();
+      showQuickOpen = !showQuickOpen;
     }
   }
 
@@ -198,7 +213,7 @@
               try {
                 const result = await readFile(path);
                 if (!destroyed) {
-                  await loadDocument(result.content, result.filePath, result.fileName);
+                  await openFile(result.content, result.filePath, result.fileName);
                 }
               } catch (err) {
                 console.error('Failed to open file from event:', err);
@@ -221,6 +236,7 @@
               case 'zoom-out': handleZoomOut(); break;
               case 'actual-size': updateSetting('fontSize', 16); break;
               case 'export-pdf': if (documentState.content) window.print(); break;
+              case 'quick-open': showQuickOpen = !showQuickOpen; break;
               case 'toggle-watch':
                 if (watchEnabled) {
                   stopWatchingFile();
@@ -241,7 +257,7 @@
             try {
               const result = await readFile(path);
               if (!destroyed) {
-                await loadDocument(result.content, result.filePath, result.fileName);
+                await openFile(result.content, result.filePath, result.fileName);
               }
             } catch (err) {
               console.error('Failed to reload changed file:', err);
@@ -256,7 +272,7 @@
             try {
               const result = await readFile(pendingFile);
               if (!destroyed) {
-                await loadDocument(result.content, result.filePath, result.fileName);
+                await openFile(result.content, result.filePath, result.fileName);
                 // Check if -w flag was set
                 const pendingWatch = await invoke('get_pending_watch');
                 if (pendingWatch) await startWatchingFile(pendingFile);
@@ -278,7 +294,7 @@
                 try {
                   const result = await readFile(path);
                   if (!destroyed) {
-                    await loadDocument(result.content, result.filePath, result.fileName);
+                    await openFile(result.content, result.filePath, result.fileName);
                   }
                 } catch (err) {
                   console.error('Failed to read dropped file:', err);
@@ -299,7 +315,7 @@
           try {
             const result = await readFile(filePath);
             if (!destroyed) {
-              await loadDocument(result.content, result.filePath, result.fileName);
+              await openFile(result.content, result.filePath, result.fileName);
             }
           } catch (err) {
             console.error('Failed to load file from params:', err);
@@ -390,6 +406,21 @@
 
 {#if showSettings}
   <SettingsDialog onclose={() => (showSettings = false)} />
+{/if}
+
+{#if showQuickOpen}
+  <QuickOpen
+    onopen={async (filePath) => {
+      showQuickOpen = false;
+      try {
+        const result = await readFile(filePath);
+        await openFile(result.content, result.filePath, result.fileName);
+      } catch (err) {
+        console.error('Failed to open recent file:', err);
+      }
+    }}
+    onclose={() => (showQuickOpen = false)}
+  />
 {/if}
 
 <style>

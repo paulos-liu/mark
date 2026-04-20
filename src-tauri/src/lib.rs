@@ -260,6 +260,9 @@ fn setup_menu(app: &tauri::App) -> Result<(), Box<dyn std::error::Error>> {
     let toggle_watch = MenuItemBuilder::with_id("toggle-watch", "Toggle Auto-Reload")
         .accelerator("CmdOrCtrl+Shift+R")
         .build(app)?;
+    let quick_open = MenuItemBuilder::with_id("quick-open", "Open Recent...")
+        .accelerator("CmdOrCtrl+P")
+        .build(app)?;
 
     // App menu (Mark)
     let app_menu = SubmenuBuilder::new(app, "Mark")
@@ -277,6 +280,7 @@ fn setup_menu(app: &tauri::App) -> Result<(), Box<dyn std::error::Error>> {
     // File menu
     let file_menu = SubmenuBuilder::new(app, "File")
         .item(&open_file)
+        .item(&quick_open)
         .item(&toggle_watch)
         .separator()
         .item(&export_pdf)
@@ -331,7 +335,7 @@ fn setup_menu(app: &tauri::App) -> Result<(), Box<dyn std::error::Error>> {
         let id = event.id().as_ref();
         match id {
             "open-file" | "preferences" | "toggle-sidebar" | "find" | "zoom-in" | "zoom-out"
-            | "actual-size" | "export-pdf" | "toggle-watch" => {
+            | "actual-size" | "export-pdf" | "toggle-watch" | "quick-open" => {
                 let _ = app_handle.emit("menu-event", id);
             }
             _ => {}
