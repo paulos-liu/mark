@@ -6,6 +6,7 @@ const defaults = {
   contentWidth: 860,      // px max-width
   showCopyButton: true,   // show copy button on code blocks
   showFrontmatter: true,  // show frontmatter metadata block
+  customCSS: '',          // user-defined CSS injected into the document
 };
 
 function load() {

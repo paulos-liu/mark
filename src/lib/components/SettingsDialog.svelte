@@ -169,6 +169,20 @@
       </div>
 
       <div class="setting-group">
+        <label class="setting-label" for="custom-css-input">Custom CSS</label>
+        <textarea
+          id="custom-css-input"
+          class="css-textarea"
+          rows="5"
+          placeholder=".markdown-body { font-family: Georgia, serif; }"
+          value={settings.customCSS}
+          oninput={(e) => updateSetting('customCSS', e.currentTarget.value)}
+          spellcheck="false"
+          autocomplete="off"
+        ></textarea>
+      </div>
+
+      <div class="setting-group">
         <!-- svelte-ignore a11y_label_has_associated_control -->
         <label class="setting-label" id="cli-label">Command Line</label>
         <p class="cli-desc">Use <code>mark file.md</code> to open files from the terminal.</p>
@@ -297,6 +311,29 @@
   .segmented button.active {
     background: var(--accent, #0969da);
     color: white;
+  }
+
+  .css-textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px 10px;
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+    font-size: 11px;
+    color: var(--text);
+    resize: vertical;
+    outline: none;
+    line-height: 1.5;
+  }
+
+  .css-textarea:focus {
+    border-color: var(--accent);
+  }
+
+  .css-textarea::placeholder {
+    color: var(--text-muted);
   }
 
   .cli-desc {

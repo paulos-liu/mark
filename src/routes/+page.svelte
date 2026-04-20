@@ -34,6 +34,18 @@
 
   let effectiveTheme = $derived(resolveTheme(systemDark));
 
+  // Inject/update custom CSS
+  $effect(() => {
+    const css = settings.customCSS;
+    let el = document.getElementById('mark-custom-css');
+    if (!el) {
+      el = document.createElement('style');
+      el.id = 'mark-custom-css';
+      document.head.appendChild(el);
+    }
+    el.textContent = css;
+  });
+
   // Apply theme to document and native window titlebar
   $effect(() => {
     document.documentElement.setAttribute('data-theme', effectiveTheme);
