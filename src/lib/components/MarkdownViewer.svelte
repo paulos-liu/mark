@@ -307,4 +307,19 @@
     background: #ff9800;
     color: white;
   }
+
+  /* Task list checkboxes */
+  .markdown-body :global(input[type="checkbox"]) {
+    pointer-events: none;
+    margin-right: 6px;
+    vertical-align: middle;
+    accent-color: var(--accent);
+    width: 14px;
+    height: 14px;
+  }
+
+  .markdown-body :global(li:has(> input[type="checkbox"])) {
+    list-style: none;
+    margin-left: -1.5em;
+  }
 </style>
