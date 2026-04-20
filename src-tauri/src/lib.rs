@@ -52,7 +52,7 @@ fn cli_targets() -> Result<Vec<PathBuf>, String> {
 
 /// Zsh completion script for the `mark` command.
 fn zsh_completion() -> &'static str {
-    "#compdef mark\n_arguments '1:file:_files'\n"
+    "#compdef mark\n_arguments \\\n  '(-w --watch)'{-w,--watch}'[auto-reload on file change]' \\\n  '1:file:_files'\n"
 }
 
 /// Bash completion script for the `mark` command.
@@ -343,39 +343,34 @@ fn setup_menu(app: &tauri::App) -> Result<(), Box<dyn std::error::Error>> {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    // Check CLI args for a file path before building the app.
-    // Skip arguments that look like flags (start with '-').
-    let pending: Option<String> = {
-        let args: Vec<String> = std::env::args().collect();
-        if args.len() > 1 {
-            let file_path = &args[1];
+    // Parse CLI args: optional -w/--watch flag and a file/directory path.
+    let (pending, pending_watch_flag) = {
+        let args: Vec<String> = std::env::args().skip(1).collect();
 
-            // Skip flags/options -- only treat as a file if it doesn't start with '-'
-            if file_path.starts_with('-') {
-                None
+        let watch_flag = args.iter().any(|a| a == "-w" || a == "--watch");
+        let file_arg = args.iter().find(|a| !a.starts_with('-')).cloned();
+
+        let resolved = file_arg.and_then(|file_path| {
+            let path = std::path::Path::new(&file_path);
+            let abs_path = if path.is_absolute() {
+                path.to_path_buf()
             } else {
-                let path = std::path::Path::new(file_path);
-                let abs_path = if path.is_absolute() {
-                    path.to_path_buf()
-                } else {
-                    std::env::current_dir().unwrap_or_default().join(path)
-                };
-
-                // Only accept paths that actually exist and are files
-                if abs_path.is_file() {
-                    Some(abs_path.to_string_lossy().to_string())
-                } else {
-                    None
-                }
+                std::env::current_dir().unwrap_or_default().join(path)
+            };
+            if abs_path.is_file() {
+                Some(abs_path.to_string_lossy().to_string())
+            } else {
+                None
             }
-        } else {
-            None
-        }
+        });
+
+        (resolved, watch_flag)
     };
+    let pending = pending; // for clarity
 
     let app = tauri::Builder::default()
         .manage(PendingFile(Mutex::new(pending)))
-        .manage(PendingWatch(Mutex::new(false)))
+        .manage(PendingWatch(Mutex::new(pending_watch_flag)))
         .manage(ActiveWatcher(Mutex::new(None)))
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_dialog::init())
