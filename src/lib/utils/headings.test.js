@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { slugify, extractHeadings, flattenHeadings, filterHeadings } from './headings.js';
+import { slugify, extractHeadings, flattenHeadings } from './headings.js';
 
 describe('slugify', () => {
   it('lowercases and hyphenates', () => {
@@ -60,6 +60,12 @@ describe('extractHeadings', () => {
   it('returns empty array for no headings', () => {
     expect(extractHeadings('just text')).toHaveLength(0);
   });
+
+  it('dedupes duplicate anchors with the renderer counter scheme', () => {
+    const md = '# Notes\n# Notes\n# Notes';
+    const anchors = extractHeadings(md).map((h) => h.anchor);
+    expect(anchors).toEqual(['notes', 'notes-1', 'notes-2']);
+  });
 });
 
 describe('flattenHeadings', () => {
@@ -67,28 +73,5 @@ describe('flattenHeadings', () => {
     const md = '# A\n## B\n### C';
     const flat = flattenHeadings(extractHeadings(md));
     expect(flat.map(h => h.text)).toEqual(['A', 'B', 'C']);
-  });
-});
-
-describe('filterHeadings', () => {
-  it('filters by text match', () => {
-    const md = '# Alpha\n# Beta\n# Gamma';
-    const filtered = filterHeadings(extractHeadings(md), 'bet');
-    expect(filtered).toHaveLength(1);
-    expect(filtered[0].text).toBe('Beta');
-  });
-
-  it('preserves ancestors of matching children', () => {
-    const md = '# Parent\n## Child Match\n# Other';
-    const filtered = filterHeadings(extractHeadings(md), 'match');
-    expect(filtered).toHaveLength(1);
-    expect(filtered[0].text).toBe('Parent');
-    expect(filtered[0].children[0].text).toBe('Child Match');
-  });
-
-  it('returns all headings for empty query', () => {
-    const md = '# A\n# B';
-    const h = extractHeadings(md);
-    expect(filterHeadings(h, '')).toHaveLength(2);
   });
 });

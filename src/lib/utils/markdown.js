@@ -30,7 +30,13 @@ marked.use({
       start(src) { return src.indexOf('$'); },
       tokenizer(src) {
         const match = src.match(/^\$([^$\n]+?)\$/);
-        if (match) return { type: 'mathInline', raw: match[0], text: match[1].trim() };
+        if (!match) return;
+        const inner = match[1];
+        // Currency heuristics: real inline math has no space just inside the
+        // delimiters and isn't immediately followed by a digit ("$5 and $10").
+        if (/^\s|\s$/.test(inner)) return;
+        if (/^\d/.test(src.slice(match[0].length))) return;
+        return { type: 'mathInline', raw: match[0], text: inner.trim() };
       },
       renderer(token) {
         try {

@@ -23,6 +23,15 @@ export async function openMarkdownFile() {
 }
 
 /**
+ * Open a folder-picker dialog and return the chosen directory path.
+ * @returns {Promise<string | null>}
+ */
+export async function openFolderDialog() {
+  const selected = await open({ directory: true, multiple: false });
+  return typeof selected === 'string' ? selected : null;
+}
+
+/**
  * Read a file by its path.
  * Validates the path is non-empty and handles read errors with descriptive messages.
  * @param {string} filePath

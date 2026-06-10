@@ -20,14 +20,50 @@
     searchText = '',
     matches = [],
     currentMatchIndex = 0,
-    fontSize = 16,
-    contentWidth = 860,
+    fontSize = 18,
+    contentWidth = 680,
     showCopyButton = true,
     frontmatter = /** @type {Record<string, string>} */ ({}),
-    showFrontmatter = true,
+    showFrontmatter = false,
     filePath = '',
     effectiveTheme = 'light',
+    readFont = '"Newsreader", Georgia, serif',
+    onviewerscroll = /** @type {(() => void) | undefined} */ (undefined),
+    onopenrelative = /** @type {((href: string) => void) | undefined} */ (undefined),
   } = $props();
+
+  // Intercept link clicks so the webview never navigates away from the app.
+  /** @param {MouseEvent} e */
+  async function handleViewerClick(e) {
+    const target = /** @type {Element} */ (e.target);
+    const a = target?.closest?.('a[href]');
+    if (!a) return;
+    const href = a.getAttribute('href') ?? '';
+    if (!href) return;
+
+    if (href.startsWith('#')) {
+      e.preventDefault();
+      const id = decodeURIComponent(href.slice(1));
+      try {
+        viewerEl?.querySelector(`#${CSS.escape(id)}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } catch {}
+      return;
+    }
+    if (/^[a-z][a-z0-9+.-]*:/i.test(href)) {
+      // Absolute URL (http, https, mailto, …) — open in the OS default handler.
+      e.preventDefault();
+      try {
+        const { openUrl } = await import('@tauri-apps/plugin-opener');
+        await openUrl(href);
+      } catch (err) {
+        console.error('Failed to open link:', err);
+      }
+      return;
+    }
+    // Relative link (e.g. ./other.md) — let the host resolve and open it.
+    e.preventDefault();
+    onopenrelative?.(href);
+  }
 
   let frontmatterOpen = $state(true);
   let hasFrontmatter = $derived(showFrontmatter && Object.keys(frontmatter).length > 0);
@@ -106,24 +142,30 @@
   // Persist scroll position on scroll (debounced 200ms)
   let _scrollTimer;
   function handleScroll() {
-    if (!filePath) return;
-    clearTimeout(_scrollTimer);
-    _scrollTimer = setTimeout(() => {
-      if (viewerEl) saveScrollPosition(filePath, viewerEl.scrollTop);
-    }, 200);
+    if (filePath) {
+      clearTimeout(_scrollTimer);
+      _scrollTimer = setTimeout(() => {
+        if (viewerEl) saveScrollPosition(filePath, viewerEl.scrollTop);
+      }, 200);
+    }
+    onviewerscroll?.();
   }
 
-  // Apply/update highlights when search state changes.
+  // Apply/update highlights when search state OR the document changes.
+  // Tracking `html` and the `matches` array identity (not just its length)
+  // ensures highlights re-apply after a document swap even when the match
+  // count happens to be unchanged.
   $effect(() => {
     const _text = searchText;
-    const _matchCount = matches.length;
+    const _matches = matches;
     const _currentIdx = currentMatchIndex;
+    html;
 
     if (!viewerEl) return;
 
     clearHighlights();
 
-    if (!_text || _matchCount === 0) return;
+    if (!_text || _matches.length === 0) return;
 
     applyHighlights(_text, _currentIdx);
   });
@@ -143,6 +185,8 @@
 
     const pres = viewerEl.querySelectorAll('pre');
     for (const pre of pres) {
+      // Mermaid blocks are replaced by their rendered diagram — don't wrap them.
+      if (pre.querySelector('code.language-mermaid')) continue;
       const wrapper = document.createElement('div');
       wrapper.className = 'code-block-wrapper';
       pre.parentNode?.insertBefore(wrapper, pre);
@@ -164,7 +208,7 @@
             btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"/><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"/></svg>`;
             btn.classList.remove('copied');
           }, 1500);
-        });
+        }).catch((err) => console.error('Copy failed:', err));
       });
 
       wrapper.appendChild(btn);
@@ -241,10 +285,11 @@
   }
 </script>
 
-<div class="markdown-viewer" bind:this={viewerEl} onscroll={handleScroll}>
+<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
+<div class="markdown-viewer" bind:this={viewerEl} onscroll={handleScroll} onclick={handleViewerClick}>
   <div
     class="markdown-body"
-    style="font-size: {fontSize}px; max-width: {contentWidth}px;"
+    style="font-size: {fontSize}px; max-width: {contentWidth === 9999 ? 'none' : contentWidth + 'px'}; font-family: {readFont};"
   >
     {#if hasFrontmatter}
       <details class="frontmatter-block" bind:open={frontmatterOpen}>
@@ -267,70 +312,141 @@
   .markdown-viewer {
     flex: 1;
     overflow-y: auto;
-    padding: 16px 48px 48px;
+    overflow-x: hidden;
+    padding: 48px 40px 180px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--line-2, #d8d2c5) transparent;
+  }
+
+  .markdown-viewer::-webkit-scrollbar { width: 10px; }
+  .markdown-viewer::-webkit-scrollbar-thumb {
+    background: var(--line-2, #d8d2c5);
+    border-radius: 5px;
+    border: 3px solid transparent;
+    background-clip: content-box;
   }
 
   .markdown-body {
     margin: 0 auto;
-    color: var(--text);
-    line-height: 1.6;
+    color: var(--ink, #272320);
+    line-height: 1.72;
   }
 
-  /* GitHub-flavored markdown base styles */
-  .markdown-body :global(h1) { font-size: 2em; font-weight: 600; margin: 0.67em 0; padding-bottom: 0.3em; border-bottom: 1px solid var(--border); }
-  .markdown-body :global(h2) { font-size: 1.5em; font-weight: 600; margin: 1em 0 0.5em; padding-bottom: 0.3em; border-bottom: 1px solid var(--border); }
-  .markdown-body :global(h3) { font-size: 1.25em; font-weight: 600; margin: 1em 0 0.5em; }
-  .markdown-body :global(h4) { font-size: 1em; font-weight: 600; margin: 1em 0 0.5em; }
-  .markdown-body :global(h5) { font-size: 0.875em; font-weight: 600; margin: 1em 0 0.5em; }
-  .markdown-body :global(h6) { font-size: 0.85em; font-weight: 600; margin: 1em 0 0.5em; color: var(--text-muted); }
+  /* Headings */
+  .markdown-body :global(h1),
+  .markdown-body :global(h2),
+  .markdown-body :global(h3),
+  .markdown-body :global(h4) {
+    font-family: var(--ui, system-ui);
+    color: var(--ink, #272320);
+    line-height: 1.2;
+    letter-spacing: -0.018em;
+    scroll-margin-top: 24px;
+  }
 
-  .markdown-body :global(p) { margin: 0 0 16px; }
-  .markdown-body :global(a) { color: var(--accent); text-decoration: none; }
-  .markdown-body :global(a:hover) { text-decoration: underline; }
+  .markdown-body :global(h1) {
+    font-size: 2em;
+    font-weight: 700;
+    margin: 0 0 0.5em;
+    letter-spacing: -0.03em;
+  }
+
+  .markdown-body :global(h2) {
+    font-size: 1.42em;
+    font-weight: 650;
+    margin: 1.9em 0 0.6em;
+    padding-bottom: 0.32em;
+    border-bottom: 0.5px solid var(--line, #e6e1d7);
+  }
+
+  .markdown-body :global(h3) {
+    font-size: 1.12em;
+    font-weight: 650;
+    margin: 1.6em 0 0.5em;
+  }
+
+  .markdown-body :global(h4) {
+    font-size: 0.82em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-2, #5d574e);
+    margin: 1.5em 0 0.4em;
+  }
+
+  .markdown-body :global(h5),
+  .markdown-body :global(h6) {
+    font-size: 0.85em;
+    font-weight: 600;
+    margin: 1em 0 0.5em;
+    color: var(--ink-2, #5d574e);
+  }
+
+  .markdown-body :global(p) { margin: 0 0 1.05em; }
+
+  .markdown-body :global(a) {
+    color: var(--accent, #c2683f);
+    text-decoration: none;
+    border-bottom: 1px solid var(--accent-line, rgba(194,104,63,.38));
+    transition: border-color 0.12s;
+  }
+
+  .markdown-body :global(a:hover) { border-bottom-color: var(--accent, #c2683f); }
+
+  .markdown-body :global(strong) { font-weight: 650; color: var(--ink, #272320); }
+  .markdown-body :global(em) { font-style: italic; }
 
   .markdown-body :global(ul),
-  .markdown-body :global(ol) { padding-left: 2em; margin: 0 0 16px; }
-  .markdown-body :global(li) { margin: 4px 0; }
-  .markdown-body :global(li + li) { margin-top: 4px; }
+  .markdown-body :global(ol) { padding-left: 1.6em; margin: 0 0 1.05em; }
+  .markdown-body :global(li) { margin: 0.3em 0; }
+  .markdown-body :global(li::marker) { color: var(--ink-3, #938c80); }
 
   .markdown-body :global(blockquote) {
-    margin: 0 0 16px;
-    padding: 0 1em;
-    color: var(--text-muted);
-    border-left: 3px solid var(--border);
+    margin: 1.4em 0;
+    padding: 0.2em 0 0.2em 1.3em;
+    border-left: 3px solid var(--accent-line, rgba(194,104,63,.38));
+    color: var(--ink-2, #5d574e);
+    font-style: italic;
   }
 
-  .markdown-body :global(code) {
-    font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
-    font-size: 85%;
-    padding: 0.2em 0.4em;
-    background: var(--input-bg);
-    border-radius: 4px;
+  .markdown-body :global(blockquote p:last-child) { margin-bottom: 0; }
+
+  /* Inline code */
+  .markdown-body :global(:not(pre) > code) {
+    font: 0.85em var(--mono, monospace);
+    background: var(--code-bg, #f4f2ec);
+    color: var(--accent, #c2683f);
+    padding: 0.12em 0.4em;
+    border-radius: 5px;
+    border: 0.5px solid var(--line, #e6e1d7);
+    white-space: nowrap;
   }
 
+  /* Code blocks */
   .markdown-body :global(pre) {
     position: relative;
-    margin: 0 0 16px;
-    padding: 16px;
-    padding-right: 40px;
+    margin: 1.5em 0;
+    padding: 14px 16px;
     overflow-x: auto;
-    background: var(--input-bg);
-    border-radius: 8px;
-    line-height: 1.45;
+    background: var(--code-bg, #f4f2ec);
+    border: 0.5px solid var(--line-2, #d8d2c5);
+    border-radius: 12px;
+    font: 0.8em/1.7 var(--mono, monospace);
+    color: var(--code-ink, #43403a);
+    scrollbar-width: thin;
   }
 
   .markdown-body :global(pre code) {
-    padding: 0;
+    font: inherit;
     background: none;
-    font-size: 85%;
+    border: none;
+    padding: 0;
+    color: inherit;
+    white-space: pre;
   }
 
-  /* Code block wrapper - positions copy button outside the scroll context */
-  .markdown-body :global(.code-block-wrapper) {
-    position: relative;
-  }
+  .markdown-body :global(.code-block-wrapper) { position: relative; }
 
-  /* Copy button - absolutely positioned in the wrapper, not the pre */
   .markdown-body :global(.code-copy-btn) {
     position: absolute;
     right: 8px;
@@ -339,12 +455,12 @@
     height: 28px;
     padding: 0;
     border: none;
-    border-radius: 4px;
-    background: var(--input-bg);
-    color: var(--text-muted);
+    border-radius: 6px;
+    background: var(--surface, #f3f1eb);
+    color: var(--ink-3, #938c80);
     cursor: pointer;
     opacity: 0;
-    transition: opacity 0.15s, background 0.15s;
+    transition: opacity 0.15s, background 0.12s, color 0.12s;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -352,68 +468,82 @@
   }
 
   .markdown-body :global(.code-block-wrapper:hover .code-copy-btn),
-  .markdown-body :global(.code-copy-btn:focus) {
-    opacity: 1;
-  }
+  .markdown-body :global(.code-copy-btn:focus) { opacity: 1; }
 
   .markdown-body :global(.code-copy-btn:hover) {
-    background: var(--border);
-    color: var(--text);
+    background: var(--surface-2, #e9e6dd);
+    color: var(--ink, #272320);
   }
 
   .markdown-body :global(.code-copy-btn.copied) {
     opacity: 1;
-    color: #22c55e;
+    color: var(--tok-str, #5d7a3f);
   }
 
+  /* Tables */
   .markdown-body :global(table) {
     border-collapse: collapse;
     width: 100%;
-    margin: 0 0 16px;
+    margin: 1.5em 0;
+    font-family: var(--ui, system-ui);
+    font-size: 0.86em;
+    border: 0.5px solid var(--line-2, #d8d2c5);
+    border-radius: 12px;
+    overflow: hidden;
   }
 
-  .markdown-body :global(th),
-  .markdown-body :global(td) {
-    padding: 6px 13px;
-    border: 1px solid var(--border);
-  }
+  .markdown-body :global(thead) { background: var(--surface, #f3f1eb); }
 
   .markdown-body :global(th) {
-    font-weight: 600;
-    background: var(--input-bg);
+    text-align: left;
+    font-weight: 650;
+    color: var(--ink, #272320);
+    padding: 10px 14px;
+    border-bottom: 0.5px solid var(--line-2, #d8d2c5);
+    white-space: nowrap;
   }
 
-  .markdown-body :global(tr:nth-child(2n)) {
-    background: var(--input-bg);
+  .markdown-body :global(td) {
+    padding: 9px 14px;
+    border-bottom: 0.5px solid var(--line, #e6e1d7);
+    color: var(--ink-2, #5d574e);
   }
+
+  .markdown-body :global(tbody tr:last-child td) { border-bottom: none; }
+  .markdown-body :global(tbody tr:hover td) { background: var(--surface, #f3f1eb); }
 
   .markdown-body :global(hr) {
-    height: 2px;
-    margin: 24px 0;
-    background: var(--border);
     border: none;
+    border-top: 0.5px solid var(--line-2, #d8d2c5);
+    margin: 2.4em 0;
   }
 
-  .markdown-body :global(img) {
-    max-width: 100%;
-    border-radius: 4px;
-  }
+  .markdown-body :global(img) { max-width: 100%; border-radius: 9px; }
 
+  /* Search highlights */
   :global(mark.search-hl) {
-    background: #ffd54f;
+    background: color-mix(in oklch, #f4be4f 55%, transparent);
     color: inherit;
-    border-radius: 2px;
+    border-radius: 3px;
     padding: 0 1px;
+    box-shadow: 0 0 0 1px color-mix(in oklch, #f4be4f 40%, transparent);
   }
 
   :global(mark.search-hl.current) {
-    background: #ff9800;
-    color: white;
+    background: var(--accent, #c2683f);
+    color: #fff;
+    box-shadow: 0 0 0 2px var(--accent-soft, rgba(194,104,63,.16));
   }
 
-  /* Mermaid diagrams */
+  /* Mermaid */
   .markdown-body :global(.mermaid-diagram) {
-    margin: 0 0 16px;
+    margin: 1.6em 0;
+    padding: 22px;
+    border-radius: 12px;
+    background: var(--surface, #f3f1eb);
+    border: 0.5px solid var(--line, #e6e1d7);
+    display: grid;
+    place-items: center;
     overflow-x: auto;
   }
 
@@ -422,24 +552,25 @@
     height: auto;
   }
 
-  /* Frontmatter block */
+  /* Frontmatter */
   .frontmatter-block {
     margin-bottom: 24px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
+    border: 0.5px solid var(--line, #e6e1d7);
+    border-radius: 12px;
     overflow: hidden;
+    font-family: var(--ui, system-ui);
     font-size: 85%;
   }
 
   .frontmatter-summary {
     padding: 8px 12px;
-    background: var(--input-bg);
+    background: var(--surface, #f3f1eb);
     cursor: pointer;
     font-weight: 600;
     font-size: 11px;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: var(--text-muted);
+    letter-spacing: 0.08em;
+    color: var(--ink-3, #938c80);
     user-select: none;
     list-style: none;
   }
@@ -454,45 +585,34 @@
     transition: transform 0.15s;
   }
 
-  .frontmatter-block[open] .frontmatter-summary::before {
-    transform: rotate(90deg);
-  }
+  .frontmatter-block[open] .frontmatter-summary::before { transform: rotate(90deg); }
 
-  .frontmatter-list {
-    margin: 0;
-    padding: 8px 12px;
-  }
+  .frontmatter-list { margin: 0; padding: 8px 12px; }
 
   .frontmatter-row {
     display: flex;
     gap: 12px;
-    padding: 3px 0;
-    border-bottom: 1px solid var(--border);
+    padding: 4px 0;
+    border-bottom: 0.5px solid var(--line, #e6e1d7);
   }
 
-  .frontmatter-row:last-child {
-    border-bottom: none;
-  }
+  .frontmatter-row:last-child { border-bottom: none; }
 
   .frontmatter-key {
     font-weight: 600;
-    color: var(--text-muted);
+    color: var(--ink-3, #938c80);
     min-width: 100px;
     flex-shrink: 0;
   }
 
-  .frontmatter-value {
-    color: var(--text);
-    margin: 0;
-    word-break: break-word;
-  }
+  .frontmatter-value { color: var(--ink, #272320); margin: 0; word-break: break-word; }
 
-  /* Task list checkboxes */
+  /* Task list */
   .markdown-body :global(input[type="checkbox"]) {
     pointer-events: none;
     margin-right: 6px;
     vertical-align: middle;
-    accent-color: var(--accent);
+    accent-color: var(--accent, #c2683f);
     width: 14px;
     height: 14px;
   }

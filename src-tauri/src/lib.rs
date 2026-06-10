@@ -170,16 +170,28 @@ fn uninstall_cli() -> Result<String, String> {
         remove_completions(&bash_targets);
     }
 
+    // Remove every installed copy (mark can live in multiple bin dirs), so a
+    // stale launcher pointing at an old app path doesn't survive.
+    let mut removed: Vec<String> = Vec::new();
+    let mut failed: Vec<String> = Vec::new();
     for target in &targets {
         if target.exists() {
             match fs::remove_file(target) {
-                Ok(_) => return Ok(target.to_string_lossy().to_string()),
-                Err(_) => continue,
+                Ok(_) => removed.push(target.to_string_lossy().to_string()),
+                Err(_) => failed.push(target.to_string_lossy().to_string()),
             }
         }
     }
 
-    Ok("Not installed".to_string())
+    if removed.is_empty() {
+        if failed.is_empty() {
+            Ok("Not installed".to_string())
+        } else {
+            Err(format!("Could not remove: {}", failed.join(", ")))
+        }
+    } else {
+        Ok(removed.join(", "))
+    }
 }
 
 /// Called by the frontend on mount to check if a file was passed via CLI.
@@ -199,6 +211,13 @@ fn get_pending_watch(state: tauri::State<PendingWatch>) -> bool {
 #[tauri::command]
 fn get_pending_directory(state: tauri::State<PendingDirectory>) -> Option<Vec<String>> {
     state.0.lock().unwrap_or_else(|e| e.into_inner()).take()
+}
+
+/// List the .md/.markdown files under a folder the user picked in-app.
+/// Returns an empty Vec when the folder has no markdown files (vs. None on CLI).
+#[tauri::command]
+fn read_directory(path: String) -> Vec<String> {
+    resolve_directory(Some(path)).unwrap_or_default()
 }
 
 /// Start watching a file for changes. Replaces any existing watcher.
@@ -246,24 +265,44 @@ fn stop_watch(watcher_state: tauri::State<ActiveWatcher>) {
     *guard = None;
 }
 
-/// Read all .md/.markdown files from a directory, sorted alphabetically.
-/// Returns None if dir_path is None or the directory can't be read.
-fn resolve_directory(dir_path: Option<String>) -> Option<Vec<String>> {
-    let dir = dir_path?;
-    let read = fs::read_dir(&dir).ok()?;
-    let mut files: Vec<String> = read
-        .filter_map(|e| e.ok())
-        .filter_map(|e| {
-            let path = e.path();
-            if path.is_file() {
-                let ext = path.extension()?.to_string_lossy().to_lowercase();
+/// Recursively collect .md/.markdown files under `dir` into `out`.
+/// Guarded against runaway trees: skips hidden/vendored dirs, caps depth and count.
+fn collect_markdown(dir: &PathBuf, depth: usize, out: &mut Vec<String>) {
+    const MAX_DEPTH: usize = 6;
+    const MAX_FILES: usize = 2000;
+    if depth > MAX_DEPTH || out.len() >= MAX_FILES {
+        return;
+    }
+    let Ok(read) = fs::read_dir(dir) else { return };
+    for entry in read.filter_map(|e| e.ok()) {
+        if out.len() >= MAX_FILES {
+            return;
+        }
+        let path = entry.path();
+        let name = entry.file_name().to_string_lossy().to_string();
+        // Skip hidden entries and common vendored/build directories.
+        if name.starts_with('.') || matches!(name.as_str(), "node_modules" | "target" | ".git") {
+            continue;
+        }
+        if path.is_dir() {
+            collect_markdown(&path, depth + 1, out);
+        } else if path.is_file() {
+            if let Some(ext) = path.extension() {
+                let ext = ext.to_string_lossy().to_lowercase();
                 if ext == "md" || ext == "markdown" {
-                    return Some(path.to_string_lossy().to_string());
+                    out.push(path.to_string_lossy().to_string());
                 }
             }
-            None
-        })
-        .collect();
+        }
+    }
+}
+
+/// Read all .md/.markdown files from a directory tree, sorted alphabetically.
+/// Returns None if dir_path is None or no markdown files are found.
+fn resolve_directory(dir_path: Option<String>) -> Option<Vec<String>> {
+    let dir = PathBuf::from(dir_path?);
+    let mut files: Vec<String> = Vec::new();
+    collect_markdown(&dir, 0, &mut files);
     files.sort();
     if files.is_empty() { None } else { Some(files) }
 }
@@ -275,6 +314,9 @@ fn setup_menu(app: &tauri::App) -> Result<(), Box<dyn std::error::Error>> {
         .build(app)?;
     let open_file = MenuItemBuilder::with_id("open-file", "Open...")
         .accelerator("CmdOrCtrl+O")
+        .build(app)?;
+    let open_folder = MenuItemBuilder::with_id("open-folder", "Open Folder...")
+        .accelerator("CmdOrCtrl+Shift+O")
         .build(app)?;
     let toggle_sidebar = MenuItemBuilder::with_id("toggle-sidebar", "Toggle Sidebar")
         .accelerator("CmdOrCtrl+\\")
@@ -317,6 +359,7 @@ fn setup_menu(app: &tauri::App) -> Result<(), Box<dyn std::error::Error>> {
     // File menu
     let file_menu = SubmenuBuilder::new(app, "File")
         .item(&open_file)
+        .item(&open_folder)
         .item(&quick_open)
         .item(&toggle_watch)
         .separator()
@@ -329,8 +372,15 @@ fn setup_menu(app: &tauri::App) -> Result<(), Box<dyn std::error::Error>> {
         .build()?;
 
     // Edit menu (Copy + Select All for the read-only viewer)
+    // Cut/Paste/Undo/Redo are needed so their ⌘ accelerators work in text
+    // inputs (Custom CSS, search, Quick Open) on macOS WKWebView.
     let edit_menu = SubmenuBuilder::new(app, "Edit")
+        .item(&PredefinedMenuItem::undo(app, Some("Undo"))?)
+        .item(&PredefinedMenuItem::redo(app, Some("Redo"))?)
+        .separator()
+        .item(&PredefinedMenuItem::cut(app, Some("Cut"))?)
         .item(&PredefinedMenuItem::copy(app, Some("Copy"))?)
+        .item(&PredefinedMenuItem::paste(app, Some("Paste"))?)
         .separator()
         .item(&PredefinedMenuItem::select_all(app, Some("Select All"))?)
         .build()?;
@@ -434,6 +484,7 @@ pub fn run() {
             get_pending_file,
             get_pending_watch,
             get_pending_directory,
+            read_directory,
             start_watch,
             stop_watch,
         ])

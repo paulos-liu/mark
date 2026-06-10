@@ -1,137 +1,170 @@
 <script>
-  import HeadingRow from './HeadingRow.svelte';
-  import { filterHeadings } from '../utils/headings.js';
+  let { headings = [], onselect, activeAnchor = '' } = $props();
 
-  let { headings = [], onselect, onsearch, onsettings } = $props();
+  let collapsed = $state(/** @type {Set<string>} */ (new Set()));
 
-  let tocSearch = $state('');
+  function flatten(nodes, depth = 0) {
+    /** @type {Array<{text:string,anchor:string,depth:number,hasChildren:boolean}>} */
+    const out = [];
+    for (const h of nodes) {
+      const key = h.anchor ?? h.id ?? h.text;
+      const hasChildren = h.children?.length > 0;
+      out.push({ text: h.text, anchor: key, depth, hasChildren });
+      if (hasChildren && !collapsed.has(key)) {
+        out.push(...flatten(h.children, depth + 1));
+      }
+    }
+    return out;
+  }
 
-  let filtered = $derived(filterHeadings(headings, tocSearch));
+  let flat = $derived(flatten(headings));
+
+  function toggleCollapse(anchor) {
+    const next = new Set(collapsed);
+    if (next.has(anchor)) next.delete(anchor);
+    else next.add(anchor);
+    collapsed = next;
+  }
 </script>
 
-<nav class="toc" aria-label="Table of contents">
-  <div class="toc-search">
-    <input
-      type="text"
-      placeholder="Filter headings..."
-      bind:value={tocSearch}
-      aria-label="Filter headings"
-    />
-  </div>
-
-  <div class="toc-list">
-    {#if filtered.length === 0}
-      <p class="empty">
-        {tocSearch ? 'No matches found' : 'No headings found'}
-      </p>
-    {:else}
-      <ul class="heading-list">
-        {#each filtered as heading (heading.id)}
-          <li>
-            <HeadingRow {heading} {onselect} />
-          </li>
-        {/each}
-      </ul>
-    {/if}
-  </div>
-
-  <div class="toc-toolbar">
-    <button class="toolbar-btn" onclick={onsettings} title="Settings (Cmd+,)" aria-label="Settings">
-      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <circle cx="12" cy="12" r="3"/>
-        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-      </svg>
-    </button>
-    <button class="toolbar-btn" onclick={onsearch} title="Search in document (Cmd+F)" aria-label="Search in document">
-      <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true">
-        <path fill="currentColor" d="M11.5 7a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0Zm-.82 4.74a6 6 0 1 1 1.06-1.06l3.04 3.04a.75.75 0 1 1-1.06 1.06l-3.04-3.04Z"/>
-      </svg>
-    </button>
-  </div>
-</nav>
+<div class="toc-wrap">
+  {#if flat.length === 0}
+    <div class="empty">No headings</div>
+  {:else}
+    <div class="toc-list">
+      {#each flat as item (item.anchor)}
+        <!-- svelte-ignore a11y_no_static_element_interactions -->
+        <div
+          class="toc-item"
+          class:active={item.anchor === activeAnchor}
+          style="padding-left: {8 + item.depth * 14}px"
+        >
+          {#if item.hasChildren}
+            <button
+              class="toc-caret"
+              class:collapsed={collapsed.has(item.anchor)}
+              onclick={() => toggleCollapse(item.anchor)}
+              aria-label={collapsed.has(item.anchor) ? 'Expand section' : 'Collapse section'}
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="8" height="8" aria-hidden="true">
+                <path d="m6 9 6 6 6-6"/>
+              </svg>
+            </button>
+          {:else}
+            <span class="toc-caret-spacer"></span>
+          {/if}
+          <button
+            class="toc-text"
+            onclick={() => onselect(item.anchor)}
+          >
+            {item.text}
+          </button>
+        </div>
+      {/each}
+    </div>
+  {/if}
+</div>
 
 <style>
-  .toc {
+  .toc-wrap {
     display: flex;
     flex-direction: column;
-    height: 100%;
-    padding-top: 8px;
-    box-sizing: border-box;
-  }
-
-  .toc-search {
-    padding: 8px 12px;
-    border-bottom: 1px solid var(--border, #e5e5e5);
-    flex-shrink: 0;
-  }
-
-  .toc-search input {
-    width: 100%;
-    padding: 6px 10px;
-    box-sizing: border-box;
-    border: 1px solid var(--border, #e5e5e5);
-    border-radius: 6px;
-    font-size: 12px;
-    background: var(--input-bg, #f5f5f5);
-    color: inherit;
-    outline: none;
-    font-family: inherit;
-  }
-
-  .toc-search input:focus {
-    border-color: var(--accent, #0969da);
-    box-shadow: 0 0 0 2px rgba(9, 105, 218, 0.15);
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
   }
 
   .toc-list {
     flex: 1;
     overflow-y: auto;
-    padding: 8px 12px;
+    overflow-x: hidden;
+    padding: 10px 8px 14px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--line-2, #d8d2c5) transparent;
   }
 
-  .heading-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-
-  .heading-list li {
-    margin: 0;
+  .toc-list::-webkit-scrollbar { width: 5px; }
+  .toc-list::-webkit-scrollbar-thumb {
+    background: var(--line-2, #d8d2c5);
+    border-radius: 3px;
   }
 
   .empty {
-    color: var(--text-muted, #999);
+    padding: 16px 10px;
     font-size: 12px;
-    padding: 12px 0;
+    color: var(--ink-3, #938c80);
     text-align: center;
   }
 
-  .toc-toolbar {
+  .toc-item {
     display: flex;
     align-items: center;
-    justify-content: flex-end;
-    gap: 4px;
-    padding: 8px 12px;
-    border-top: 1px solid var(--border, #e5e5e5);
+    gap: 0;
+    position: relative;
+    border-radius: 7px;
+    transition: background 0.1s;
+  }
+
+  .toc-item:hover { background: var(--surface-2, #e9e6dd); }
+
+  .toc-item.active { background: none; }
+
+  .toc-item.active::before {
+    content: "";
+    position: absolute;
+    left: 2px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 16px;
+    border-radius: 2px;
+    background: var(--accent, #c2683f);
+  }
+
+  .toc-caret {
+    width: 16px;
+    height: 16px;
+    flex: 0 0 16px;
+    display: grid;
+    place-items: center;
+    border: none;
+    background: none;
+    padding: 0;
+    color: var(--ink-3, #938c80);
+    cursor: default;
+    transition: transform 0.15s, color 0.1s;
+    border-radius: 4px;
+    margin-right: 2px;
     flex-shrink: 0;
   }
 
-  .toolbar-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    border: none;
-    background: none;
-    border-radius: 6px;
-    cursor: pointer;
-    color: var(--text-muted, #656d76);
-    transition: all 0.15s ease;
+  .toc-caret:hover { color: var(--ink-2, #5d574e); background: var(--surface-2, #e9e6dd); }
+  .toc-caret.collapsed { transform: rotate(-90deg); }
+
+  .toc-caret-spacer {
+    width: 16px;
+    flex: 0 0 16px;
+    margin-right: 2px;
   }
 
-  .toolbar-btn:hover {
-    background: var(--toc-hover, rgba(0, 0, 0, 0.06));
-    color: var(--text, #1f2328);
+  .toc-text {
+    flex: 1;
+    min-width: 0;
+    text-align: left;
+    border: none;
+    background: none;
+    padding: 5px 6px 5px 2px;
+    font: 500 12.5px var(--ui, system-ui);
+    color: var(--ink-2, #5d574e);
+    line-height: 1.35;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: default;
+    border-radius: 5px;
+    transition: color 0.1s;
   }
+
+  .toc-item:hover .toc-text { color: var(--ink, #272320); }
+  .toc-item.active .toc-text { color: var(--accent, #c2683f); font-weight: 600; }
 </style>

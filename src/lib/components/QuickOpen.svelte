@@ -14,202 +14,211 @@
       : recentFiles
   );
 
-  $effect(() => {
-    // Reset selection when results change
-    filtered;
-    selectedIndex = 0;
-  });
-
-  $effect(() => {
-    if (inputEl) inputEl.focus();
-  });
+  $effect(() => { filtered; selectedIndex = 0; });
+  $effect(() => { if (inputEl) inputEl.focus(); });
 
   function handleKeydown(e) {
     if (e.key === 'Escape') { e.stopPropagation(); onclose(); }
     if (e.key === 'ArrowDown') { e.preventDefault(); selectedIndex = Math.min(selectedIndex + 1, filtered.length - 1); }
     if (e.key === 'ArrowUp') { e.preventDefault(); selectedIndex = Math.max(selectedIndex - 1, 0); }
-    if (e.key === 'Enter' && filtered[selectedIndex]) { onopen(filtered[selectedIndex]); }
+    if (e.key === 'Enter' && filtered[selectedIndex]) onopen(filtered[selectedIndex]);
   }
 
-  function handleBackdropClick(e) {
-    if (e.target === e.currentTarget) onclose();
-  }
-
-  /** @param {string} filePath */
-  function fileName(filePath) {
-    return filePath.split('/').pop() ?? filePath;
-  }
-
-  /** @param {string} filePath */
-  function dirName(filePath) {
-    const parts = filePath.split('/');
-    parts.pop();
-    const dir = parts.join('/');
-    return dir.replace(/^\/Users\/[^/]+/, '~');
-  }
+  /** @param {string} p */
+  const fileName = (p) => p.split('/').pop() ?? p;
+  /** @param {string} p */
+  const dirName = (p) => { const parts = p.split('/'); parts.pop(); return parts.join('/').replace(/^\/Users\/[^/]+/, '~'); };
 </script>
 
 <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
-<div class="backdrop" onclick={handleBackdropClick}>
-  <div class="panel" role="dialog" aria-modal="true" aria-label="Quick Open">
-    <div class="search-row">
-      <svg class="search-icon" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
-        <path fill="currentColor" d="M10.68 11.74a6 6 0 0 1-7.922-8.982 6 6 0 0 1 8.982 7.922l3.04 3.04a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215ZM11.5 7a4.499 4.499 0 1 0-8.997 0A4.499 4.499 0 0 0 11.5 7Z"/>
+<div class="overlay" onclick={(e) => e.target === e.currentTarget && onclose()}>
+  <div class="modal qo" role="dialog" aria-modal="true" aria-label="Quick Open" onclick={(e) => e.stopPropagation()}>
+    <div class="qo-input">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" width="18" height="18" style="color:var(--ink-3);flex:0 0 18px" aria-hidden="true">
+        <circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/>
       </svg>
       <!-- svelte-ignore a11y_autofocus -->
       <input
         bind:this={inputEl}
         bind:value={query}
         onkeydown={handleKeydown}
-        class="search-input"
-        placeholder="Open recent file..."
+        placeholder="Go to file…"
         autocomplete="off"
         spellcheck="false"
+        aria-label="Search recent files"
       />
-      <kbd class="hint">esc</kbd>
+      <kbd class="kbd">esc</kbd>
     </div>
 
-    {#if filtered.length > 0}
-      <ul class="results" role="listbox">
+    <div class="qo-list" role="listbox">
+      {#if filtered.length === 0}
+        <div class="qo-empty">
+          {query ? `No files match "${query}"` : 'No recent files'}
+        </div>
+      {:else}
         {#each filtered as file, i}
           <!-- svelte-ignore a11y_click_events_have_key_events -->
-          <li
-            class="result-item"
-            class:selected={i === selectedIndex}
+          <div
+            class="qo-item"
+            class:sel={i === selectedIndex}
             role="option"
             aria-selected={i === selectedIndex}
-            onclick={() => onopen(file)}
             onmouseenter={() => (selectedIndex = i)}
+            onmousedown={() => onopen(file)}
           >
-            <span class="file-name">{fileName(file)}</span>
-            <span class="file-dir">{dirName(file)}</span>
-          </li>
+            <span class="qo-ico" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" width="15" height="15">
+                <path d="M6 3h7l5 5v11a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/><path d="M13 3v5h5"/>
+                <path d="M8 16v-3l1.5 1.7L11 13v3M14 13v3M14 16l1.4-1.6" stroke-width="1.3"/>
+              </svg>
+            </span>
+            <div class="qo-meta">
+              <div class="qo-name">{fileName(file)}</div>
+              <div class="qo-path">{dirName(file)}</div>
+            </div>
+          </div>
         {/each}
-      </ul>
-    {:else}
-      <div class="empty">No recent files{query ? ' matching your search' : ''}</div>
-    {/if}
+      {/if}
+    </div>
+
+    <div class="qo-foot">
+      <span class="k"><kbd class="kbd">↑↓</kbd> navigate</span>
+      <span class="k"><kbd class="kbd">⏎</kbd> open</span>
+      <span class="k"><kbd class="kbd">⌘O</kbd> recent files</span>
+    </div>
   </div>
 </div>
 
 <style>
-  .backdrop {
+  .overlay {
     position: fixed;
     inset: 0;
     z-index: 300;
-    background: rgba(0, 0, 0, 0.35);
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    padding-top: 80px;
+    background: rgba(0,0,0,0.32);
+    -webkit-backdrop-filter: blur(2px);
     backdrop-filter: blur(2px);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 78px;
+    animation: fade 0.14s ease;
   }
 
-  .panel {
+  @keyframes fade { from { opacity: 0; } }
+
+  .modal.qo {
     width: 560px;
     max-width: 90vw;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+    background: var(--surface-hi, #fff);
+    border: 0.5px solid var(--line-2, #d8d2c5);
+    border-radius: 14px;
+    box-shadow: 0 30px 80px -12px rgba(var(--shadow-rgb, 30 25 18) / 0.5);
     overflow: hidden;
-    max-height: 60vh;
     display: flex;
     flex-direction: column;
+    animation: pop 0.16s cubic-bezier(.2,.8,.3,1);
   }
 
-  .search-row {
+  @keyframes pop { from { opacity: 0; transform: translateY(-8px) scale(0.985); } }
+
+  .qo-input {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 12px 16px;
-    border-bottom: 1px solid var(--border);
+    gap: 11px;
+    padding: 15px 18px;
+    border-bottom: 0.5px solid var(--line, #e6e1d7);
   }
 
-  .search-icon {
-    color: var(--text-muted);
-    flex-shrink: 0;
-  }
-
-  .search-input {
+  .qo-input input {
     flex: 1;
     border: none;
     background: none;
-    font-size: 14px;
-    color: var(--text);
     outline: none;
-    font-family: inherit;
+    font: 500 17px var(--ui, system-ui);
+    color: var(--ink, #272320);
   }
 
-  .search-input::placeholder {
-    color: var(--text-muted);
+  .qo-input input::placeholder { color: var(--ink-3, #938c80); font-weight: 400; }
+
+  .kbd {
+    font: 600 10.5px var(--mono, monospace);
+    background: var(--surface, #f3f1eb);
+    border: 0.5px solid var(--line-2, #d8d2c5);
+    border-bottom-width: 1.5px;
+    border-radius: 5px;
+    padding: 2px 6px;
+    color: var(--ink-2, #5d574e);
+    white-space: nowrap;
   }
 
-  .hint {
-    font-size: 11px;
-    padding: 2px 5px;
-    background: var(--input-bg);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    color: var(--text-muted);
-    flex-shrink: 0;
-  }
+  .qo-list { max-height: 300px; overflow-y: auto; padding: 6px; }
 
-  .results {
-    list-style: none;
-    margin: 0;
-    padding: 4px 0;
-    overflow-y: auto;
-  }
-
-  .result-item {
+  .qo-item {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 8px 16px;
-    cursor: pointer;
-    overflow: hidden;
+    gap: 11px;
+    padding: 9px 10px;
+    border-radius: 9px;
+    cursor: default;
+    color: var(--ink-2, #5d574e);
+    transition: background 0.08s;
   }
 
-  .result-item.selected {
-    background: var(--accent);
-    color: white;
+  .qo-item.sel { background: var(--accent-soft, rgba(194,104,63,.16)); }
+
+  .qo-ico {
+    flex: 0 0 30px;
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    background: var(--surface, #f3f1eb);
+    display: grid;
+    place-items: center;
+    color: var(--ink-3, #938c80);
+    transition: background 0.1s, color 0.1s;
   }
 
-  .result-item.selected .file-dir {
-    opacity: 0.75;
+  .qo-item.sel .qo-ico {
+    background: var(--accent, #c2683f);
+    color: #fff;
   }
 
-  .file-name {
-    font-size: 13px;
-    font-weight: 500;
+  .qo-meta { flex: 1; min-width: 0; }
+
+  .qo-name {
+    font: 600 13.5px var(--ui, system-ui);
+    color: var(--ink, #272320);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    flex-shrink: 0;
-    max-width: 50%;
   }
 
-  .file-dir {
-    font-size: 11px;
-    color: var(--text-muted);
+  .qo-path {
+    font: 500 11.5px var(--mono, monospace);
+    color: var(--ink-3, #938c80);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    text-align: right;
     direction: rtl;
-    min-width: 0;
+    text-align: left;
   }
 
-  .result-item.selected .file-dir {
-    color: inherit;
-  }
-
-  .empty {
-    padding: 24px 16px;
+  .qo-empty {
+    padding: 34px;
     text-align: center;
+    color: var(--ink-3, #938c80);
     font-size: 13px;
-    color: var(--text-muted);
   }
+
+  .qo-foot {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    padding: 9px 16px;
+    border-top: 0.5px solid var(--line, #e6e1d7);
+    font: 500 11px var(--ui, system-ui);
+    color: var(--ink-3, #938c80);
+  }
+
+  .k { display: flex; align-items: center; gap: 5px; white-space: nowrap; }
 </style>

@@ -43,4 +43,19 @@ describe('parseFrontmatter', () => {
     const { meta } = parseFrontmatter('---\nurl: https://example.com/path\n---\n');
     expect(meta.url).toBe('https://example.com/path');
   });
+
+  it('does NOT treat a leading thematic break as frontmatter', () => {
+    const doc = '---\n\n# Real Title\n\nBody text.\n\n---\n\nMore.';
+    const { meta, body } = parseFrontmatter(doc);
+    expect(meta).toEqual({});
+    expect(body).toBe(doc); // nothing swallowed
+  });
+
+  it('requires the closing fence to be a lone --- line', () => {
+    // "----" is not a valid closer, so this is not frontmatter
+    const doc = '---\ntitle: X\n----\nbody';
+    const { meta, body } = parseFrontmatter(doc);
+    expect(meta).toEqual({});
+    expect(body).toBe(doc);
+  });
 });

@@ -1,449 +1,541 @@
 <script>
   import { invoke } from '@tauri-apps/api/core';
   import { settings, updateSetting } from '../stores/settings.svelte.js';
+  import { parseVscodeTheme, vscodeThemeToVars } from '../utils/vscodeTheme.js';
+  import { THEME_PRESETS } from '../themes/presets.js';
 
   let { onclose } = $props();
 
   let cliStatus = $state('');
   let cliError = $state('');
+  let themeError = $state('');
   let dialogEl;
+
+  // Built-in palettes plus the bundled VS Code presets feed one dropdown.
+  const BUILT_IN = [
+    { id: 'light', label: 'Light' },
+    { id: 'dark', label: 'Dark' },
+    { id: 'system', label: 'System' },
+  ];
+
+  // An imported theme isn't one of the bundled presets, so it needs its own
+  // entry in the dropdown to stay selectable/visible.
+  let importedActive = $derived(
+    !!settings.vscodeTheme &&
+      !THEME_PRESETS.some((p) => p.name === settings.vscodeTheme.name),
+  );
+
+  let currentThemeId = $derived.by(() => {
+    const vt = settings.vscodeTheme;
+    if (vt) {
+      const preset = THEME_PRESETS.find((p) => p.name === vt.name);
+      return preset ? `preset:${preset.name}` : 'imported';
+    }
+    return settings.theme; // 'light' | 'dark' | 'system'
+  });
+
+  /** @param {any} preset */
+  function applyPreset(preset) {
+    themeError = '';
+    const mark = vscodeThemeToVars(preset);
+    if (mark) updateSetting('vscodeTheme', mark);
+  }
+
+  /** @param {string} id */
+  function selectTheme(id) {
+    themeError = '';
+    if (id === 'light' || id === 'dark' || id === 'system') {
+      updateSetting('vscodeTheme', null);
+      updateSetting('theme', id);
+    } else if (id.startsWith('preset:')) {
+      const preset = THEME_PRESETS.find((p) => p.name === id.slice('preset:'.length));
+      if (preset) applyPreset(preset);
+    }
+    // 'imported' is already the active theme — selecting it is a no-op.
+  }
+
+  async function importThemeFile() {
+    themeError = '';
+    try {
+      const { open } = await import('@tauri-apps/plugin-dialog');
+      const { readTextFile } = await import('@tauri-apps/plugin-fs');
+      const selected = await open({
+        multiple: false,
+        filters: [{ name: 'VS Code theme', extensions: ['json', 'jsonc'] }],
+      });
+      if (!selected) return;
+      const path = typeof selected === 'string' ? selected : /** @type {any} */ (selected).path;
+      const text = await readTextFile(path);
+      const mark = parseVscodeTheme(text);
+      if (!mark) {
+        themeError = 'That file is not a recognizable VS Code theme.';
+        return;
+      }
+      updateSetting('vscodeTheme', mark);
+    } catch (err) {
+      themeError = String(err);
+    }
+  }
 
   function handleBackdropClick(e) {
     if (e.target === e.currentTarget) onclose();
   }
 
-  function handleKeydown(e) {
-    if (e.key === 'Escape') onclose();
-  }
-
-  // Trap focus inside dialog and auto-focus on mount
   $effect(() => {
     if (!dialogEl) return;
     dialogEl.focus();
   });
 
   async function installCli() {
-    cliStatus = '';
-    cliError = '';
+    cliStatus = ''; cliError = '';
     try {
       const result = await invoke('install_cli');
       cliStatus = String(result);
-    } catch (err) {
-      cliError = String(err);
-    }
+    } catch (err) { cliError = String(err); }
   }
 
   async function uninstallCli() {
-    cliStatus = '';
-    cliError = '';
+    cliStatus = ''; cliError = '';
     try {
       const result = await invoke('uninstall_cli');
       cliStatus = result === 'Not installed' ? 'CLI not found' : `Removed from ${result}`;
-    } catch (err) {
-      cliError = String(err);
-    }
+    } catch (err) { cliError = String(err); }
   }
 
-  const fontSizes = [
-    { label: 'Small', value: 14 },
-    { label: 'Default', value: 16 },
-    { label: 'Large', value: 18 },
-    { label: 'X-Large', value: 20 },
-  ];
-
   const widths = [
-    { label: 'Narrow', value: 680 },
-    { label: 'Default', value: 860 },
-    { label: 'Wide', value: 1080 },
-    { label: 'Full', value: 9999 },
+    { label: 'Narrow', value: 560 },
+    { label: 'Default', value: 680 },
+    { label: 'Wide',    value: 820 },
+    { label: 'Full',    value: 9999 },
   ];
 </script>
 
-<svelte:window onkeydown={handleKeydown} />
+<svelte:window onkeydown={(e) => e.key === 'Escape' && onclose()} />
 
 <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
-<div class="backdrop" onclick={handleBackdropClick}>
+<div class="overlay" onclick={handleBackdropClick}>
   <div
-    class="dialog"
+    class="modal"
     role="dialog"
     aria-modal="true"
     aria-label="Settings"
     bind:this={dialogEl}
     tabindex="-1"
+    onclick={(e) => e.stopPropagation()}
   >
-    <div class="dialog-header">
-      <h3 id="settings-dialog-title">Settings</h3>
-      <button class="close-btn" onclick={onclose} aria-label="Close settings">
-        <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
-          <path fill="currentColor" d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.75.75 0 1 1 1.06 1.06L9.06 8l3.22 3.22a.75.75 0 1 1-1.06 1.06L8 9.06l-3.22 3.22a.75.75 0 0 1-1.06-1.06L6.94 8 3.72 4.78a.75.75 0 0 1 0-1.06Z"/>
+    <div class="set-head">
+      <h2>Settings</h2>
+      <button class="icon-btn" onclick={onclose} aria-label="Close settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15" aria-hidden="true">
+          <path d="M6 6l12 12M18 6 6 18"/>
         </svg>
       </button>
     </div>
 
-    <div class="dialog-body">
-      <div class="setting-group" role="group" aria-labelledby="theme-label">
-        <!-- svelte-ignore a11y_label_has_associated_control -->
-        <label class="setting-label" id="theme-label">Theme</label>
-        <div class="segmented" role="radiogroup" aria-labelledby="theme-label">
-          {#each ['system', 'light', 'dark'] as t}
-            <button
-              class:active={settings.theme === t}
-              onclick={() => updateSetting('theme', t)}
-              role="radio"
-              aria-checked={settings.theme === t}
+    <div class="set-body">
+      <!-- Editor theme (window palette + VS Code themes) -->
+      <div class="set-row">
+        <div class="set-lt">
+          <div class="set-label">Editor theme</div>
+          <div class="set-desc">
+            {#if themeError}
+              <span class="cli-err">{themeError}</span>
+            {:else if importedActive}
+              Using <strong>{settings.vscodeTheme.name}</strong> — imported from a VS Code theme.
+            {:else}
+              The window palette — a built-in look or any VS Code theme.
+            {/if}
+          </div>
+        </div>
+        <div class="theme-row">
+          <div class="select-wrap">
+            <select
+              class="theme-select"
+              aria-label="Editor theme"
+              value={currentThemeId}
+              onchange={(e) => selectTheme(e.currentTarget.value)}
             >
-              {#if t === 'system'}
-                <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M7.5 1.75a.75.75 0 0 1 .75-.75 6.5 6.5 0 0 1 0 13 .75.75 0 0 1 0-1.5 5 5 0 0 0 0-10 .75.75 0 0 1-.75-.75ZM8.25 2.5v10a5 5 0 0 0 0-10Z"/></svg>
-              {:else if t === 'light'}
-                <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M8 12a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm0-1.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Zm5.657-8.157a.75.75 0 0 1 0 1.061l-1.061 1.06a.75.75 0 0 1-1.06-1.06l1.06-1.06a.75.75 0 0 1 1.06 0ZM8 0a.75.75 0 0 1 .75.75v1.5a.75.75 0 0 1-1.5 0V.75A.75.75 0 0 1 8 0ZM3.464 2.343a.75.75 0 0 1 0 1.061l-1.06 1.06a.75.75 0 0 1-1.061-1.06l1.06-1.06a.75.75 0 0 1 1.06 0ZM16 8a.75.75 0 0 1-.75.75h-1.5a.75.75 0 0 1 0-1.5h1.5A.75.75 0 0 1 16 8ZM2.25 8.75a.75.75 0 0 1 0-1.5H.75a.75.75 0 0 1 0 1.5h1.5Zm11.407 4.907a.75.75 0 0 1-1.061 0l-1.06-1.06a.75.75 0 0 1 1.06-1.061l1.06 1.06a.75.75 0 0 1 0 1.061ZM3.464 13.657a.75.75 0 0 1-1.061 0l-1.06-1.06a.75.75 0 0 1 1.06-1.061l1.06 1.06a.75.75 0 0 1 0 1.06ZM8 16a.75.75 0 0 1-.75-.75v-1.5a.75.75 0 0 1 1.5 0v1.5A.75.75 0 0 1 8 16Z"/></svg>
-              {:else}
-                <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M9.598 1.591a.749.749 0 0 1 .785-.175 7.001 7.001 0 1 1-8.967 8.967.75.75 0 0 1 .961-.96 5.5 5.5 0 0 0 7.22-7.832Z"/></svg>
-              {/if}
-              <span>{t.charAt(0).toUpperCase() + t.slice(1)}</span>
-            </button>
+              <optgroup label="Built-in">
+                {#each BUILT_IN as b}
+                  <option value={b.id}>{b.label}</option>
+                {/each}
+              </optgroup>
+              <optgroup label="VS Code themes">
+                {#each THEME_PRESETS as preset}
+                  <option value={"preset:" + preset.name}>{preset.name}</option>
+                {/each}
+                {#if importedActive}
+                  <option value="imported">{settings.vscodeTheme.name}</option>
+                {/if}
+              </optgroup>
+            </select>
+            <svg class="select-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+          </div>
+          <button class="btn" onclick={importThemeFile}>Import…</button>
+        </div>
+      </div>
+
+      <!-- Reading font -->
+      <div class="set-row">
+        <div class="set-lt">
+          <div class="set-label">Reading font</div>
+          <div class="set-desc">Typeface for body text.</div>
+        </div>
+        <div class="segmented">
+          {#each [['serif','Serif'],['sans','Sans'],['mono','Mono']] as [v, label]}
+            <button class="seg" class:on={settings.readFont === v} onclick={() => updateSetting('readFont', v)}>{label}</button>
           {/each}
         </div>
       </div>
 
-      <div class="setting-group" role="group" aria-labelledby="fontsize-label">
-        <!-- svelte-ignore a11y_label_has_associated_control -->
-        <label class="setting-label" id="fontsize-label">Font Size</label>
-        <div class="segmented" role="radiogroup" aria-labelledby="fontsize-label">
-          {#each fontSizes as fs}
-            <button
-              class:active={settings.fontSize === fs.value}
-              onclick={() => updateSetting('fontSize', fs.value)}
-              role="radio"
-              aria-checked={settings.fontSize === fs.value}
-            >
-              {fs.label}
-            </button>
-          {/each}
+      <!-- Font size -->
+      <div class="set-row">
+        <div class="set-lt">
+          <div class="set-label">Font size</div>
+          <div class="set-desc">Body text size.</div>
+        </div>
+        <div class="slider-row">
+          <input
+            type="range"
+            min="14" max="22" step="1"
+            value={settings.fontSize}
+            oninput={(e) => updateSetting('fontSize', Number(e.target.value))}
+            aria-label="Font size"
+          />
+          <span class="slider-val">{settings.fontSize}px</span>
         </div>
       </div>
 
-      <div class="setting-group" role="group" aria-labelledby="width-label">
-        <!-- svelte-ignore a11y_label_has_associated_control -->
-        <label class="setting-label" id="width-label">Content Width</label>
-        <div class="segmented" role="radiogroup" aria-labelledby="width-label">
+      <!-- Content width -->
+      <div class="set-row">
+        <div class="set-lt">
+          <div class="set-label">Content width</div>
+          <div class="set-desc">How wide the reading column gets.</div>
+        </div>
+        <div class="segmented full">
           {#each widths as w}
-            <button
-              class:active={settings.contentWidth === w.value}
-              onclick={() => updateSetting('contentWidth', w.value)}
-              role="radio"
-              aria-checked={settings.contentWidth === w.value}
-            >
+            <button class="seg" class:on={settings.contentWidth === w.value} onclick={() => updateSetting('contentWidth', w.value)}>
               {w.label}
             </button>
           {/each}
         </div>
       </div>
 
-      <div class="setting-group" role="group" aria-labelledby="display-label">
-        <!-- svelte-ignore a11y_label_has_associated_control -->
-        <label class="setting-label" id="display-label">Display</label>
-        <label class="toggle-row">
-          <span class="toggle-text">Show copy button</span>
-          <button
-            class="toggle"
-            class:active={settings.showCopyButton}
-            role="switch"
-            aria-checked={settings.showCopyButton}
-            onclick={() => updateSetting('showCopyButton', !settings.showCopyButton)}
-          >
-            <span class="toggle-knob"></span>
-          </button>
-        </label>
-        <label class="toggle-row">
-          <span class="toggle-text">Show frontmatter</span>
-          <button
-            class="toggle"
-            class:active={settings.showFrontmatter}
-            role="switch"
-            aria-checked={settings.showFrontmatter}
-            onclick={() => updateSetting('showFrontmatter', !settings.showFrontmatter)}
-          >
-            <span class="toggle-knob"></span>
-          </button>
-        </label>
+      <!-- Copy button -->
+      <div class="set-row">
+        <div class="set-lt">
+          <div class="set-label">Copy button</div>
+          <div class="set-desc">Show a copy button on code blocks.</div>
+        </div>
+        <div class="segmented">
+          {#each [[true, 'On'], [false, 'Off']] as [v, label]}
+            <button class="seg" class:on={settings.showCopyButton === v} onclick={() => updateSetting('showCopyButton', v)}>{label}</button>
+          {/each}
+        </div>
       </div>
 
-      <div class="setting-group">
-        <label class="setting-label" for="custom-css-input">Custom CSS</label>
+      <!-- Frontmatter -->
+      <div class="set-row">
+        <div class="set-lt">
+          <div class="set-label">Frontmatter</div>
+          <div class="set-desc">Show YAML metadata at the top of documents.</div>
+        </div>
+        <div class="segmented">
+          {#each [[true, 'On'], [false, 'Off']] as [v, label]}
+            <button class="seg" class:on={settings.showFrontmatter === v} onclick={() => updateSetting('showFrontmatter', v)}>{label}</button>
+          {/each}
+        </div>
+      </div>
+
+      <!-- Custom CSS -->
+      <div class="set-row col">
+        <div class="set-lt">
+          <div class="set-label">Custom CSS</div>
+          <div class="set-desc">Applied to the rendered markdown. Live preview as you type.</div>
+        </div>
         <textarea
-          id="custom-css-input"
-          class="css-textarea"
-          rows="5"
-          placeholder=".markdown-body { font-family: Georgia, serif; }"
+          class="set-css"
+          spellcheck="false"
+          placeholder=".markdown-body h1 &#123; letter-spacing: -0.04em; &#125;"
           bind:value={settings.customCSS}
           oninput={() => updateSetting('customCSS', settings.customCSS)}
-          spellcheck="false"
-          autocomplete="off"
         ></textarea>
       </div>
 
-      <div class="setting-group">
-        <!-- svelte-ignore a11y_label_has_associated_control -->
-        <label class="setting-label" id="cli-label">Command Line</label>
-        <p class="cli-desc">Use <code>mark file.md</code> to open files from the terminal.</p>
-        <div class="cli-actions" aria-labelledby="cli-label">
-          <button class="cli-btn install" onclick={installCli}>Install CLI</button>
-          <button class="cli-btn uninstall" onclick={uninstallCli}>Uninstall</button>
+      <!-- CLI -->
+      <div class="set-row">
+        <div class="set-lt">
+          <div class="set-label">Command-line tool</div>
+          <div class="set-desc">
+            {#if cliStatus}
+              <span class="cli-ok">{cliStatus}</span>
+            {:else if cliError}
+              <span class="cli-err">{cliError}</span>
+            {:else}
+              Install <code>mark</code> to open files from your terminal.
+            {/if}
+          </div>
         </div>
-        {#if cliStatus}
-          <p class="cli-msg success" role="status">{cliStatus}</p>
-        {/if}
-        {#if cliError}
-          <p class="cli-msg error" role="alert">{cliError}</p>
-        {/if}
+        <div class="cli-btns">
+          <button class="btn accent" onclick={installCli}>Install CLI</button>
+          <button class="btn danger" onclick={uninstallCli}>Uninstall</button>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
 <style>
-  .backdrop {
+  .overlay {
     position: fixed;
     inset: 0;
     z-index: 200;
-    background: rgba(0, 0, 0, 0.4);
+    background: rgba(0,0,0,0.32);
+    -webkit-backdrop-filter: blur(2px);
+    backdrop-filter: blur(2px);
     display: flex;
     align-items: center;
     justify-content: center;
-    backdrop-filter: blur(2px);
+    animation: fade 0.14s ease;
   }
 
-  .dialog {
-    background: var(--bg, #fff);
-    border: 1px solid var(--border, #d1d9e0);
-    border-radius: 12px;
-    width: 380px;
-    max-width: 90vw;
-    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
+  @keyframes fade { from { opacity: 0; } }
+
+  .modal {
+    background: var(--surface-hi, #fff);
+    border: 0.5px solid var(--line-2, #d8d2c5);
+    border-radius: 14px;
+    width: 580px;
+    max-width: 92vw;
+    max-height: 84vh;
+    box-shadow: 0 30px 80px -12px rgba(var(--shadow-rgb, 30 25 18) / 0.45);
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
     outline: none;
+    animation: pop 0.16s cubic-bezier(.2,.8,.3,1);
   }
 
-  .dialog-header {
+  @keyframes pop { from { opacity: 0; transform: translateY(-8px) scale(0.985); } }
+
+  .set-head {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 16px 20px 12px;
-    border-bottom: 1px solid var(--border, #d1d9e0);
+    padding: 17px 20px;
+    border-bottom: 0.5px solid var(--line, #e6e1d7);
+    flex-shrink: 0;
   }
 
-  .dialog-header h3 {
+  .set-head h2 {
     margin: 0;
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--text);
+    font: 650 17px var(--ui, system-ui);
+    letter-spacing: -0.01em;
+    color: var(--ink, #272320);
   }
 
-  .close-btn {
+  .icon-btn {
+    width: 28px; height: 28px;
+    border: none; background: none; padding: 0;
+    border-radius: 7px; cursor: default;
+    color: var(--ink-2, #5d574e);
+    display: grid; place-items: center;
+    transition: background 0.12s, color 0.12s;
+  }
+
+  .icon-btn:hover { background: var(--surface-2, #e9e6dd); color: var(--ink, #272320); }
+
+  .set-body {
+    padding: 6px 20px 20px;
+    overflow-y: auto;
+    flex: 1;
+  }
+
+  .set-row {
     display: flex;
     align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
-    border: none;
-    background: none;
-    border-radius: 6px;
-    cursor: pointer;
-    color: var(--text-muted);
-  }
-
-  .close-btn:hover {
-    background: var(--toc-hover);
-    color: var(--text);
-  }
-
-  .dialog-body {
-    padding: 16px 20px 20px;
-    display: flex;
-    flex-direction: column;
+    justify-content: space-between;
     gap: 20px;
+    padding: 15px 0;
+    border-bottom: 0.5px solid var(--line, #e6e1d7);
   }
 
-  .setting-group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+  .set-row:last-child { border-bottom: none; }
+  .set-row.col { flex-direction: column; align-items: stretch; gap: 9px; }
+
+  .set-lt { min-width: 0; flex: 1; }
+
+  .set-label {
+    font: 600 13.5px var(--ui, system-ui);
+    color: var(--ink, #272320);
   }
 
-  .setting-label {
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+  .set-desc {
+    font: 400 12px var(--ui, system-ui);
+    color: var(--ink-3, #938c80);
+    margin-top: 2px;
+    line-height: 1.45;
   }
 
+  .set-desc code {
+    font: 600 11.5px var(--mono, monospace);
+    background: var(--code-bg, #f4f2ec);
+    border: 0.5px solid var(--line, #e6e1d7);
+    border-radius: 4px;
+    padding: 1px 5px;
+    color: var(--ink, #272320);
+  }
+
+  .cli-ok { color: #5d7a3f; font-weight: 500; }
+  .cli-err { color: #c0392b; font-weight: 500; }
+
+  /* Segmented control */
   .segmented {
     display: flex;
-    gap: 1px;
-    background: var(--border);
-    border-radius: 8px;
-    overflow: hidden;
+    background: var(--surface, #f3f1eb);
+    border-radius: 9px;
+    padding: 3px;
+    gap: 2px;
+    flex: 0 0 auto;
   }
 
-  .segmented button {
-    flex: 1;
+  .segmented.full { flex: 1; }
+
+  .seg {
+    border: none;
+    background: none;
+    cursor: default;
+    border-radius: 7px;
+    padding: 6px 12px;
+    font: 600 12px var(--ui, system-ui);
+    color: var(--ink-2, #5d574e);
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 5px;
-    padding: 7px 8px;
-    border: none;
-    background: var(--input-bg);
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--text-muted);
-    cursor: pointer;
-    font-family: inherit;
-    transition: all 0.15s ease;
+    flex: 1;
+    white-space: nowrap;
+    transition: background 0.12s, color 0.12s;
   }
 
-  .segmented button:hover:not(.active) {
-    background: var(--toc-hover);
-    color: var(--text);
+  .seg.on {
+    background: var(--surface-hi, #fff);
+    color: var(--ink, #272320);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.08);
   }
 
-  .segmented button.active {
-    background: var(--accent, #0969da);
-    color: white;
+  :global([data-theme="dark"]) .seg.on {
+    box-shadow: inset 0 0 0 0.5px var(--line-2, #3d3830);
   }
 
-  .css-textarea {
-    width: 100%;
-    box-sizing: border-box;
-    padding: 8px 10px;
-    background: var(--input-bg);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
-    font-size: 11px;
-    color: var(--text);
-    resize: vertical;
-    outline: none;
-    line-height: 1.5;
-  }
-
-  .css-textarea:focus {
-    border-color: var(--accent);
-  }
-
-  .css-textarea::placeholder {
-    color: var(--text-muted);
-  }
-
-  .cli-desc {
-    font-size: 12px;
-    color: var(--text-muted);
-    margin: 0;
-    line-height: 1.4;
-  }
-
-  .cli-desc code {
-    font-size: 11px;
-    padding: 1px 4px;
-    background: var(--input-bg);
-    border-radius: 3px;
-    font-family: 'SF Mono', SFMono-Regular, Consolas, monospace;
-  }
-
-  .cli-actions {
-    display: flex;
-    gap: 8px;
-  }
-
-  .cli-btn {
-    padding: 6px 14px;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    font-size: 12px;
-    font-weight: 500;
-    cursor: pointer;
-    font-family: inherit;
-    transition: all 0.15s ease;
-  }
-
-  .cli-btn.install {
-    background: var(--accent, #0969da);
-    color: white;
-    border-color: var(--accent, #0969da);
-  }
-
-  .cli-btn.install:hover {
-    opacity: 0.9;
-  }
-
-  .cli-btn.uninstall {
-    background: var(--input-bg);
-    color: var(--text-muted);
-  }
-
-  .cli-btn.uninstall:hover {
-    color: var(--text);
-    background: var(--toc-hover);
-  }
-
-  .cli-msg {
-    font-size: 12px;
-    margin: 0;
-    line-height: 1.4;
-    white-space: pre-wrap;
-    word-break: break-all;
-  }
-
-  .cli-msg.success {
-    color: #2da44e;
-  }
-
-  .cli-msg.error {
-    color: #cf222e;
-  }
-
-  .toggle-row {
+  /* Slider */
+  .slider-row {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    cursor: pointer;
+    gap: 10px;
+    flex: 0 0 auto;
   }
 
-  .toggle-text {
-    font-size: 13px;
-    color: var(--text);
+  .slider-row input[type="range"] {
+    width: 130px;
+    accent-color: var(--accent, #c2683f);
   }
 
-  .toggle {
-    position: relative;
+  .slider-val {
+    font: 600 12px var(--mono, monospace);
+    color: var(--ink-2, #5d574e);
     width: 36px;
-    height: 20px;
-    border: none;
-    border-radius: 10px;
-    background: var(--border);
-    cursor: pointer;
-    padding: 0;
-    transition: background 0.2s ease;
+    text-align: right;
   }
 
-  .toggle.active {
-    background: var(--accent, #0969da);
+  /* CSS textarea */
+  .set-css {
+    width: 100%;
+    min-height: 80px;
+    resize: vertical;
+    background: var(--code-bg, #f4f2ec);
+    border: 0.5px solid var(--line-2, #d8d2c5);
+    border-radius: 9px;
+    padding: 10px 12px;
+    font: 12.5px/1.6 var(--mono, monospace);
+    color: var(--code-ink, #43403a);
+    outline: none;
   }
 
-  .toggle-knob {
+  .set-css:focus {
+    border-color: var(--accent-line, rgba(194,104,63,.38));
+    box-shadow: 0 0 0 3px var(--accent-soft, rgba(194,104,63,.16));
+  }
+
+  /* Theme dropdown + import */
+  .theme-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex: 0 0 auto;
+  }
+
+  .select-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .theme-select {
+    appearance: none;
+    -webkit-appearance: none;
+    min-width: 156px;
+    padding: 7px 30px 7px 12px;
+    background: var(--surface-hi, #fff);
+    border: 0.5px solid var(--line-2, #d8d2c5);
+    border-radius: 8px;
+    font: 600 12.5px var(--ui, system-ui);
+    color: var(--ink, #272320);
+    cursor: default;
+  }
+
+  .theme-select:focus {
+    outline: none;
+    border-color: var(--accent-line, rgba(194,104,63,.38));
+    box-shadow: 0 0 0 3px var(--accent-soft, rgba(194,104,63,.16));
+  }
+
+  .select-chev {
     position: absolute;
-    top: 2px;
-    left: 2px;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background: white;
-    transition: transform 0.2s ease;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    right: 9px;
+    color: var(--ink-3, #938c80);
+    pointer-events: none;
   }
 
-  .toggle.active .toggle-knob {
-    transform: translateX(16px);
+  /* CLI buttons */
+  .cli-btns { display: flex; gap: 8px; flex-shrink: 0; }
+
+  .btn {
+    border: 0.5px solid var(--line-2, #d8d2c5);
+    background: var(--surface-hi, #fff);
+    cursor: default;
+    border-radius: 8px;
+    padding: 8px 14px;
+    font: 600 12.5px var(--ui, system-ui);
+    color: var(--ink, #272320);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: background 0.12s;
+    white-space: nowrap;
   }
+
+  .btn:hover { background: var(--surface-2, #e9e6dd); }
+
+  .btn.accent {
+    background: var(--accent, #c2683f);
+    color: #fff;
+    border-color: transparent;
+  }
+
+  .btn.accent:hover {
+    background: color-mix(in oklch, var(--accent, #c2683f) 88%, #000);
+  }
+
+  .btn.danger { color: #c0392b; }
+  .btn.danger:hover { background: color-mix(in oklch, #c0392b 10%, var(--surface-hi, #fff)); }
 </style>

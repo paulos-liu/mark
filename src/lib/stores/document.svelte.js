@@ -33,20 +33,15 @@ export async function loadDocument(content, filePath, fileName) {
     documentState.headings = extractHeadings(body);
   } catch (/** @type {any} */ err) {
     console.error('Failed to process document:', err);
+    // Escape the message — it can echo document content and is injected via {@html}.
+    const safe = String(err?.message ?? 'Unknown error').replace(
+      /[&<>]/g,
+      (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c] ?? c,
+    );
     documentState.content = content;
-    documentState.html = `<p style="color: red;">Failed to render document: ${err?.message ?? 'Unknown error'}</p>`;
+    documentState.html = `<p style="color: var(--accent, #c2683f);">Failed to render document: ${safe}</p>`;
     documentState.headings = [];
   } finally {
     documentState.loading = false;
   }
-}
-
-export function clearDocument() {
-  documentState.content = '';
-  documentState.html = '';
-  documentState.headings = [];
-  documentState.filePath = '';
-  documentState.fileName = '';
-  documentState.loading = false;
-  documentState.frontmatter = {};
 }

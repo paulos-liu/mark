@@ -46,6 +46,10 @@ export function extractHeadings(markdown) {
   const stack = [];
   const lines = markdown.split('\n');
   let inCodeBlock = false;
+  // Dedupe anchors with the same counter scheme as the markdown.js heading
+  // renderer, so TOC anchors always match the rendered DOM ids.
+  /** @type {Record<string, number>} */
+  const anchorCounts = {};
 
   for (const line of lines) {
     const trimmed = line.trim();
@@ -69,11 +73,19 @@ export function extractHeadings(markdown) {
     const text = trimmed.slice(level + 1).trim();
     if (!text) continue;
 
+    let anchor = slugify(text);
+    if (anchorCounts[anchor] != null) {
+      anchorCounts[anchor]++;
+      anchor = `${anchor}-${anchorCounts[anchor]}`;
+    } else {
+      anchorCounts[anchor] = 0;
+    }
+
     const heading = {
       id: crypto.randomUUID(),
       level,
       text,
-      anchor: slugify(text),
+      anchor,
       children: [],
     };
 
@@ -108,25 +120,4 @@ export function flattenHeadings(headings) {
     }
   }
   return result;
-}
-
-/**
- * Filter headings by search text, preserving ancestors of matches.
- * @param {Heading[]} headings
- * @param {string} query
- * @returns {Heading[]}
- */
-export function filterHeadings(headings, query) {
-  if (!query) return headings;
-  const lower = query.toLowerCase();
-
-  return headings.reduce((acc, heading) => {
-    const matches = heading.text.toLowerCase().includes(lower);
-    const filteredChildren = filterHeadings(heading.children, query);
-
-    if (matches || filteredChildren.length > 0) {
-      acc.push({ ...heading, children: filteredChildren });
-    }
-    return acc;
-  }, []);
 }
