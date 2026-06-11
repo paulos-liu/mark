@@ -2242,6 +2242,124 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-10T16:46:36.161Z"
+    },
+    {
+      "id": "bug-140",
+      "timestamp": "2026-06-10T23:12:25.309Z",
+      "error_message": "Significant refactor of ",
+      "file": "src/routes/+page.svelte",
+      "root_cause": "6 lines replaced/restructured",
+      "fix": "Rewrote 12→4 lines (6 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "svelte"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-10T23:12:25.309Z"
+    },
+    {
+      "id": "bug-141",
+      "timestamp": "2026-06-11T02:46:59.121Z",
+      "error_message": "Incorrect value in code",
+      "file": "src-tauri/capabilities/default.json",
+      "root_cause": "Had \"core:webview:allow-print\"",
+      "fix": "Changed to \"core:window:allow-start-dragging\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-11T02:46:59.121Z"
+    },
+    {
+      "id": "bug-142",
+      "timestamp": "2026-06-10T00:00:00.000Z",
+      "error_message": "Titlebar drag does not move the window",
+      "file": "src-tauri/capabilities/default.json",
+      "root_cause": "data-tauri-drag-region triggers window.startDragging() over IPC, which requires core:window:allow-start-dragging. That permission is NOT in core:default, so the drag call was denied.",
+      "fix": "Added \"core:window:allow-start-dragging\" to capabilities permissions, then rebuilt.",
+      "tags": [
+        "tauri",
+        "drag-region",
+        "titlebar",
+        "capabilities",
+        "permissions",
+        "macos"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-10T00:00:00.000Z"
+    },
+    {
+      "id": "bug-143",
+      "timestamp": "2026-06-11T02:51:00.247Z",
+      "error_message": "Wrong reference: unlistenMenu should be unlistenOpenDir",
+      "file": "src/routes/+page.svelte",
+      "root_cause": "Used \"unlistenMenu\" instead of \"unlistenOpenDir\"",
+      "fix": "Changed unlistenMenu → unlistenOpenDir",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "svelte"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-11T02:51:00.247Z"
+    },
+    {
+      "id": "bug-144",
+      "timestamp": "2026-06-11T02:51:05.580Z",
+      "error_message": "Missing error handling in unknown",
+      "file": "src/routes/+page.svelte",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "svelte"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-11T02:51:05.580Z"
+    },
+    {
+      "id": "bug-145",
+      "timestamp": "2026-06-10T00:00:00.000Z",
+      "error_message": "CLI `mark <folder>` does not open folders",
+      "file": "src-tauri/src/lib.rs, src/routes/+page.svelte",
+      "root_cause": "Launcher runs `open -a Mark.app <path>` (no --args), so paths arrive as macOS open-document events (RunEvent::Opened), not argv. The Opened handler only handled path.is_file(); directories were dropped. The argv is_dir parsing existed but never received the path.",
+      "fix": "Added else-if path.is_dir() branch in RunEvent::Opened: resolve_directory, emit 'open-directory', store in PendingDirectory. Added matching 'open-directory' listener + cleanup in +page.svelte. Verified via screenshot: mark /tmp/marktest loads folder in Files sidebar.",
+      "tags": [
+        "tauri",
+        "cli",
+        "open-folder",
+        "RunEvent::Opened",
+        "macos",
+        "directory"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-10T00:00:00.000Z"
+    },
+    {
+      "id": "bug-146",
+      "timestamp": "2026-06-11T04:36:24.053Z",
+      "error_message": "Incorrect value in code",
+      "file": "src/routes/+page.svelte",
+      "root_cause": "Had \"empty-logo\"",
+      "fix": "Changed to \"empty-title\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "svelte"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-11T04:36:24.053Z"
     }
   ]
 }

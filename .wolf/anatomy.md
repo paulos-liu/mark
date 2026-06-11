@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-10T19:42:53.492Z
-> Files: 68 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-11T04:36:35.255Z
+> Files: 70 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/plans/
 
@@ -19,6 +19,7 @@
 - `CLAUDE.md` — OpenWolf (~57 tok)
 - `package.json` — Node.js package manifest (~290 tok)
 - `playwright.config.js` (~114 tok)
+- `README.md` — Project documentation (~772 tok)
 - `test-all-features.md` — Mark Feature Test (~1449 tok)
 - `test-document.md` — Getting Started with Mark (~199 tok)
 - `vitest.config.js` — /*.test.js'], (~73 tok)
@@ -68,11 +69,11 @@
 
 ## src-tauri/capabilities/
 
-- `default.json` (~178 tok)
+- `default.json` (~189 tok)
 
 ## src-tauri/src/
 
-- `lib.rs` — Build a CLI launcher script. Escapes the path for safe shell embedding. (~4836 tok)
+- `lib.rs` — Build a CLI launcher script. Escapes the path for safe shell embedding. (~5046 tok)
 - `main.rs` — Prevents additional console window on Windows in release, DO NOT REMOVE!! (~48 tok)
 
 ## src/
@@ -89,7 +90,7 @@
 - `MarkdownViewer.svelte` — Svelte: MarkdownViewer (~5090 tok)
 - `QuickOpen.svelte` — Svelte: QuickOpen (~1775 tok)
 - `SearchBar.svelte` — Svelte: SearchBar (~1029 tok)
-- `SettingsDialog.svelte` — Svelte: SettingsDialog (~4214 tok)
+- `SettingsDialog.svelte` — Svelte: SettingsDialog (~4359 tok)
 - `TableOfContents.svelte` — Svelte: TableOfContents (~1150 tok)
 - `Titlebar.svelte` — Svelte: Titlebar (~20 tok)
 
@@ -102,8 +103,8 @@
 - `scrollMemory.js` — Exports getScrollPosition, saveScrollPosition (~330 tok)
 - `scrollMemory.test.js` — Provide a full localStorage mock (happy-dom's implementation is incomplete) (~509 tok)
 - `search.svelte.js` — Maximum number of matches to track to prevent UI freezing (~363 tok)
-- `settings.svelte.js` — Normalize persisted values from older versions so every consumer (~555 tok)
-- `ui.svelte.js` — Exports uiState (~16 tok)
+- `settings.svelte.js` — Normalize persisted values from older versions so every consumer (~577 tok)
+- `ui.svelte.js` — Exports uiState (~38 tok)
 
 ## src/lib/themes/
 
@@ -125,7 +126,7 @@
 
 ## src/routes/
 
-- `+page.svelte` — Svelte: +page (~10094 tok)
+- `+page.svelte` — Svelte: +page (~10176 tok)
 
 ## tests/
 
@@ -133,3 +134,4 @@
 - `features.spec.js` — Declares BASE (~1298 tok)
 - `mark.spec.js` — Declares BASE (~2959 tok)
 - `review.spec.js` — Load markdown content into the viewer via the dev test hook. (~1187 tok)
+- `titlebar-sidebar.spec.js` — Declares BASE (~750 tok)

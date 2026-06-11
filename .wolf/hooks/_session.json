@@ -6,6 +6,76 @@
       "count": 1,
       "tokens": 58,
       "first_read": "2026-06-10T19:42:49.499Z"
+    },
+    "/Users/paulosliu/Projects/mark/README.md": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-10T21:18:55.063Z"
+    },
+    "/Users/paulosliu/Projects/mark/src/routes/+page.svelte": {
+      "count": 9,
+      "tokens": 10244,
+      "first_read": "2026-06-10T21:19:08.584Z"
+    },
+    "/Users/paulosliu/Projects/mark/src/lib/stores/settings.svelte.js": {
+      "count": 1,
+      "tokens": 555,
+      "first_read": "2026-06-10T23:11:34.672Z"
+    },
+    "/Users/paulosliu/Projects/mark/src/lib/stores/ui.svelte.js": {
+      "count": 1,
+      "tokens": 16,
+      "first_read": "2026-06-10T23:11:37.153Z"
+    },
+    "/Users/paulosliu/Projects/mark/src/lib/components/SettingsDialog.svelte": {
+      "count": 1,
+      "tokens": 4214,
+      "first_read": "2026-06-10T23:11:46.040Z"
+    },
+    "/Users/paulosliu/Projects/mark/playwright.config.js": {
+      "count": 1,
+      "tokens": 114,
+      "first_read": "2026-06-10T23:15:30.078Z"
+    },
+    "/Users/paulosliu/Projects/mark/tests/features.spec.js": {
+      "count": 1,
+      "tokens": 1298,
+      "first_read": "2026-06-10T23:15:32.183Z"
+    },
+    "/Users/paulosliu/Projects/mark/src-tauri/capabilities/default.json": {
+      "count": 1,
+      "tokens": 178,
+      "first_read": "2026-06-11T02:46:46.954Z"
+    },
+    "/Users/paulosliu/Projects/mark/src-tauri/src/lib.rs": {
+      "count": 2,
+      "tokens": 4836,
+      "first_read": "2026-06-11T02:49:01.272Z"
+    },
+    "/Users/paulosliu/Projects/mark/src-tauri/icons/icon.png": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-11T03:15:59.463Z"
+    },
+    "/tmp/mark-icon-clean.png": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-11T03:17:56.942Z"
+    },
+    "/tmp/mark-icon-white.png": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-11T03:22:05.263Z"
+    },
+    "/tmp/mark-icon-M.png": {
+      "count": 2,
+      "tokens": 0,
+      "first_read": "2026-06-11T03:28:50.666Z"
+    },
+    "/tmp/mark-icon-pen.png": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-11T04:03:08.528Z"
     }
   },
   "files_written": [
@@ -14,14 +84,112 @@
       "action": "edit",
       "tokens": 26,
       "at": "2026-06-10T19:42:53.501Z"
+    },
+    {
+      "file": "/Users/paulosliu/Projects/mark/README.md",
+      "action": "create",
+      "tokens": 882,
+      "at": "2026-06-10T21:19:33.373Z"
+    },
+    {
+      "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+      "action": "edit",
+      "tokens": 24,
+      "at": "2026-06-10T23:11:54.386Z"
+    },
+    {
+      "file": "/Users/paulosliu/Projects/mark/src/lib/stores/settings.svelte.js",
+      "action": "edit",
+      "tokens": 67,
+      "at": "2026-06-10T23:12:00.343Z"
+    },
+    {
+      "file": "/Users/paulosliu/Projects/mark/src/lib/stores/ui.svelte.js",
+      "action": "create",
+      "tokens": 38,
+      "at": "2026-06-10T23:12:07.293Z"
+    },
+    {
+      "file": "/Users/paulosliu/Projects/mark/src/lib/components/SettingsDialog.svelte",
+      "action": "edit",
+      "tokens": 163,
+      "at": "2026-06-10T23:12:13.189Z"
+    },
+    {
+      "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+      "action": "edit",
+      "tokens": 20,
+      "at": "2026-06-10T23:12:25.308Z"
+    },
+    {
+      "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+      "action": "edit",
+      "tokens": 31,
+      "at": "2026-06-10T23:16:53.829Z"
+    },
+    {
+      "file": "/Users/paulosliu/Projects/mark/tests/titlebar-sidebar.spec.js",
+      "action": "create",
+      "tokens": 750,
+      "at": "2026-06-10T23:17:09.011Z"
+    },
+    {
+      "file": "/Users/paulosliu/Projects/mark/src-tauri/capabilities/default.json",
+      "action": "edit",
+      "tokens": 31,
+      "at": "2026-06-11T02:46:59.120Z"
+    },
+    {
+      "file": "/Users/paulosliu/Projects/mark/src-tauri/src/lib.rs",
+      "action": "edit",
+      "tokens": 399,
+      "at": "2026-06-11T02:50:56.400Z"
+    },
+    {
+      "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+      "action": "edit",
+      "tokens": 27,
+      "at": "2026-06-11T02:51:00.246Z"
+    },
+    {
+      "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+      "action": "edit",
+      "tokens": 229,
+      "at": "2026-06-11T02:51:05.579Z"
+    },
+    {
+      "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+      "action": "edit",
+      "tokens": 38,
+      "at": "2026-06-11T02:51:10.672Z"
+    },
+    {
+      "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+      "action": "edit",
+      "tokens": 24,
+      "at": "2026-06-11T04:36:24.052Z"
+    },
+    {
+      "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+      "action": "edit",
+      "tokens": 5,
+      "at": "2026-06-11T04:36:35.264Z"
     }
   ],
   "edit_counts": {
-    ".gitignore": 1
+    ".gitignore": 1,
+    "README.md": 1,
+    "src/routes/+page.svelte": 8,
+    "src/lib/stores/settings.svelte.js": 1,
+    "src/lib/stores/ui.svelte.js": 1,
+    "src/lib/components/SettingsDialog.svelte": 1,
+    "tests/titlebar-sidebar.spec.js": 1,
+    "src-tauri/capabilities/default.json": 1,
+    "src-tauri/src/lib.rs": 1
   },
-  "anatomy_hits": 1,
-  "anatomy_misses": 0,
-  "repeated_reads_warned": 0,
+  "anatomy_hits": 9,
+  "anatomy_misses": 6,
+  "repeated_reads_warned": 10,
   "cerebrum_warnings": 0,
-  "stop_count": 0
+  "stop_count": 14
 }

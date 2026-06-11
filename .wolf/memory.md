@@ -937,3 +937,35 @@ Final: 60 unit + 33 e2e green. Verified in the real Tauri app via computer-use: 
 | Time | Action | File(s) | Outcome | ~Tokens |
 |------|--------|---------|---------|--------|
 | 12:42 | Edited .gitignore | 2→6 lines | ~24 |
+| 12:43 | commit+push to GitHub origin | many | success, new repo pushed | ~3k |
+| 12:43 | Session end: 1 writes across 1 files (.gitignore) | 1 reads | ~84 tok |
+| 14:19 | Created README.md | — | ~823 |
+| 14:19 | Session end: 2 writes across 2 files (.gitignore, README.md) | 3 reads | ~11060 tok |
+| 16:11 | Edited src/routes/+page.svelte | 3→2 lines | ~23 |
+| 16:12 | Edited src/lib/stores/settings.svelte.js | 3→4 lines | ~67 |
+| 16:12 | Created src/lib/stores/ui.svelte.js | — | ~38 |
+| 16:12 | Edited src/lib/components/SettingsDialog.svelte | expanded (+13 lines) | ~152 |
+| 16:12 | Edited src/routes/+page.svelte | reduced (-8 lines) | ~19 |
+| 16:12 | remove titlebar app name + add sidebar-on-launch setting | +page.svelte, settings/ui stores, SettingsDialog | done, 60 tests pass | ~6k |
+| 16:12 | Session end: 7 writes across 6 files (.gitignore, README.md, +page.svelte, settings.svelte.js, ui.svelte.js) | 6 reads | ~16147 tok |
+| 16:16 | Edited src/routes/+page.svelte | 5→5 lines | ~29 |
+| 16:17 | Created tests/titlebar-sidebar.spec.js | — | ~750 |
+| 16:17 | titlebar font→sans-serif (var(--ui)) + add e2e tests | +page.svelte, tests/titlebar-sidebar.spec.js | done, 5 e2e pass | ~5k |
+| 16:17 | Session end: 9 writes across 7 files (.gitignore, README.md, +page.svelte, settings.svelte.js, ui.svelte.js) | 8 reads | ~18340 tok |
+| 19:44 | Session end: 9 writes across 7 files (.gitignore, README.md, +page.svelte, settings.svelte.js, ui.svelte.js) | 8 reads | ~18340 tok |
+| 19:46 | Edited src-tauri/capabilities/default.json | 2→3 lines | ~31 |
+| 19:48 | Session end: 10 writes across 8 files (.gitignore, README.md, +page.svelte, settings.svelte.js, ui.svelte.js) | 9 reads | ~18511 tok |
+| 19:50 | Edited src-tauri/src/lib.rs | modified to_file_path() | ~372 |
+| 19:51 | Edited src/routes/+page.svelte | 2→3 lines | ~25 |
+| 19:51 | Edited src/routes/+page.svelte | added error handling | ~214 |
+| 19:51 | Edited src/routes/+page.svelte | added 1 condition(s) | ~36 |
+| 19:53 | Session end: 14 writes across 9 files (.gitignore, README.md, +page.svelte, settings.svelte.js, ui.svelte.js) | 10 reads | ~24040 tok |
+| 20:19 | Session end: 14 writes across 9 files (.gitignore, README.md, +page.svelte, settings.svelte.js, ui.svelte.js) | 12 reads | ~24040 tok |
+| 20:20 | Session end: 14 writes across 9 files (.gitignore, README.md, +page.svelte, settings.svelte.js, ui.svelte.js) | 12 reads | ~24040 tok |
+| 20:23 | Session end: 14 writes across 9 files (.gitignore, README.md, +page.svelte, settings.svelte.js, ui.svelte.js) | 13 reads | ~24040 tok |
+| 20:32 | Session end: 14 writes across 9 files (.gitignore, README.md, +page.svelte, settings.svelte.js, ui.svelte.js) | 14 reads | ~24040 tok |
+| 21:04 | Session end: 14 writes across 9 files (.gitignore, README.md, +page.svelte, settings.svelte.js, ui.svelte.js) | 15 reads | ~24040 tok |
+| 21:09 | Session end: 14 writes across 9 files (.gitignore, README.md, +page.svelte, settings.svelte.js, ui.svelte.js) | 15 reads | ~24040 tok |
+| 21:36 | Edited src/routes/+page.svelte | 3→2 lines | ~22 |
+| 21:36 | Edited src/routes/+page.svelte | removed 14 lines | ~5 |
+| 21:37 | Session end: 16 writes across 9 files (.gitignore, README.md, +page.svelte, settings.svelte.js, ui.svelte.js) | 15 reads | ~24267 tok |
