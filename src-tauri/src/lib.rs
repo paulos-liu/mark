@@ -507,6 +507,20 @@ pub fn run() {
                         if let Ok(mut pending) = app_handle.state::<PendingFile>().0.lock() {
                             *pending = Some(path_str);
                         }
+                    } else if path.is_dir() {
+                        // `mark <folder>` arrives here as an open event, not via argv.
+                        if let Some(files) =
+                            resolve_directory(Some(path.to_string_lossy().to_string()))
+                        {
+                            // Emit for already-loaded frontend
+                            let _ = app_handle.emit("open-directory", &files);
+                            // Also store for frontend that hasn't loaded yet
+                            if let Ok(mut pending) =
+                                app_handle.state::<PendingDirectory>().0.lock()
+                            {
+                                *pending = Some(files);
+                            }
+                        }
                     }
                 }
             }

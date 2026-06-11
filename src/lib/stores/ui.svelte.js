@@ -1,3 +1,5 @@
+import { settings } from './settings.svelte.js';
+
 export const uiState = $state({
-  showTOC: false,
+  showTOC: settings.sidebarOnStart ?? false,
 });

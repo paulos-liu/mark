@@ -9,6 +9,7 @@ const defaults = {
   showFrontmatter: false, // show frontmatter metadata block
   customCSS: '',          // user-defined CSS injected into the document
   vscodeTheme: null,      // imported VS Code theme: { name, type, vars } | null
+  sidebarOnStart: false,  // open the sidebar / table of contents on launch
 };
 
 const CONTENT_WIDTHS = [560, 680, 820, 9999];

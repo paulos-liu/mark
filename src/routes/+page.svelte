@@ -345,6 +345,7 @@
 
     let unlistenPromise = null;
     let unlistenOpenFile = null;
+    let unlistenOpenDir = null;
     let unlistenMenu = null;
     let unlistenFileChanged = null;
 
@@ -370,6 +371,24 @@
               } catch (err) {
                 console.error('Failed to open file from event:', err);
               }
+            }
+          });
+        }
+
+        if (!destroyed) {
+          unlistenOpenDir = await listen('open-directory', async (event) => {
+            if (destroyed) return;
+            const files = /** @type {string[]} */ (event.payload);
+            if (!files || files.length === 0) return;
+            await stopWatchingFile();
+            directoryFiles = files;
+            sbTab = 'files';
+            uiState.showTOC = true;
+            try {
+              const result = await readFile(files[0]);
+              if (!destroyed) await openFile(result.content, result.filePath, result.fileName);
+            } catch (err) {
+              console.error('Failed to open directory from event:', err);
             }
           });
         }
@@ -490,6 +509,7 @@
       destroyed = true;
       mq.removeEventListener('change', handler);
       if (unlistenOpenFile) unlistenOpenFile();
+      if (unlistenOpenDir) unlistenOpenDir();
       if (unlistenMenu) unlistenMenu();
       if (unlistenPromise) unlistenPromise.then((u) => u());
       if (unlistenFileChanged) unlistenFileChanged();
@@ -523,7 +543,6 @@
     </button>
 
     <div class="tb-title" data-tauri-drag-region>
-      <span class="tb-app">Mark</span>
       {#if documentState.fileName}
         <span class="tb-file">{documentState.fileName}</span>
       {/if}
@@ -661,7 +680,6 @@
       {:else}
         <div class="empty-state">
           <div class="empty-content">
-            <div class="empty-logo">M</div>
             <p class="empty-title">Mark</p>
             <p class="empty-desc">Open a file or a folder to get started</p>
             <div class="empty-actions">
@@ -814,7 +832,7 @@
     display: flex;
     align-items: baseline;
     gap: 7px;
-    font-family: 'Newsreader', Georgia, serif;
+    font-family: var(--ui);
     font-size: 14px;
     line-height: 1;
     /* Serif caps sit high in the line box. Fallback: optical nudge down to
@@ -833,15 +851,7 @@
     /* text-box trims metrics to glyph mass; a sub-pixel nudge corrects the
        residual optical lift of mixed-case text (mass sits toward x-height). */
     .tb-title { transform: translateY(0.5px); }
-    .tb-app,
     .tb-file { text-box: trim-both cap alphabetic; }
-  }
-
-  .tb-app {
-    font-weight: 600;
-    color: var(--ink);
-    letter-spacing: -0.01em;
-    flex-shrink: 0;
   }
 
   .tb-file {
@@ -1122,19 +1132,6 @@
     flex-direction: column;
     align-items: center;
     gap: 8px;
-  }
-
-  .empty-logo {
-    width: 56px;
-    height: 56px;
-    border-radius: 14px;
-    background: var(--accent);
-    color: #fff;
-    font: 700 28px var(--ui);
-    display: grid;
-    place-items: center;
-    letter-spacing: -0.02em;
-    margin-bottom: 8px;
   }
 
   .empty-title {

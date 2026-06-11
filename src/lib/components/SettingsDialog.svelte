@@ -247,6 +247,19 @@
         </div>
       </div>
 
+      <!-- Sidebar on launch -->
+      <div class="set-row">
+        <div class="set-lt">
+          <div class="set-label">Sidebar on launch</div>
+          <div class="set-desc">Open the sidebar automatically when the app starts.</div>
+        </div>
+        <div class="segmented">
+          {#each [[true, 'Open'], [false, 'Collapsed']] as [v, label]}
+            <button class="seg" class:on={settings.sidebarOnStart === v} onclick={() => updateSetting('sidebarOnStart', v)}>{label}</button>
+          {/each}
+        </div>
+      </div>
+
       <!-- Custom CSS -->
       <div class="set-row col">
         <div class="set-lt">
