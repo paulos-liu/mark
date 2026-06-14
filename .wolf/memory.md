@@ -969,3 +969,244 @@ Final: 60 unit + 33 e2e green. Verified in the real Tauri app via computer-use: 
 | 21:36 | Edited src/routes/+page.svelte | 3→2 lines | ~22 |
 | 21:36 | Edited src/routes/+page.svelte | removed 14 lines | ~5 |
 | 21:37 | Session end: 16 writes across 9 files (.gitignore, README.md, +page.svelte, settings.svelte.js, ui.svelte.js) | 15 reads | ~24267 tok |
+| 21:45 | Session end: 16 writes across 9 files (.gitignore, README.md, +page.svelte, settings.svelte.js, ui.svelte.js) | 15 reads | ~24267 tok |
+
+## Session: 2026-06-13 11:56
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 12:08 | Created ../../.claude/plans/steady-nibbling-sun.md | — | ~2250 |
+| 12:10 | Edited ../../.claude/plans/steady-nibbling-sun.md | expanded (+64 lines) | ~1139 |
+| 12:11 | Edited src-tauri/capabilities/default.json | 2→3 lines | ~23 |
+| 12:11 | Edited src/lib/stores/document.svelte.js | modified applyContent() | ~582 |
+| 12:11 | Created src/lib/stores/editor.svelte.js | — | ~495 |
+| 12:13 | Created src/lib/components/MarkdownEditor.svelte | — | ~1804 |
+| 12:13 | Edited src/lib/components/MarkdownEditor.svelte | inline fix | ~18 |
+| 12:14 | Edited src/lib/utils/fileHandler.js | 2→2 lines | ~34 |
+| 12:14 | Edited src/lib/utils/fileHandler.js | added error handling | ~181 |
+| 12:15 | Edited src/routes/+page.svelte | expanded (+10 lines) | ~199 |
+| 12:15 | Edited src/routes/+page.svelte | inline fix | ~28 |
+| 12:15 | Edited src/routes/+page.svelte | expanded (+9 lines) | ~122 |
+| 12:15 | Edited src/routes/+page.svelte | added error handling | ~622 |
+| 12:15 | Edited src/routes/+page.svelte | added 1 condition(s) | ~208 |
+| 12:15 | Edited src/routes/+page.svelte | added 1 condition(s) | ~50 |
+| 12:15 | Edited src/routes/+page.svelte | added 1 condition(s) | ~151 |
+| 12:16 | Edited src/routes/+page.svelte | added 2 condition(s) | ~130 |
+| 12:16 | Edited src/routes/+page.svelte | added 2 condition(s) | ~232 |
+| 12:16 | Edited src/routes/+page.svelte | added 1 condition(s) | ~95 |
+| 12:16 | Edited src/routes/+page.svelte | added 1 condition(s) | ~163 |
+| 12:16 | Edited src/routes/+page.svelte | added 1 condition(s) | ~56 |
+| 12:16 | Edited src/routes/+page.svelte | added 1 condition(s) | ~81 |
+| 12:17 | Edited src/routes/+page.svelte | 2→4 lines | ~63 |
+| 12:17 | Edited src/routes/+page.svelte | modified loadContent() | ~161 |
+| 12:17 | Edited src/routes/+page.svelte | expanded (+11 lines) | ~295 |
+| 12:17 | Edited src/routes/+page.svelte | 8→11 lines | ~111 |
+| 12:17 | Edited src/routes/+page.svelte | added 2 condition(s) | ~192 |
+| 12:17 | Edited src/routes/+page.svelte | expanded (+10 lines) | ~264 |
+| 12:18 | Edited src/routes/+page.svelte | expanded (+16 lines) | ~297 |
+| 12:18 | Edited src/routes/+page.svelte | expanded (+110 lines) | ~729 |
+| 12:18 | Edited src-tauri/src/lib.rs | expanded (+6 lines) | ~104 |
+| 12:18 | Edited src-tauri/src/lib.rs | 6→8 lines | ~54 |
+| 12:18 | Edited src-tauri/src/lib.rs | 4→5 lines | ~41 |
+| 12:19 | Edited src-tauri/src/lib.rs | 2→3 lines | ~56 |
+| 12:21 | Created src/lib/stores/editor.test.js | — | ~861 |
+| 12:22 | Created tests/edit.spec.js | — | ~820 |
+| 12:26 | Edited README.md | 5→5 lines | ~109 |
+| 12:26 | Edited README.md | 1→2 lines | ~85 |
+| 12:26 | Edited README.md | 9→11 lines | ~98 |
+| 12:26 | Edited README.md | inline fix | ~23 |
+| 12:26 | Edited README.md | 1→2 lines | ~34 |
+| 12:26 | Edited test-all-features.md | 2→3 lines | ~26 |
+| 12:26 | Edited test-all-features.md | 3→5 lines | ~29 |
+
+## Session summary: 2026-06-13 — Editable viewer (Read ↔ Edit toggle) + .md cleanup
+
+Added an Obsidian-style **Read ↔ Edit toggle** (Part A) to the previously read-only app, and folded in a `.md` cleanup pass.
+
+- **New**: `src/lib/stores/editor.svelte.js` (editorState: mode/buffer/dirty/saving + enter/exit/setBuffer/markSaved/hasUnsavedChanges/resetEditor); `src/lib/components/MarkdownEditor.svelte` (lazy-loaded CodeMirror 6 source editor, warm-themed, search/history, lineWrapping). Tests: `src/lib/stores/editor.test.js` (11), `tests/edit.spec.js` (5).
+- **Changed**: `document.svelte.js` (added `raw`; extracted `applyContent()` so edit buffers re-render with no spinner); `+page.svelte` (Read/Edit segmented toggle + ⌘E/⌘S, `saveDocument` via new `writeFile`, unsaved-changes guard modal, watcher self-write suppression + changed-on-disk reload toast, DEV `__markTest` edit hooks, render editor↔viewer); `fileHandler.js` (`writeFile`); `capabilities/default.json` (`fs:allow-write-text-file`); `lib.rs` (Save ⌘S, Toggle Edit ⌘E menu items + event routing).
+- **Deps**: codemirror, @codemirror/{lang-markdown,state,view,commands,language,search}.
+- **Verified**: `npm run build` ✓, `npm test` 71 ✓, `tests/edit.spec.js` 5 ✓. 3 full-suite e2e failures are **pre-existing** (stale titlebar/Files-tree assertions; confirmed failing on committed baseline). Real-app save/watcher behaviour not yet manually verified.
+- **.md cleanup**: `openwolf scan` rebuilt anatomy.md; deleted stray empty `md`; README + test-all-features updated for edit mode; buglog bug-151 (latent open-folder menu) + bug-152 (CM Compartment misimport).
+- **Phase 2 documented** (not built): Obsidian Live Preview plan in `~/.claude/plans/steady-nibbling-sun.md`.
+| 12:29 | Session end: 43 writes across 12 files (steady-nibbling-sun.md, default.json, document.svelte.js, editor.svelte.js, MarkdownEditor.svelte) | 18 reads | ~41279 tok |
+| 12:46 | Session end: 43 writes across 12 files (steady-nibbling-sun.md, default.json, document.svelte.js, editor.svelte.js, MarkdownEditor.svelte) | 18 reads | ~41279 tok |
+| 12:54 | Session end: 43 writes across 12 files (steady-nibbling-sun.md, default.json, document.svelte.js, editor.svelte.js, MarkdownEditor.svelte) | 18 reads | ~41279 tok |
+
+## Session: 2026-06-13 16:14
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-06-13 16:16
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 16:17 | Edited ../../.claude/plans/steady-nibbling-sun.md | expanded (+12 lines) | ~579 |
+| 16:17 | Edited ../../.claude/plans/steady-nibbling-sun.md | 3→3 lines | ~259 |
+| 16:18 | Edited ../../.claude/plans/steady-nibbling-sun.md | 8→9 lines | ~328 |
+| 16:18 | Edited ../../.claude/plans/steady-nibbling-sun.md | inline fix | ~54 |
+| 16:18 | Edited ../../.claude/plans/steady-nibbling-sun.md | modified Concretely() | ~360 |
+| 16:18 | Edited ../../.claude/plans/steady-nibbling-sun.md | 2→2 lines | ~370 |
+| 16:19 | Edited src/lib/components/MarkdownEditor.svelte | 3→4 lines | ~37 |
+| 16:19 | Edited src/lib/components/MarkdownEditor.svelte | modified makeTheme() | ~94 |
+| 16:19 | Edited ../../.claude/plans/steady-nibbling-sun.md | 2→2 lines | ~283 |
+| 16:19 | Edited ../../.claude/plans/steady-nibbling-sun.md | 3→3 lines | ~114 |
+| 16:19 | Edited ../../.claude/plans/steady-nibbling-sun.md | 3→3 lines | ~220 |
+| 16:19 | Edited ../../.claude/plans/steady-nibbling-sun.md | 5→5 lines | ~359 |
+| 16:19 | Critiqued + fixed editing-toggle plan (steady-nibbling-sun.md) against built impl; corrected stale claims, strengthened Read|%s Edit on/off toggle spec | ~/.claude/plans/steady-nibbling-sun.md | done | ~22k |
+| - | Critiqued + fixed editing-toggle plan (steady-nibbling-sun.md) against built impl; corrected stale claims, strengthened Read/Edit on-off toggle spec | ~/.claude/plans/steady-nibbling-sun.md | done | ~22k |
+| 16:22 | Edited tests/mark.spec.js | 8→3 lines | ~43 |
+| 16:22 | Edited tests/mark.spec.js | 2→2 lines | ~40 |
+| 16:22 | Edited tests/features.spec.js | 2→2 lines | ~44 |
+| 16:30 | SESSION: verify-and-finish editable-viewer (Read↔Edit toggle). Branch `editable-viewer`. Subagent critiqued+fixed the plan (now a verify-and-finish doc; toggle on/off spec strengthened). Found Part A+B already built in working tree. Tidied MarkdownEditor.svelte JSDoc (now svelte-check clean). | src/lib/components/MarkdownEditor.svelte, ~/.claude/plans/steady-nibbling-sun.md | done | ~6k |
+| 16:30 | Verification: vitest 71/71 pass; Playwright 44/44 pass after fixing 3 PRE-EXISTING stale tests (.empty-logo, titlebar 'Mark', .sb-head — red on main, see bug-158). svelte-check still has ~149 pre-existing codebase-wide "implicitly any" errors (NOT a passing gate; our new editor.svelte.js + MarkdownEditor.svelte are clean). | tests/mark.spec.js, tests/features.spec.js | 44/44 green | ~4k |
+| 16:30 | Computer-use real-app pass (debug bundle com.mark.app): opened file → Read renders → Edit shows CM6 source (warm theme) → typed → accent dirty-dot → ⌘S wrote to disk (verified) → dot cleared, no watcher loop → Read re-rendered with edit → ⌘E toggles → ⌘O while dirty showed Save/Don't Save/Cancel guard → Cancel kept doc, no leak to disk. | (real app) | all pass | ~5k |
+| 16:30 | Session end: 15 writes across 4 files (steady-nibbling-sun.md, MarkdownEditor.svelte, mark.spec.js, features.spec.js) | 14 reads | ~26732 tok |
+| 17:57 | Session end: 15 writes across 4 files (steady-nibbling-sun.md, MarkdownEditor.svelte, mark.spec.js, features.spec.js) | 14 reads | ~26732 tok |
+| 17:58 | Session end: 15 writes across 4 files (steady-nibbling-sun.md, MarkdownEditor.svelte, mark.spec.js, features.spec.js) | 14 reads | ~26732 tok |
+| 18:07 | Edited src/lib/stores/editor.svelte.js | modified setEditView() | ~164 |
+| 18:08 | Edited src/routes/+page.svelte | 9→10 lines | ~52 |
+| 18:08 | Edited src/routes/+page.svelte | added 2 condition(s) | ~152 |
+| 18:08 | Edited src/routes/+page.svelte | expanded (+6 lines) | ~217 |
+| 18:08 | Edited src/routes/+page.svelte | 8→9 lines | ~90 |
+| 18:08 | Edited src/routes/+page.svelte | modified enterEdit() | ~104 |
+| 18:08 | Edited src/lib/components/MarkdownEditor.svelte | 5→6 lines | ~57 |
+| 18:09 | Edited tests/edit.spec.js | expanded (+18 lines) | ~387 |
+| 18:10 | Created src/lib/utils/livePreview.js | — | ~1143 |
+| 18:10 | Edited src/lib/components/MarkdownEditor.svelte | 6→9 lines | ~98 |
+| 18:10 | Edited src/lib/components/MarkdownEditor.svelte | 5→9 lines | ~81 |
+| 18:11 | Edited src/lib/components/MarkdownEditor.svelte | 3→4 lines | ~45 |
+| 18:11 | Edited src/lib/components/MarkdownEditor.svelte | added 1 condition(s) | ~114 |
+| 18:11 | Edited src/lib/components/MarkdownEditor.svelte | modified global() | ~365 |
+| 18:11 | Edited tests/edit.spec.js | expanded (+22 lines) | ~366 |
+| 18:12 | Edited src/lib/utils/livePreview.js | 2→2 lines | ~35 |
+| 18:13 | Edited src/lib/utils/livePreview.js | modified eq() | ~113 |
+| 18:13 | Edited src/lib/utils/livePreview.js | expanded (+6 lines) | ~98 |
+| 18:13 | Edited src/lib/utils/livePreview.js | added 4 condition(s) | ~530 |
+| 18:13 | Edited src/lib/components/MarkdownEditor.svelte | modified global() | ~128 |
+| 18:13 | Edited tests/edit.spec.js | expanded (+17 lines) | ~263 |
+| 18:15 | Edited src/lib/stores/editor.test.js | 16→18 lines | ~109 |
+| 18:15 | Edited src/lib/stores/editor.test.js | expanded (+28 lines) | ~308 |
+| 18:16 | Created scripts/gen-stress-md.mjs | — | ~652 |
+| 18:17 | Created tests/perf.spec.js | — | ~755 |
+| 18:23 | Created ../../.claude/projects/-Users-paulosliu-Projects-mark/memory/code-review-in-subagent.md | — | ~251 |
+| 18:30 | Created src/lib/utils/livePreview.js | — | ~2029 |
+| 18:30 | Edited src/routes/+page.svelte | added 1 condition(s) | ~111 |
+| 18:35 | SESSION: hybrid Live Preview (Read·Live·Source). New livePreview.js CM6 decoration layer (hide markers, style content, reveal-on-active-line; headings/bold/italic/strike/inline-code/blockquote/bullets). Compartment toggles it in MarkdownEditor; editorState.editView+setEditView; 3-seg titlebar. | livePreview.js, MarkdownEditor.svelte, editor.svelte.js, +page.svelte | done | ~12k |
+| 18:35 | Verified: vitest 75/75, Playwright 48/48 (added edit/perf specs), computer-use real-app pass on 6455-line stress doc (instant open, smooth scroll, reveal works), perf 4552 lines: read 225ms/live 114ms/type 37ms. /code-review loop (in subagent): round1 2 bugs+2 nits fixed (tree-advance rebuild, guardUnsaved concurrent-prompt, same-line rebuild skip, single-pass union iterate), round2 clean []. | tests/, scripts/gen-stress-md.mjs | all green | ~8k |
+| 18:36 | Session end: 43 writes across 12 files (steady-nibbling-sun.md, MarkdownEditor.svelte, mark.spec.js, features.spec.js, editor.svelte.js) | 17 reads | ~41245 tok |
+| 18:37 | Session end: 43 writes across 12 files (steady-nibbling-sun.md, MarkdownEditor.svelte, mark.spec.js, features.spec.js, editor.svelte.js) | 17 reads | ~41245 tok |
+| 18:44 | Edited src/lib/stores/settings.svelte.js | 4→6 lines | ~112 |
+| 18:44 | Edited src/lib/stores/settings.svelte.js | added 2 condition(s) | ~85 |
+| 18:44 | Edited src/lib/components/SettingsDialog.svelte | expanded (+29 lines) | ~312 |
+| 18:44 | Edited src/lib/stores/editor.svelte.js | reduced (-12 lines) | ~39 |
+| 18:44 | Edited src/routes/+page.svelte | 10→9 lines | ~47 |
+| 18:44 | Edited src/routes/+page.svelte | modified toggleEditMode() | ~49 |
+| 18:45 | Edited src/routes/+page.svelte | added 1 condition(s) | ~163 |
+| 18:45 | Edited src/routes/+page.svelte | 4→4 lines | ~37 |
+| 18:45 | Edited src/routes/+page.svelte | added 1 condition(s) | ~144 |
+| 18:45 | Edited src/routes/+page.svelte | modified enterEdit() | ~95 |
+| 18:45 | Edited src/lib/stores/editor.test.js | 18→16 lines | ~81 |
+| 18:46 | Edited src/lib/stores/editor.test.js | reduced (-28 lines) | ~74 |
+| 18:46 | Edited tests/edit.spec.js | expanded (+6 lines) | ~475 |
+| 18:49 | Edited tests/perf.spec.js | 5→5 lines | ~86 |
+| 18:50 | Created ../../.claude/projects/-Users-paulosliu-Projects-mark/memory/code-review-in-subagent.md | — | ~328 |
+| 18:55 | Created src/lib/utils/livePreview.js | — | ~2913 |
+| 18:55 | Edited src/lib/components/MarkdownEditor.svelte | modified global() | ~88 |
+| 18:55 | Edited tests/edit.spec.js | expanded (+15 lines) | ~214 |
+| 18:59 | Edited src/lib/utils/livePreview.js | modified renderHr() | ~28 |
+| 19:06 | Created src/lib/utils/livePreview.js | — | ~3199 |
+| 19:08 | Edited src/lib/utils/livePreview.js | modified eq() | ~229 |
+| 19:11 | Edited src/lib/utils/livePreview.js | added 1 import(s) | ~66 |
+| 19:12 | Edited src/lib/utils/livePreview.js | modified renderHr() | ~262 |
+| 19:12 | Edited src/lib/components/MarkdownEditor.svelte | modified global() | ~227 |
+| 19:12 | Edited tests/edit.spec.js | expanded (+15 lines) | ~228 |
+| 19:13 | Edited src/lib/utils/livePreview.js | 4→5 lines | ~51 |
+| 19:13 | Edited src/lib/components/MarkdownEditor.svelte | modified global() | ~163 |
+| 19:13 | Edited tests/edit.spec.js | expanded (+16 lines) | ~249 |
+| 19:15 | Edited src/lib/utils/livePreview.js | modified constructor() | ~280 |
+| 19:15 | Edited src/lib/utils/livePreview.js | added 3 condition(s) | ~206 |
+| 19:15 | Edited src/lib/components/MarkdownEditor.svelte | modified global() | ~82 |
+| 19:15 | Edited tests/edit.spec.js | expanded (+12 lines) | ~190 |
+| 19:18 | Edited src/lib/utils/livePreview.js | added 1 import(s) | ~36 |
+| 19:18 | Edited src/lib/utils/livePreview.js | added 2 condition(s) | ~616 |
+| 19:18 | Edited tests/edit.spec.js | expanded (+14 lines) | ~203 |
+| 19:19 | Edited src/lib/utils/livePreview.js | added error handling | ~212 |
+| 19:20 | Edited src/lib/utils/livePreview.js | added 4 condition(s) | ~350 |
+| 19:20 | Edited tests/edit.spec.js | expanded (+12 lines) | ~203 |
+| 19:21 | Edited src/lib/utils/livePreview.js | added error handling | ~561 |
+| 19:21 | Edited src/lib/components/MarkdownEditor.svelte | modified global() | ~135 |
+| 19:21 | Edited tests/edit.spec.js | expanded (+10 lines) | ~163 |
+| 19:23 | Edited src/lib/utils/livePreview.js | modified renderFenced() | ~45 |
+| 19:23 | Edited src/lib/utils/livePreview.js | 2→6 lines | ~68 |
+| 19:24 | Created ../../mark-blocks-demo.md | — | ~207 |
+| 19:36 | Edited src/lib/utils/livePreview.js | expanded (+8 lines) | ~215 |
+| 19:36 | Edited src/lib/utils/livePreview.js | added 2 condition(s) | ~261 |
+| 19:36 | Edited src/lib/utils/livePreview.js | added 1 condition(s) | ~130 |
+| 19:36 | Edited src/lib/utils/livePreview.js | 2→3 lines | ~70 |
+| 19:37 | Edited src/lib/utils/livePreview.js | added nullish coalescing | ~31 |
+| 19:37 | Edited src/lib/utils/livePreview.js | added optional chaining | ~206 |
+| 19:37 | Edited src/lib/utils/livePreview.js | expanded (+8 lines) | ~160 |
+| 19:37 | Edited src/lib/utils/livePreview.js | added optional chaining | ~88 |
+| 19:47 | Edited src/lib/utils/headings.js | removed 18 lines | ~5 |
+| 19:47 | Edited src/lib/utils/headings.test.js | removed 10 lines | ~3 |
+| 19:47 | Edited src/lib/utils/headings.test.js | inline fix | ~17 |
+| 19:49 | Edited src/routes/+page.svelte | added 1 condition(s) | ~399 |
+| 19:50 | Edited src/routes/+page.svelte | modified handleOpenFile() | ~186 |
+| 19:50 | Edited src/routes/+page.svelte | modified catch() | ~96 |
+| 19:50 | Edited src/routes/+page.svelte | reduced (-9 lines) | ~60 |
+| 19:50 | Edited src/routes/+page.svelte | modified if() | ~49 |
+| 19:50 | Edited src/routes/+page.svelte | modified catch() | ~100 |
+| 19:52 | Created src/lib/utils/mermaid.js | — | ~309 |
+| 19:52 | Edited src/lib/utils/livePreview.js | added 1 import(s) | ~36 |
+| 19:52 | Edited src/lib/utils/livePreview.js | modified renderMermaidInto() | ~93 |
+| 19:52 | Edited src/lib/components/MarkdownViewer.svelte | reduced (-6 lines) | ~115 |
+| 19:52 | Edited src/lib/components/MarkdownViewer.svelte | 8→6 lines | ~42 |
+| 19:52 | Edited src/lib/components/MarkdownViewer.svelte | 5→3 lines | ~33 |
+| 19:53 | Edited src/lib/components/MarkdownViewer.svelte | modified renderMermaid() | ~284 |
+| 19:59 | Edited src/lib/components/MarkdownViewer.svelte | 9→7 lines | ~111 |
+| 20:00 | SESSION: block-widget Live Preview increment + settings refactor + whole-codebase clean-up. Titlebar reverted to Read|Edit; Live-vs-Source + default Read/Edit are now SETTINGS (editorMode/defaultMode). Block widgets (HR, fenced code, tables, images, block+inline math via KaTeX, mermaid) render in place via a StateField (facet-provided) with click-to-edit; inline stays a viewport ViewPlugin. New shared util src/lib/utils/mermaid.js (used by Read view + Live). Removed dead flattenHeadings; deduped open-file/folder flows in +page.svelte (presentSingleFile/showDirectory). | livePreview.js, mermaid.js, MarkdownEditor.svelte, settings.svelte.js, SettingsDialog.svelte, +page.svelte, MarkdownViewer.svelte, headings.js | done | ~30k |
+| 20:00 | Verified: vitest 70/70; Playwright 56/56 (16 edit specs incl. all block widgets + 1 perf); 3 code-review subagent loops → []; computer-use subagents confirmed block widgets render in real app AND the refactors (folder-open, read-view mermaid) didn't break. DEFERRED (surfaced to user): search dual-count rework (#3) — orthogonal, risky to a tested feature, project pre-deferred. | tests/ | all green | ~10k |
+| 20:07 | Session end: 112 writes across 19 files (steady-nibbling-sun.md, MarkdownEditor.svelte, mark.spec.js, features.spec.js, editor.svelte.js) | 36 reads | ~82321 tok |
+
+## Session: 2026-06-14 22:02
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 22:07 | Created src/lib/stores/search.svelte.js | — | ~256 |
+| 22:07 | Edited src/routes/+page.svelte | 6→6 lines | ~32 |
+| 22:07 | Edited src/routes/+page.svelte | computeMatches() → viewer() | ~88 |
+| 22:07 | Edited src/routes/+page.svelte | 8→8 lines | ~187 |
+| 22:07 | Edited src/routes/+page.svelte | 4→4 lines | ~51 |
+| 22:07 | Edited src/lib/components/MarkdownViewer.svelte | 5→4 lines | ~19 |
+| 22:07 | Edited src/lib/components/MarkdownViewer.svelte | 3→4 lines | ~70 |
+| 22:07 | Edited src/lib/components/MarkdownViewer.svelte | added optional chaining | ~146 |
+| 22:07 | Edited src/lib/components/MarkdownViewer.svelte | modified if() | ~53 |
+| 22:09 | Edited tests/review.spec.js | expanded (+24 lines) | ~436 |
+| 22:10 | Edited tests/review.spec.js | markers() → times() | ~382 |
+| 22:12 | Unify search: count now from rendered DOM (onmatchcount→setMatchCount), removed computeMatches/matches array | search.svelte.js, MarkdownViewer.svelte, +page.svelte, review.spec.js | 70 unit + 9 review e2e green | ~6000 |
+| 22:15 | Edited src/lib/utils/livePreview.js | modified buildBlockDecorations() | ~84 |
+| 22:15 | Edited src/lib/utils/livePreview.js | modified define() | ~271 |
+| 22:16 | /simplify cleanup of editable-viewer diff: dedup activeLines() in blockLivePreview StateField | src/lib/utils/livePreview.js | 70 vitest pass | ~12k |
+| 22:25 | Edited src/routes/+page.svelte | added error handling | ~215 |
+| 22:25 | Edited src/routes/+page.svelte | 4→4 lines | ~48 |
+| 22:25 | Edited src/routes/+page.svelte | 4→6 lines | ~123 |
+| 22:26 | Edited src/routes/+page.svelte | 6→7 lines | ~39 |
+| 22:26 | Edited src/lib/components/MarkdownViewer.svelte | modified applyHighlights() | ~21 |
+| 22:31 | /simplify+/code-review (subagents): fixed reloadFromDisk watch-off, unsaved-dot consistency, hid search pill in edit, applyHighlights return 0, livePreview activeLines dedup | +page.svelte, MarkdownViewer.svelte, livePreview.js | 2nd-pass review clean; 70 unit + 58 e2e green | ~12000 |
+| 22:35 | Session end: 18 writes across 5 files (search.svelte.js, +page.svelte, MarkdownViewer.svelte, review.spec.js, livePreview.js) | 18 reads | ~38597 tok |
+| 22:35 | Created ../../mark-cu-verify.md | — | ~52 |
+| 22:35 | Session end: 19 writes across 6 files (search.svelte.js, +page.svelte, MarkdownViewer.svelte, review.spec.js, livePreview.js) | 18 reads | ~38652 tok |
+| 22:39 | Edited src/lib/components/MarkdownEditor.svelte | 5→6 lines | ~128 |
+| 22:39 | Edited src/lib/components/MarkdownEditor.svelte | modified global() | ~245 |
+| 22:41 | Match editor heading sizes to reader (Read/Edit parity) per user; aligned cm-lp-h* + source markStyle to .markdown-body scale | MarkdownEditor.svelte | 70 unit + 58 e2e green | ~3500 |
+| 22:41 | Session end: 21 writes across 7 files (search.svelte.js, +page.svelte, MarkdownViewer.svelte, review.spec.js, livePreview.js) | 20 reads | ~39730 tok |
+| 22:55 | Session end: 21 writes across 7 files (search.svelte.js, +page.svelte, MarkdownViewer.svelte, review.spec.js, livePreview.js) | 21 reads | ~39730 tok |
+| 22:58 | Edited src/lib/components/MarkdownEditor.svelte | 6→10 lines | ~214 |
+| 22:58 | Edited src/lib/components/MarkdownEditor.svelte | modified global() | ~270 |
+| 23:01 | Edited tests/edit.spec.js | expanded (+26 lines) | ~386 |
+| 23:03 | Fix Live-mode heading 2x size: markStyle token + .cm-lp-h* font-size were MULTIPLYING; made markStyle the sole size owner, removed font-size from cm-lp-h*; added regression test | MarkdownEditor.svelte, edit.spec.js | 70 unit + 59 e2e green | ~5000 |
+| 23:03 | Session end: 24 writes across 8 files (search.svelte.js, +page.svelte, MarkdownViewer.svelte, review.spec.js, livePreview.js) | 21 reads | ~40634 tok |
+| 23:04 | Session end: 24 writes across 8 files (search.svelte.js, +page.svelte, MarkdownViewer.svelte, review.spec.js, livePreview.js) | 21 reads | ~40634 tok |
+| 23:04 | Session end: 24 writes across 8 files (search.svelte.js, +page.svelte, MarkdownViewer.svelte, review.spec.js, livePreview.js) | 22 reads | ~40634 tok |

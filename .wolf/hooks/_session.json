@@ -1,195 +1,277 @@
 {
-  "session_id": "session-2026-06-10-1242",
-  "started": "2026-06-10T19:42:24.600Z",
+  "session_id": "session-2026-06-14-2202",
+  "started": "2026-06-14T05:02:49.400Z",
   "files_read": {
-    "/Users/paulosliu/Projects/mark/.gitignore": {
-      "count": 1,
-      "tokens": 58,
-      "first_read": "2026-06-10T19:42:49.499Z"
+    "/Users/paulosliu/Projects/mark/src/lib/stores/search.svelte.js": {
+      "count": 3,
+      "tokens": 256,
+      "first_read": "2026-06-14T05:04:03.867Z"
     },
-    "/Users/paulosliu/Projects/mark/README.md": {
-      "count": 1,
-      "tokens": 0,
-      "first_read": "2026-06-10T21:18:55.063Z"
+    "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownViewer.svelte": {
+      "count": 7,
+      "tokens": 4966,
+      "first_read": "2026-06-14T05:04:04.171Z"
     },
     "/Users/paulosliu/Projects/mark/src/routes/+page.svelte": {
-      "count": 9,
-      "tokens": 10244,
-      "first_read": "2026-06-10T21:19:08.584Z"
+      "count": 23,
+      "tokens": 13097,
+      "first_read": "2026-06-14T05:04:19.243Z"
     },
-    "/Users/paulosliu/Projects/mark/src/lib/stores/settings.svelte.js": {
-      "count": 1,
-      "tokens": 555,
-      "first_read": "2026-06-10T23:11:34.672Z"
+    "/Users/paulosliu/Projects/mark/tests/review.spec.js": {
+      "count": 2,
+      "tokens": 1187,
+      "first_read": "2026-06-14T05:06:13.767Z"
     },
-    "/Users/paulosliu/Projects/mark/src/lib/stores/ui.svelte.js": {
+    "/Users/paulosliu/Projects/mark/package.json": {
       "count": 1,
-      "tokens": 16,
-      "first_read": "2026-06-10T23:11:37.153Z"
-    },
-    "/Users/paulosliu/Projects/mark/src/lib/components/SettingsDialog.svelte": {
-      "count": 1,
-      "tokens": 4214,
-      "first_read": "2026-06-10T23:11:46.040Z"
+      "tokens": 388,
+      "first_read": "2026-06-14T05:07:50.424Z"
     },
     "/Users/paulosliu/Projects/mark/playwright.config.js": {
       "count": 1,
       "tokens": 114,
-      "first_read": "2026-06-10T23:15:30.078Z"
+      "first_read": "2026-06-14T05:08:03.379Z"
     },
-    "/Users/paulosliu/Projects/mark/tests/features.spec.js": {
+    "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownEditor.svelte": {
+      "count": 3,
+      "tokens": 2933,
+      "first_read": "2026-06-14T05:14:09.058Z"
+    },
+    "/Users/paulosliu/Projects/mark/src/lib/stores/editor.svelte.js": {
+      "count": 4,
+      "tokens": 495,
+      "first_read": "2026-06-14T05:14:09.460Z"
+    },
+    "/Users/paulosliu/Projects/mark/src/lib/utils/livePreview.js": {
+      "count": 5,
+      "tokens": 5447,
+      "first_read": "2026-06-14T05:14:09.982Z"
+    },
+    "/Users/paulosliu/Projects/mark/src/lib/utils/mermaid.js": {
+      "count": 3,
+      "tokens": 309,
+      "first_read": "2026-06-14T05:14:10.414Z"
+    },
+    "/Users/paulosliu/Projects/mark/scripts/gen-stress-md.mjs": {
       "count": 1,
-      "tokens": 1298,
-      "first_read": "2026-06-10T23:15:32.183Z"
+      "tokens": 652,
+      "first_read": "2026-06-14T05:14:10.896Z"
     },
-    "/Users/paulosliu/Projects/mark/src-tauri/capabilities/default.json": {
+    "/Users/paulosliu/.claude/projects/-Users-paulosliu-Projects-mark/b932a144-b476-418f-a991-c1c78c920724/tool-results/b56df2sjo.txt": {
       "count": 1,
-      "tokens": 178,
-      "first_read": "2026-06-11T02:46:46.954Z"
+      "tokens": 0,
+      "first_read": "2026-06-14T05:14:16.964Z"
     },
-    "/Users/paulosliu/Projects/mark/src-tauri/src/lib.rs": {
+    "/Users/paulosliu/Projects/mark/src/lib/utils/markdown.js": {
+      "count": 1,
+      "tokens": 800,
+      "first_read": "2026-06-14T05:14:23.189Z"
+    },
+    "/Users/paulosliu/Projects/mark/src/lib/stores/editor.test.js": {
+      "count": 1,
+      "tokens": 861,
+      "first_read": "2026-06-14T05:14:23.271Z"
+    },
+    "/Users/paulosliu/Projects/mark/tests/perf.spec.js": {
+      "count": 1,
+      "tokens": 779,
+      "first_read": "2026-06-14T05:15:16.847Z"
+    },
+    "/Users/paulosliu/Projects/mark/src/lib/stores/document.svelte.js": {
+      "count": 1,
+      "tokens": 631,
+      "first_read": "2026-06-14T05:21:53.547Z"
+    },
+    "/Users/paulosliu/Projects/mark/tests/edit.spec.js": {
+      "count": 3,
+      "tokens": 3086,
+      "first_read": "2026-06-14T05:23:50.691Z"
+    },
+    "/private/tmp/claude-501/-Users-paulosliu-Projects-mark/d96fbc40-4385-41f4-9a38-03c47b862cd1/tasks/brvhvpor3.output": {
       "count": 2,
-      "tokens": 4836,
-      "first_read": "2026-06-11T02:49:01.272Z"
-    },
-    "/Users/paulosliu/Projects/mark/src-tauri/icons/icon.png": {
-      "count": 1,
       "tokens": 0,
-      "first_read": "2026-06-11T03:15:59.463Z"
+      "first_read": "2026-06-14T05:30:09.605Z"
     },
-    "/tmp/mark-icon-clean.png": {
+    "/Users/paulosliu/Projects/mark/src/lib/stores/settings.svelte.js": {
       "count": 1,
-      "tokens": 0,
-      "first_read": "2026-06-11T03:17:56.942Z"
+      "tokens": 677,
+      "first_read": "2026-06-14T05:37:56.031Z"
     },
-    "/tmp/mark-icon-white.png": {
-      "count": 1,
-      "tokens": 0,
-      "first_read": "2026-06-11T03:22:05.263Z"
-    },
-    "/tmp/mark-icon-M.png": {
+    "/private/tmp/claude-501/-Users-paulosliu-Projects-mark/d96fbc40-4385-41f4-9a38-03c47b862cd1/tasks/be2zfotpr.output": {
       "count": 2,
       "tokens": 0,
-      "first_read": "2026-06-11T03:28:50.666Z"
+      "first_read": "2026-06-14T05:40:42.810Z"
     },
-    "/tmp/mark-icon-pen.png": {
+    "/private/tmp/claude-501/-Users-paulosliu-Projects-mark/d96fbc40-4385-41f4-9a38-03c47b862cd1/tasks/bz1wewpd0.output": {
       "count": 1,
       "tokens": 0,
-      "first_read": "2026-06-11T04:03:08.528Z"
+      "first_read": "2026-06-14T05:54:59.384Z"
+    },
+    "/private/tmp/claude-501/-Users-paulosliu-Projects-mark/d96fbc40-4385-41f4-9a38-03c47b862cd1/tasks/b62009fh2.output": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-14T06:04:48.000Z"
     }
   },
   "files_written": [
     {
-      "file": "/Users/paulosliu/Projects/mark/.gitignore",
-      "action": "edit",
-      "tokens": 26,
-      "at": "2026-06-10T19:42:53.501Z"
-    },
-    {
-      "file": "/Users/paulosliu/Projects/mark/README.md",
+      "file": "/Users/paulosliu/Projects/mark/src/lib/stores/search.svelte.js",
       "action": "create",
-      "tokens": 882,
-      "at": "2026-06-10T21:19:33.373Z"
+      "tokens": 256,
+      "at": "2026-06-14T05:07:08.554Z"
     },
     {
       "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
       "action": "edit",
-      "tokens": 24,
-      "at": "2026-06-10T23:11:54.386Z"
-    },
-    {
-      "file": "/Users/paulosliu/Projects/mark/src/lib/stores/settings.svelte.js",
-      "action": "edit",
-      "tokens": 67,
-      "at": "2026-06-10T23:12:00.343Z"
-    },
-    {
-      "file": "/Users/paulosliu/Projects/mark/src/lib/stores/ui.svelte.js",
-      "action": "create",
-      "tokens": 38,
-      "at": "2026-06-10T23:12:07.293Z"
-    },
-    {
-      "file": "/Users/paulosliu/Projects/mark/src/lib/components/SettingsDialog.svelte",
-      "action": "edit",
-      "tokens": 163,
-      "at": "2026-06-10T23:12:13.189Z"
+      "tokens": 34,
+      "at": "2026-06-14T05:07:15.774Z"
     },
     {
       "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+      "action": "edit",
+      "tokens": 94,
+      "at": "2026-06-14T05:07:18.100Z"
+    },
+    {
+      "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+      "action": "edit",
+      "tokens": 200,
+      "at": "2026-06-14T05:07:23.778Z"
+    },
+    {
+      "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+      "action": "edit",
+      "tokens": 54,
+      "at": "2026-06-14T05:07:25.520Z"
+    },
+    {
+      "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownViewer.svelte",
       "action": "edit",
       "tokens": 20,
-      "at": "2026-06-10T23:12:25.308Z"
+      "at": "2026-06-14T05:07:29.542Z"
+    },
+    {
+      "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownViewer.svelte",
+      "action": "edit",
+      "tokens": 75,
+      "at": "2026-06-14T05:07:34.675Z"
+    },
+    {
+      "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownViewer.svelte",
+      "action": "edit",
+      "tokens": 156,
+      "at": "2026-06-14T05:07:39.816Z"
+    },
+    {
+      "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownViewer.svelte",
+      "action": "edit",
+      "tokens": 57,
+      "at": "2026-06-14T05:07:41.819Z"
+    },
+    {
+      "file": "/Users/paulosliu/Projects/mark/tests/review.spec.js",
+      "action": "edit",
+      "tokens": 436,
+      "at": "2026-06-14T05:09:19.435Z"
+    },
+    {
+      "file": "/Users/paulosliu/Projects/mark/tests/review.spec.js",
+      "action": "edit",
+      "tokens": 382,
+      "at": "2026-06-14T05:10:46.886Z"
+    },
+    {
+      "file": "/Users/paulosliu/Projects/mark/src/lib/utils/livePreview.js",
+      "action": "edit",
+      "tokens": 84,
+      "at": "2026-06-14T05:15:00.412Z"
+    },
+    {
+      "file": "/Users/paulosliu/Projects/mark/src/lib/utils/livePreview.js",
+      "action": "edit",
+      "tokens": 271,
+      "at": "2026-06-14T05:15:08.527Z"
     },
     {
       "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
       "action": "edit",
-      "tokens": 31,
-      "at": "2026-06-10T23:16:53.829Z"
+      "tokens": 230,
+      "at": "2026-06-14T05:25:37.812Z"
     },
     {
-      "file": "/Users/paulosliu/Projects/mark/tests/titlebar-sidebar.spec.js",
+      "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+      "action": "edit",
+      "tokens": 51,
+      "at": "2026-06-14T05:25:39.771Z"
+    },
+    {
+      "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+      "action": "edit",
+      "tokens": 132,
+      "at": "2026-06-14T05:25:59.211Z"
+    },
+    {
+      "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+      "action": "edit",
+      "tokens": 42,
+      "at": "2026-06-14T05:26:00.834Z"
+    },
+    {
+      "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownViewer.svelte",
+      "action": "edit",
+      "tokens": 22,
+      "at": "2026-06-14T05:26:05.077Z"
+    },
+    {
+      "file": "/Users/paulosliu/mark-cu-verify.md",
       "action": "create",
-      "tokens": 750,
-      "at": "2026-06-10T23:17:09.011Z"
+      "tokens": 55,
+      "at": "2026-06-14T05:35:23.349Z"
     },
     {
-      "file": "/Users/paulosliu/Projects/mark/src-tauri/capabilities/default.json",
+      "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownEditor.svelte",
       "action": "edit",
-      "tokens": 31,
-      "at": "2026-06-11T02:46:59.120Z"
+      "tokens": 138,
+      "at": "2026-06-14T05:39:40.501Z"
     },
     {
-      "file": "/Users/paulosliu/Projects/mark/src-tauri/src/lib.rs",
+      "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownEditor.svelte",
       "action": "edit",
-      "tokens": 399,
-      "at": "2026-06-11T02:50:56.400Z"
+      "tokens": 263,
+      "at": "2026-06-14T05:39:47.318Z"
     },
     {
-      "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
-      "action": "edit",
-      "tokens": 27,
-      "at": "2026-06-11T02:51:00.246Z"
-    },
-    {
-      "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+      "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownEditor.svelte",
       "action": "edit",
       "tokens": 229,
-      "at": "2026-06-11T02:51:05.579Z"
+      "at": "2026-06-14T05:58:51.357Z"
     },
     {
-      "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+      "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownEditor.svelte",
       "action": "edit",
-      "tokens": 38,
-      "at": "2026-06-11T02:51:10.672Z"
+      "tokens": 289,
+      "at": "2026-06-14T05:58:57.916Z"
     },
     {
-      "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+      "file": "/Users/paulosliu/Projects/mark/tests/edit.spec.js",
       "action": "edit",
-      "tokens": 24,
-      "at": "2026-06-11T04:36:24.052Z"
-    },
-    {
-      "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
-      "action": "edit",
-      "tokens": 5,
-      "at": "2026-06-11T04:36:35.264Z"
+      "tokens": 386,
+      "at": "2026-06-14T06:01:20.876Z"
     }
   ],
   "edit_counts": {
-    ".gitignore": 1,
-    "README.md": 1,
+    "src/lib/stores/search.svelte.js": 1,
     "src/routes/+page.svelte": 8,
-    "src/lib/stores/settings.svelte.js": 1,
-    "src/lib/stores/ui.svelte.js": 1,
-    "src/lib/components/SettingsDialog.svelte": 1,
-    "tests/titlebar-sidebar.spec.js": 1,
-    "src-tauri/capabilities/default.json": 1,
-    "src-tauri/src/lib.rs": 1
+    "src/lib/components/MarkdownViewer.svelte": 5,
+    "tests/review.spec.js": 2,
+    "src/lib/utils/livePreview.js": 2,
+    "../../mark-cu-verify.md": 1,
+    "src/lib/components/MarkdownEditor.svelte": 4,
+    "tests/edit.spec.js": 1
   },
-  "anatomy_hits": 9,
-  "anatomy_misses": 6,
-  "repeated_reads_warned": 10,
+  "anatomy_hits": 16,
+  "anatomy_misses": 5,
+  "repeated_reads_warned": 46,
   "cerebrum_warnings": 0,
-  "stop_count": 14
+  "stop_count": 7
 }
