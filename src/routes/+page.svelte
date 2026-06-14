@@ -2,21 +2,31 @@
   import { onMount } from 'svelte';
   import 'katex/dist/katex.min.css';
   import MarkdownViewer from '$lib/components/MarkdownViewer.svelte';
+  import MarkdownEditor from '$lib/components/MarkdownEditor.svelte';
   import TableOfContents from '$lib/components/TableOfContents.svelte';
   import SettingsDialog from '$lib/components/SettingsDialog.svelte';
   import QuickOpen from '$lib/components/QuickOpen.svelte';
   import DirectoryBrowser from '$lib/components/DirectoryBrowser.svelte';
-  import { documentState, loadDocument } from '$lib/stores/document.svelte.js';
+  import { documentState, loadDocument, applyContent } from '$lib/stores/document.svelte.js';
+  import {
+    editorState,
+    enterEditMode,
+    exitEditMode,
+    setBuffer,
+    markSaved,
+    hasUnsavedChanges,
+    resetEditor,
+  } from '$lib/stores/editor.svelte.js';
   import { addRecent } from '$lib/stores/recents.svelte.js';
   import { uiState } from '$lib/stores/ui.svelte.js';
   import { settings, updateSetting, resolveTheme } from '$lib/stores/settings.svelte.js';
   import {
     searchState,
-    computeMatches,
+    setMatchCount,
     nextMatch,
     prevMatch,
   } from '$lib/stores/search.svelte.js';
-  import { openMarkdownFile, openFolderDialog, readFile } from '$lib/utils/fileHandler.js';
+  import { openMarkdownFile, openFolderDialog, readFile, writeFile } from '$lib/utils/fileHandler.js';
 
   const ALLOWED_EXTENSIONS = ['.md', '.markdown', '.txt'];
   const READ_FONTS = {
@@ -36,6 +46,15 @@
   let activeAnchor = $state('');
   let searchInputEl = $state(null);
   let openError = $state('');
+
+  // Edit mode: the last content we wrote to disk (to ignore the watcher event
+  // our own save triggers), the discard-confirmation modal, and a "file changed
+  // on disk while editing" reload prompt.
+  let lastSavedBuffer = '';
+  let showDiscardPrompt = $state(false);
+  /** @type {((proceed: boolean) => void) | null} */
+  let discardResolve = null;
+  let diskReloadPath = $state('');
 
   // An imported VS Code theme drives both the palette and light/dark mode;
   // otherwise the built-in Light/Dark/System setting (System follows the OS).
@@ -83,8 +102,13 @@
     }).catch(() => {});
   });
 
+  // Reset to the first match whenever the query or the rendered document
+  // changes. The match count itself is reported by the viewer (setMatchCount),
+  // which counts the same `<mark>` elements it highlights.
   $effect(() => {
-    computeMatches(documentState.content, searchState.searchText);
+    searchState.searchText;
+    documentState.html;
+    searchState.currentMatchIndex = 0;
   });
 
   function scrollToHeading(anchor) {
@@ -97,9 +121,101 @@
 
   async function openFile(content, filePath, fileName) {
     await loadDocument(content, filePath, fileName);
+    resetEditor();
+    lastSavedBuffer = '';
+    diskReloadPath = '';
+    // Honor the "Open documents in" preference (edit experience comes from settings.editorMode).
+    if (settings.defaultMode === 'edit' && documentState.content) enterEditMode();
     const basename = filePath ? (filePath.split('/').pop() ?? '') : '';
     if (filePath && !basename.startsWith('mark_stdin_')) addRecent(filePath);
     activeAnchor = '';
+  }
+
+  function toggleEditMode() {
+    if (!documentState.content && editorState.mode === 'read') return;
+    if (editorState.mode === 'edit') exitEditMode();
+    else enterEditMode();
+  }
+
+  /**
+   * Persist the edit buffer to disk. Returns true on success (or when there's
+   * nothing to save), false on failure.
+   * @returns {Promise<boolean>}
+   */
+  async function saveDocument() {
+    if (editorState.mode !== 'edit' || !editorState.dirty || !documentState.filePath) {
+      return true;
+    }
+    editorState.saving = true;
+    try {
+      const buffer = editorState.buffer;
+      await writeFile(documentState.filePath, buffer);
+      lastSavedBuffer = buffer;
+      applyContent(buffer); // refresh rendered views + raw without a reload spinner
+      markSaved();
+      openError = '';
+      return true;
+    } catch (err) {
+      console.error('Failed to save file:', err);
+      const name = documentState.filePath.split('/').pop() || 'file';
+      openError = `Couldn't save “${name}”. It may be outside a folder Mark is allowed to write.`;
+      return false;
+    } finally {
+      editorState.saving = false;
+    }
+  }
+
+  /**
+   * Guard before switching away from a document with unsaved edits. Resolves
+   * true if it's safe to proceed (clean, saved, or discarded), false if the
+   * user cancels or a save fails.
+   * @returns {Promise<boolean>}
+   */
+  function guardUnsaved() {
+    if (!hasUnsavedChanges()) return Promise.resolve(true);
+    // A prompt is already open (e.g. a file-drop fires while it's up) — don't
+    // overwrite its resolver and orphan the first caller; cancel the new switch.
+    if (discardResolve) return Promise.resolve(false);
+    showDiscardPrompt = true;
+    return new Promise((resolve) => {
+      discardResolve = resolve;
+    });
+  }
+
+  /** @param {'save' | 'discard' | 'cancel'} choice */
+  async function resolveDiscard(choice) {
+    showDiscardPrompt = false;
+    const resolve = discardResolve;
+    discardResolve = null;
+    if (choice === 'save') {
+      const ok = await saveDocument();
+      resolve?.(ok);
+    } else if (choice === 'discard') {
+      markSaved();
+      resolve?.(true);
+    } else {
+      resolve?.(false);
+    }
+  }
+
+  /** Replace the current (edited) document with the changed-on-disk version. */
+  async function reloadFromDisk() {
+    const path = diskReloadPath;
+    diskReloadPath = '';
+    if (!path) return;
+    // Reload the watched file in place WITHOUT stopping the watch (unlike a
+    // document switch via _loadPath) — we're re-reading the same file the
+    // watcher is still tracking, mirroring the non-dirty auto-reload path.
+    // openFile resets the editor (discarding the buffer + dirty flag).
+    try {
+      const result = await readFile(path);
+      await openFile(result.content, result.filePath, result.fileName);
+      openError = '';
+    } catch (err) {
+      console.error('Failed to reload changed file:', err);
+      const name = path.split('/').pop() || 'file';
+      openError = `Couldn't open “${name}”. It may be outside a folder Mark is allowed to read.`;
+    }
   }
 
   /**
@@ -108,6 +224,12 @@
    * @param {string} filePath
    */
   async function openByPath(filePath) {
+    if (!(await guardUnsaved())) return false;
+    return _loadPath(filePath);
+  }
+
+  /** Read and display a file by path, without the unsaved-changes guard. */
+  async function _loadPath(filePath) {
     try {
       const result = await readFile(filePath);
       // Switching documents stops watching the previous file, like handleOpenFile.
@@ -121,6 +243,31 @@
       openError = `Couldn't open “${name}”. It may be outside a folder Mark is allowed to read.`;
       return false;
     }
+  }
+
+  /**
+   * Display a freshly-opened single file, leaving folder mode and stopping the
+   * previous watch. Shared by Open File, the open-file event, and drag-drop.
+   * @param {{content: string, filePath: string, fileName: string}} result
+   */
+  async function presentSingleFile(result) {
+    await stopWatchingFile();
+    directoryFiles = null;
+    sbTab = 'toc';
+    await openFile(result.content, result.filePath, result.fileName);
+  }
+
+  /**
+   * Enter folder mode: show the file tree and open the first file. Shared by Open
+   * Folder, the open-directory event, and the CLI directory argument.
+   * @param {string[]} files
+   */
+  async function showDirectory(files) {
+    await stopWatchingFile();
+    directoryFiles = files;
+    sbTab = 'files';
+    uiState.showTOC = true;
+    if (files.length > 0) await _loadPath(files[0]);
   }
 
   async function startWatchingFile(filePath) {
@@ -152,30 +299,23 @@
   }
 
   async function handleOpenFile() {
+    if (!(await guardUnsaved())) return;
     try {
       const result = await openMarkdownFile();
-      if (result) {
-        await stopWatchingFile();
-        directoryFiles = null;
-        sbTab = 'toc';
-        await openFile(result.content, result.filePath, result.fileName);
-      }
+      if (result) await presentSingleFile(result);
     } catch (err) {
       console.error('Failed to open file:', err);
     }
   }
 
   async function handleOpenFolder() {
+    if (!(await guardUnsaved())) return;
     try {
       const dir = await openFolderDialog();
       if (!dir) return;
       const { invoke } = await import('@tauri-apps/api/core');
       const files = /** @type {string[]} */ (await invoke('read_directory', { path: dir }));
-      await stopWatchingFile();
-      directoryFiles = files;
-      sbTab = 'files';
-      uiState.showTOC = true;
-      if (files.length > 0) await openByPath(files[0]);
+      await showDirectory(files);
     } catch (err) {
       console.error('Failed to open folder:', err);
     }
@@ -229,7 +369,16 @@
       if (e.shiftKey) handleOpenFolder();
       else handleOpenFile();
     }
-    if ((e.metaKey || e.ctrlKey) && e.key === 'f') {
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 's' && !e.shiftKey) {
+      e.preventDefault();
+      saveDocument();
+    }
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'e' && !e.shiftKey) {
+      e.preventDefault();
+      toggleEditMode();
+    }
+    // In edit mode the CodeMirror editor owns ⌘F (its own search panel).
+    if ((e.metaKey || e.ctrlKey) && e.key === 'f' && editorState.mode !== 'edit') {
       e.preventDefault();
       focusSearch();
     }
@@ -335,6 +484,19 @@
           directoryFiles = null;
           return openFile(content, filePath, fileName);
         },
+        // Edit-mode hooks: disk save uses a Tauri API unavailable in a plain
+        // browser, so e2e drives the toggle + buffer and asserts on rendering.
+        enterEdit() { enterEditMode(); },
+        exitEdit() { exitEditMode(); },
+        setBuffer(v) { setBuffer(v); },
+        setSetting(k, v) { updateSetting(k, v); },
+        editorState() {
+          return {
+            mode: editorState.mode,
+            dirty: editorState.dirty,
+            buffer: editorState.buffer,
+          };
+        },
       };
     }
 
@@ -360,14 +522,10 @@
             if (destroyed) return;
             const path = /** @type {string} */ (event.payload);
             if (isAllowedFile(path)) {
+              if (!(await guardUnsaved())) return;
               try {
                 const result = await readFile(path);
-                if (!destroyed) {
-                  await stopWatchingFile();
-                  directoryFiles = null;
-                  sbTab = 'toc';
-                  await openFile(result.content, result.filePath, result.fileName);
-                }
+                if (!destroyed) await presentSingleFile(result);
               } catch (err) {
                 console.error('Failed to open file from event:', err);
               }
@@ -380,16 +538,8 @@
             if (destroyed) return;
             const files = /** @type {string[]} */ (event.payload);
             if (!files || files.length === 0) return;
-            await stopWatchingFile();
-            directoryFiles = files;
-            sbTab = 'files';
-            uiState.showTOC = true;
-            try {
-              const result = await readFile(files[0]);
-              if (!destroyed) await openFile(result.content, result.filePath, result.fileName);
-            } catch (err) {
-              console.error('Failed to open directory from event:', err);
-            }
+            if (!(await guardUnsaved())) return;
+            if (!destroyed) await showDirectory(files);
           });
         }
 
@@ -407,6 +557,8 @@
               case 'zoom-out': handleZoomOut(); break;
               case 'actual-size': updateSetting('fontSize', 18); break;
               case 'export-pdf': exportPdf(); break;
+              case 'save': saveDocument(); break;
+              case 'toggle-edit': toggleEditMode(); break;
               case 'quick-open': showQuickOpen = !showQuickOpen; break;
               case 'toggle-watch':
                 if (watchEnabled) {
@@ -427,7 +579,16 @@
             if (path !== documentState.filePath) return;
             try {
               const result = await readFile(path);
-              if (!destroyed) await loadDocument(result.content, result.filePath, result.fileName);
+              if (destroyed) return;
+              // Ignore the watcher event our own save just triggered.
+              if (result.content === lastSavedBuffer) return;
+              // Don't clobber unsaved edits — offer a manual reload instead.
+              if (hasUnsavedChanges()) {
+                diskReloadPath = path;
+                return;
+              }
+              await loadDocument(result.content, result.filePath, result.fileName);
+              lastSavedBuffer = '';
             } catch (err) {
               console.error('Failed to reload changed file:', err);
             }
@@ -453,15 +614,7 @@
         if (!destroyed) {
           const dirFiles = await invoke('get_pending_directory');
           if (dirFiles && dirFiles.length > 0 && !destroyed) {
-            directoryFiles = dirFiles;
-            sbTab = 'files';
-            uiState.showTOC = true;
-            try {
-              const result = await readFile(dirFiles[0]);
-              if (!destroyed) await openFile(result.content, result.filePath, result.fileName);
-            } catch (err) {
-              console.error('Failed to open first directory file:', err);
-            }
+            await showDirectory(dirFiles);
           }
         }
 
@@ -472,14 +625,10 @@
             if (event.payload.type === 'drop' && event.payload.paths?.length > 0) {
               const path = event.payload.paths[0];
               if (isAllowedFile(path)) {
+                if (!(await guardUnsaved())) return;
                 try {
                   const result = await readFile(path);
-                  if (!destroyed) {
-                    await stopWatchingFile();
-                    directoryFiles = null;
-                    sbTab = 'toc';
-                    await openFile(result.content, result.filePath, result.fileName);
-                  }
+                  if (!destroyed) await presentSingleFile(result);
                 } catch (err) {
                   console.error('Failed to read dropped file:', err);
                 }
@@ -544,6 +693,9 @@
 
     <div class="tb-title" data-tauri-drag-region>
       {#if documentState.fileName}
+        {#if hasUnsavedChanges()}
+          <span class="tb-unsaved" title="Unsaved changes" aria-label="Unsaved changes"></span>
+        {/if}
         <span class="tb-file">{documentState.fileName}</span>
       {/if}
       {#if watchEnabled}
@@ -553,6 +705,8 @@
 
     <div class="tb-spacer" data-tauri-drag-region></div>
 
+    <!-- Document search lives here in Read mode; in Edit mode CodeMirror owns ⌘F. -->
+    {#if editorState.mode !== 'edit'}
     <div class="tb-search" class:on={!!searchState.searchText}>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;flex:0 0 14px;color:var(--ink-3)" aria-hidden="true">
         <circle cx="11" cy="11" r="7"/>
@@ -570,18 +724,36 @@
       />
       {#if searchState.searchText}
         <span class="tb-count">
-          {searchState.matches.length ? `${searchState.currentMatchIndex + 1}/${searchState.matches.length}` : '0/0'}
+          {searchState.matchCount ? `${searchState.currentMatchIndex + 1}/${searchState.matchCount}` : '0/0'}
         </span>
         <span class="tb-navbtns">
-          <button class="icon-btn sm" onclick={prevMatch} disabled={!searchState.matches.length} title="Previous (⇧⏎)" aria-label="Previous match">
+          <button class="icon-btn sm" onclick={prevMatch} disabled={!searchState.matchCount} title="Previous (⇧⏎)" aria-label="Previous match">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="12" height="12" aria-hidden="true"><path d="m6 14 6-6 6 6"/></svg>
           </button>
-          <button class="icon-btn sm" onclick={nextMatch} disabled={!searchState.matches.length} title="Next (⏎)" aria-label="Next match">
+          <button class="icon-btn sm" onclick={nextMatch} disabled={!searchState.matchCount} title="Next (⏎)" aria-label="Next match">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="12" height="12" aria-hidden="true"><path d="m6 10 6 6 6-6"/></svg>
           </button>
         </span>
       {/if}
     </div>
+    {/if}
+
+    {#if documentState.content}
+      <div class="tb-modes" role="group" aria-label="View mode">
+        <button
+          class="tb-mode"
+          class:on={editorState.mode === 'read'}
+          onclick={() => { if (editorState.mode === 'edit') exitEditMode(); }}
+          title="Reading view (⌘E)"
+        >Read</button>
+        <button
+          class="tb-mode"
+          class:on={editorState.mode === 'edit'}
+          onclick={() => { if (editorState.mode === 'read') enterEditMode(); }}
+          title="Editing view (⌘E) — Live or Source set in Settings"
+        >Edit</button>
+      </div>
+    {/if}
 
     <button
       class="icon-btn"
@@ -661,22 +833,34 @@
           <p>Loading {documentState.fileName || 'file'}…</p>
         </div>
       {:else if documentState.content}
-        <MarkdownViewer
-          html={documentState.html}
-          searchText={searchState.searchText}
-          matches={searchState.matches}
-          currentMatchIndex={searchState.currentMatchIndex}
-          fontSize={settings.fontSize}
-          contentWidth={settings.contentWidth}
-          showCopyButton={settings.showCopyButton}
-          frontmatter={documentState.frontmatter}
-          showFrontmatter={settings.showFrontmatter}
-          filePath={documentState.filePath}
-          effectiveTheme={effectiveTheme}
-          readFont={readFontCss}
-          onviewerscroll={handleViewerScroll}
-          onopenrelative={handleRelativeLink}
-        />
+        {#if editorState.mode === 'edit'}
+          <MarkdownEditor
+            value={editorState.buffer}
+            effectiveTheme={effectiveTheme}
+            fontSize={settings.fontSize}
+            contentWidth={settings.contentWidth}
+            readFont={readFontCss}
+            livePreview={settings.editorMode === 'live'}
+            onchange={setBuffer}
+          />
+        {:else}
+          <MarkdownViewer
+            html={documentState.html}
+            searchText={searchState.searchText}
+            currentMatchIndex={searchState.currentMatchIndex}
+            onmatchcount={setMatchCount}
+            fontSize={settings.fontSize}
+            contentWidth={settings.contentWidth}
+            showCopyButton={settings.showCopyButton}
+            frontmatter={documentState.frontmatter}
+            showFrontmatter={settings.showFrontmatter}
+            filePath={documentState.filePath}
+            effectiveTheme={effectiveTheme}
+            readFont={readFontCss}
+            onviewerscroll={handleViewerScroll}
+            onopenrelative={handleRelativeLink}
+          />
+        {/if}
       {:else}
         <div class="empty-state">
           <div class="empty-content">
@@ -695,6 +879,16 @@
         <div class="open-error" role="alert">
           <span>{openError}</span>
           <button class="open-error-x" onclick={() => (openError = '')} aria-label="Dismiss">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="13" height="13" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+          </button>
+        </div>
+      {/if}
+
+      {#if diskReloadPath}
+        <div class="open-error reload-toast" role="alert">
+          <span>This file changed on disk.</span>
+          <button class="reload-btn" onclick={reloadFromDisk}>Reload</button>
+          <button class="open-error-x" onclick={() => (diskReloadPath = '')} aria-label="Dismiss">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="13" height="13" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
           </button>
         </div>
@@ -722,6 +916,22 @@
     }}
     onclose={() => (showQuickOpen = false)}
   />
+{/if}
+
+{#if showDiscardPrompt}
+  <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
+  <div class="discard-overlay" onclick={() => resolveDiscard('cancel')}>
+    <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
+    <div class="discard-modal" role="dialog" aria-modal="true" aria-label="Unsaved changes" onclick={(e) => e.stopPropagation()}>
+      <p class="discard-title">Save changes?</p>
+      <p class="discard-desc">“{documentState.fileName}” has unsaved changes.</p>
+      <div class="discard-actions">
+        <button class="discard-btn ghost" onclick={() => resolveDiscard('cancel')}>Cancel</button>
+        <button class="discard-btn" onclick={() => resolveDiscard('discard')}>Don't Save</button>
+        <button class="discard-btn primary" onclick={() => resolveDiscard('save')}>Save</button>
+      </div>
+    </div>
+  </div>
 {/if}
 
 <style>
@@ -1181,6 +1391,116 @@
     padding: 1px 5px;
     color: var(--ink-2);
   }
+
+  /* ── Read/Edit toggle ── */
+  .tb-modes {
+    display: flex;
+    height: 26px;
+    padding: 2px;
+    gap: 2px;
+    background: var(--paper);
+    border: 0.5px solid var(--line-2);
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+
+  .tb-mode {
+    border: none;
+    background: none;
+    padding: 0 11px;
+    border-radius: 6px;
+    font: 600 11.5px var(--ui);
+    color: var(--ink-3);
+    cursor: default;
+    transition: background 0.12s, color 0.12s;
+  }
+
+  .tb-mode:hover { color: var(--ink); }
+
+  .tb-mode.on {
+    background: var(--surface-hi);
+    color: var(--ink);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  }
+
+  :global([data-theme="dark"]) .tb-mode.on {
+    box-shadow: inset 0 0 0 0.5px var(--line-2);
+  }
+
+  /* Unsaved-changes dot (accent), distinct from the gray watching dot */
+  .tb-unsaved {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--accent);
+    flex-shrink: 0;
+    align-self: center;
+  }
+
+  /* ── Changed-on-disk reload toast (reuses .open-error layout) ── */
+  .reload-toast { border-left-color: var(--accent); }
+
+  .reload-btn {
+    flex: 0 0 auto;
+    height: 24px;
+    padding: 0 12px;
+    border: none;
+    border-radius: 6px;
+    background: var(--accent);
+    color: var(--accent-ink, #fff);
+    font: 600 12px var(--ui);
+    cursor: default;
+    transition: opacity 0.12s;
+  }
+
+  .reload-btn:hover { opacity: 0.9; }
+
+  /* ── Discard-changes confirmation ── */
+  .discard-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: grid;
+    place-items: center;
+    background: rgba(var(--shadow-rgb) / 0.28);
+    backdrop-filter: blur(2px);
+  }
+
+  .discard-modal {
+    width: min(360px, 86vw);
+    background: var(--surface-hi);
+    border: 0.5px solid var(--line-2);
+    border-radius: 14px;
+    padding: 20px 22px 18px;
+    box-shadow: 0 12px 40px rgba(var(--shadow-rgb) / 0.3);
+    font-family: var(--ui);
+  }
+
+  .discard-title { margin: 0 0 5px; font: 700 15px var(--ui); color: var(--ink); }
+  .discard-desc { margin: 0 0 18px; font-size: 13px; color: var(--ink-3); word-break: break-word; }
+
+  .discard-actions { display: flex; justify-content: flex-end; gap: 8px; }
+
+  .discard-btn {
+    padding: 7px 14px;
+    border-radius: 8px;
+    border: 0.5px solid var(--line-2);
+    background: var(--surface);
+    color: var(--ink);
+    font: 600 12.5px var(--ui);
+    cursor: default;
+    transition: background 0.12s, opacity 0.12s;
+  }
+
+  .discard-btn:hover { background: var(--surface-2); }
+
+  .discard-btn.primary {
+    background: var(--accent);
+    color: var(--accent-ink, #fff);
+    border-color: transparent;
+  }
+
+  .discard-btn.primary:hover { opacity: 0.9; }
 
   /* ── Resizing ── */
   .resizing { user-select: none; cursor: col-resize; }

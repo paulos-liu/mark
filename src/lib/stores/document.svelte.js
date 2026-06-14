@@ -3,6 +3,9 @@ import { renderMarkdown } from '../utils/markdown.js';
 import { parseFrontmatter } from '../utils/frontmatter.js';
 
 export const documentState = $state({
+  // Full raw file text including any frontmatter. This is the source of truth
+  // for editing (`content`/`frontmatter` are the lossy, stripped/parsed views).
+  raw: '',
   content: '',
   html: '',
   headings: [],
@@ -12,19 +15,14 @@ export const documentState = $state({
   frontmatter: /** @type {Record<string, string>} */ ({}),
 });
 
-export async function loadDocument(content, filePath, fileName) {
-  documentState.loading = true;
-  documentState.fileName = fileName;
-  documentState.filePath = filePath;
-
-  // Clear old content so the spinner shows
-  documentState.content = '';
-  documentState.html = '';
-  documentState.headings = [];
-
-  // Double rAF to ensure the spinner actually paints
-  await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
-
+/**
+ * Re-derive the rendered views (raw, content, html, headings, frontmatter) from
+ * full file text. No spinner/clear and no filePath/fileName changes — used both
+ * by loadDocument and to re-render an edit buffer instantly on toggle/save.
+ * @param {string} content full file text (may include frontmatter)
+ */
+export function applyContent(content) {
+  documentState.raw = content;
   try {
     const { meta, body } = parseFrontmatter(content);
     documentState.frontmatter = meta;
@@ -41,7 +39,23 @@ export async function loadDocument(content, filePath, fileName) {
     documentState.content = content;
     documentState.html = `<p style="color: var(--accent, #c2683f);">Failed to render document: ${safe}</p>`;
     documentState.headings = [];
-  } finally {
-    documentState.loading = false;
   }
+}
+
+export async function loadDocument(content, filePath, fileName) {
+  documentState.loading = true;
+  documentState.fileName = fileName;
+  documentState.filePath = filePath;
+
+  // Clear old content so the spinner shows
+  documentState.raw = '';
+  documentState.content = '';
+  documentState.html = '';
+  documentState.headings = [];
+
+  // Double rAF to ensure the spinner actually paints
+  await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+
+  applyContent(content);
+  documentState.loading = false;
 }

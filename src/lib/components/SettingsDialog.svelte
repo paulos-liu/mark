@@ -247,6 +247,35 @@
         </div>
       </div>
 
+      <!-- Editing experience -->
+      <div class="set-row">
+        <div class="set-lt">
+          <div class="set-label">Editing experience</div>
+          <div class="set-desc">
+            Live renders Markdown in place (revealing syntax on the cursor's line);
+            Source shows raw Markdown.
+          </div>
+        </div>
+        <div class="segmented">
+          {#each [['live', 'Live'], ['source', 'Source']] as [v, label]}
+            <button class="seg" class:on={settings.editorMode === v} onclick={() => updateSetting('editorMode', v)}>{label}</button>
+          {/each}
+        </div>
+      </div>
+
+      <!-- Default view -->
+      <div class="set-row">
+        <div class="set-lt">
+          <div class="set-label">Open documents in</div>
+          <div class="set-desc">Which view a document opens in.</div>
+        </div>
+        <div class="segmented">
+          {#each [['read', 'Reading'], ['edit', 'Editing']] as [v, label]}
+            <button class="seg" class:on={settings.defaultMode === v} onclick={() => updateSetting('defaultMode', v)}>{label}</button>
+          {/each}
+        </div>
+      </div>
+
       <!-- Sidebar on launch -->
       <div class="set-row">
         <div class="set-lt">

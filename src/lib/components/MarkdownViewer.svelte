@@ -1,24 +1,15 @@
 <script>
-  import { onMount } from 'svelte';
   import { getScrollPosition, saveScrollPosition } from '$lib/stores/scrollMemory.js';
+  import { renderMermaidSvg } from '$lib/utils/mermaid.js';
 
-  let mermaid;
   /** @type {Map<Element, string>} Maps each rendered .mermaid-diagram wrapper to its source */
   const mermaidSources = new Map();
-
-  onMount(async () => {
-    const m = await import('mermaid');
-    mermaid = m.default;
-    // Use current effectiveTheme — the theme $effect may have already fired while mermaid was loading
-    mermaid.initialize({ startOnLoad: false, theme: effectiveTheme === 'dark' ? 'dark' : 'neutral' });
-    // Render any blocks already in the DOM (html was set before mermaid loaded)
-    renderMermaid();
-  });
+  // Mermaid blocks are rendered by the `html` $effect below (which also runs on
+  // mount); mermaid itself lazy-loads on first render.
 
   let {
     html = '',
     searchText = '',
-    matches = [],
     currentMatchIndex = 0,
     fontSize = 18,
     contentWidth = 680,
@@ -30,6 +21,7 @@
     readFont = '"Newsreader", Georgia, serif',
     onviewerscroll = /** @type {(() => void) | undefined} */ (undefined),
     onopenrelative = /** @type {((href: string) => void) | undefined} */ (undefined),
+    onmatchcount = /** @type {((count: number) => void) | undefined} */ (undefined),
   } = $props();
 
   // Intercept link clicks so the webview never navigates away from the app.
@@ -68,11 +60,9 @@
   let frontmatterOpen = $state(true);
   let hasFrontmatter = $derived(showFrontmatter && Object.keys(frontmatter).length > 0);
 
-  // Re-initialize mermaid with new theme and re-render existing diagrams
+  // Re-render existing diagrams with the new theme when it changes.
   $effect(() => {
-    const theme = effectiveTheme;
-    if (!mermaid) return;
-    mermaid.initialize({ startOnLoad: false, theme: theme === 'dark' ? 'dark' : 'neutral' });
+    effectiveTheme;
     rerenderMermaidTheme();
   });
   let viewerEl;
@@ -90,9 +80,7 @@
     }
     // New document: clear stored sources, then render any mermaid blocks
     mermaidSources.clear();
-    if (mermaid) {
-      renderMermaid();
-    }
+    renderMermaid();
 
     // Restore scroll position after DOM settles
     const path = filePath;
@@ -104,15 +92,14 @@
   });
 
   async function renderMermaid() {
-    if (!viewerEl || !mermaid) return;
+    if (!viewerEl) return;
     const blocks = viewerEl.querySelectorAll('pre > code.language-mermaid');
     for (const code of blocks) {
       const pre = code.parentElement;
       if (!pre || pre.dataset.mermaidRendered) continue;
       const source = code.textContent ?? '';
       try {
-        const id = `mermaid-${Math.random().toString(36).slice(2)}`;
-        const { svg } = await mermaid.render(id, source);
+        const svg = await renderMermaidSvg(source, effectiveTheme === 'dark');
         const wrapper = document.createElement('div');
         wrapper.className = 'mermaid-diagram';
         wrapper.innerHTML = svg;
@@ -125,16 +112,14 @@
   }
 
   async function rerenderMermaidTheme() {
-    if (!mermaid || mermaidSources.size === 0) return;
+    if (mermaidSources.size === 0) return;
     for (const [wrapper, source] of mermaidSources) {
       if (!wrapper.isConnected) {
         mermaidSources.delete(wrapper);
         continue;
       }
       try {
-        const id = `mermaid-${Math.random().toString(36).slice(2)}`;
-        const { svg } = await mermaid.render(id, source);
-        wrapper.innerHTML = svg;
+        wrapper.innerHTML = await renderMermaidSvg(source, effectiveTheme === 'dark');
       } catch {}
     }
   }
@@ -151,13 +136,12 @@
     onviewerscroll?.();
   }
 
-  // Apply/update highlights when search state OR the document changes.
-  // Tracking `html` and the `matches` array identity (not just its length)
-  // ensures highlights re-apply after a document swap even when the match
-  // count happens to be unchanged.
+  // Highlight matches by walking the rendered DOM, then report how many were
+  // found. The count and the `<mark>` elements come from this single pass, so
+  // the titlebar count can never disagree with what's highlighted. Tracking
+  // `html` re-applies highlights after a document swap.
   $effect(() => {
     const _text = searchText;
-    const _matches = matches;
     const _currentIdx = currentMatchIndex;
     html;
 
@@ -165,9 +149,8 @@
 
     clearHighlights();
 
-    if (!_text || _matches.length === 0) return;
-
-    applyHighlights(_text, _currentIdx);
+    const count = _text ? applyHighlights(_text, _currentIdx) : 0;
+    onmatchcount?.(count);
   });
 
   function removeCopyButtons() {
@@ -227,7 +210,7 @@
   }
 
   function applyHighlights(query, activeIndex) {
-    if (!viewerEl) return;
+    if (!viewerEl) return 0;
 
     const walker = document.createTreeWalker(viewerEl, NodeFilter.SHOW_TEXT);
     const textNodes = [];
@@ -282,6 +265,8 @@
     if (current) {
       current.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
+
+    return globalMatchIdx;
   }
 </script>
 

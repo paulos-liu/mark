@@ -25,8 +25,8 @@ test('Files tree renders nested folders from a directory listing', async ({ page
   await page.evaluate((files) => window.__markTest.loadDirectory(files), SAMPLE_FILES);
   await page.waitForTimeout(400);
 
-  // Section header is the root folder name, uppercased via CSS
-  await expect(page.locator('.sb-head')).toHaveText('search-notes');
+  // The deepest shared directory ("search-notes") is the top folder node.
+  await expect(page.getByText('search-notes', { exact: true })).toBeVisible();
 
   // Files tab is active, tree present
   await expect(page.locator('.tree[role="tree"]')).toBeVisible();

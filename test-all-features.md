@@ -24,7 +24,8 @@ This document exercises every feature implemented in this session. Open it with 
 - [x] Pipe support (`mark -`)
 - [x] Directory browser (`mark .`)
 - [x] Custom CSS injection
-- [ ] VSCode theme import (coming soon)
+- [x] VSCode theme import
+- [x] Read ↔ Edit toggle (⌘E) and save (⌘S)
 
 ---
 
@@ -34,6 +35,8 @@ This document exercises every feature implemented in this session. Open it with 
 |---|---|---|
 | Open file | ⌘O | ✅ |
 | Quick Open | ⌘P | ✅ |
+| Toggle edit | ⌘E | ✅ |
+| Save | ⌘S | ✅ |
 | Find | ⌘F | ✅ |
 | Export PDF | ⌘⇧E | ✅ |
 | Toggle sidebar | ⌘\ | ✅ |

@@ -342,6 +342,12 @@ fn setup_menu(app: &tauri::App) -> Result<(), Box<dyn std::error::Error>> {
     let quick_open = MenuItemBuilder::with_id("quick-open", "Open Recent...")
         .accelerator("CmdOrCtrl+P")
         .build(app)?;
+    let save = MenuItemBuilder::with_id("save", "Save")
+        .accelerator("CmdOrCtrl+S")
+        .build(app)?;
+    let toggle_edit = MenuItemBuilder::with_id("toggle-edit", "Toggle Edit Mode")
+        .accelerator("CmdOrCtrl+E")
+        .build(app)?;
 
     // App menu (Mark)
     let app_menu = SubmenuBuilder::new(app, "Mark")
@@ -361,6 +367,8 @@ fn setup_menu(app: &tauri::App) -> Result<(), Box<dyn std::error::Error>> {
         .item(&open_file)
         .item(&open_folder)
         .item(&quick_open)
+        .separator()
+        .item(&save)
         .item(&toggle_watch)
         .separator()
         .item(&export_pdf)
@@ -388,6 +396,7 @@ fn setup_menu(app: &tauri::App) -> Result<(), Box<dyn std::error::Error>> {
     // View menu
     let view_menu = SubmenuBuilder::new(app, "View")
         .item(&toggle_sidebar)
+        .item(&toggle_edit)
         .separator()
         .item(&find)
         .separator()
@@ -422,7 +431,8 @@ fn setup_menu(app: &tauri::App) -> Result<(), Box<dyn std::error::Error>> {
         let id = event.id().as_ref();
         match id {
             "open-file" | "preferences" | "toggle-sidebar" | "find" | "zoom-in" | "zoom-out"
-            | "actual-size" | "export-pdf" | "toggle-watch" | "quick-open" => {
+            | "actual-size" | "export-pdf" | "toggle-watch" | "quick-open" | "save"
+            | "toggle-edit" => {
                 let _ = app_handle.emit("menu-event", id);
             }
             _ => {}

@@ -13,11 +13,6 @@ test.beforeEach(async ({ page }) => {
 // ── Empty state ──────────────────────────────────────────────────────────────
 
 test('empty state renders correctly', async ({ page }) => {
-  // Clay M logo
-  const logo = page.locator('.empty-logo');
-  await expect(logo).toBeVisible();
-  await expect(logo).toContainText('M');
-
   // Heading + tagline
   await expect(page.locator('.empty-title')).toContainText('Mark');
   await expect(page.locator('.empty-desc')).toContainText('Open a file or a folder');
@@ -43,8 +38,8 @@ test('titlebar has sidebar toggle, title, search, settings', async ({ page }) =>
   const sidebarToggle = page.locator('button[aria-label*="sidebar"]');
   await expect(sidebarToggle).toBeVisible();
 
-  // Title "Mark" visible
-  await expect(page.locator('.tb-title')).toContainText('Mark');
+  // Title area present (shows the open file's name; empty on the start screen)
+  await expect(page.locator('.tb-title')).toHaveCount(1);
 
   // Inline search input
   const searchInput = page.locator('.tb-search input');

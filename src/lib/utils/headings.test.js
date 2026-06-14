@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { slugify, extractHeadings, flattenHeadings } from './headings.js';
+import { slugify, extractHeadings } from './headings.js';
 
 describe('slugify', () => {
   it('lowercases and hyphenates', () => {
@@ -65,13 +65,5 @@ describe('extractHeadings', () => {
     const md = '# Notes\n# Notes\n# Notes';
     const anchors = extractHeadings(md).map((h) => h.anchor);
     expect(anchors).toEqual(['notes', 'notes-1', 'notes-2']);
-  });
-});
-
-describe('flattenHeadings', () => {
-  it('flattens nested headings', () => {
-    const md = '# A\n## B\n### C';
-    const flat = flattenHeadings(extractHeadings(md));
-    expect(flat.map(h => h.text)).toEqual(['A', 'B', 'C']);
   });
 });

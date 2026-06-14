@@ -77,6 +77,30 @@ test('highlights re-apply after switching to a doc with the same match count', a
   await expect(page.locator('.markdown-body mark.search-hl')).toHaveCount(3);
 });
 
+// ── Titlebar count and highlights share one source (rendered DOM) ─────────────
+
+test('titlebar count equals the highlight count, not the raw-markdown count', async ({ page }) => {
+  // "alpha" is visible 3 times (heading, plain text, bold) but ALSO appears in a
+  // link URL that renders no visible text. The raw markdown contains it 4 times;
+  // the rendered DOM only 3. The count and the highlights must both be 3.
+  await load(page, '# alpha\n\nalpha and **alpha**, see [link](https://alpha.example.com).');
+  await page.locator('.tb-search input').fill('alpha');
+  await page.waitForTimeout(250);
+  await expect(page.locator('.markdown-body mark.search-hl')).toHaveCount(3);
+  await expect(page.locator('.tb-count')).toHaveText('1/3');
+});
+
+test('a term that exists only in markdown syntax is counted as zero', async ({ page }) => {
+  // "example" is in the URL but not the visible link text. The rendered view has
+  // no match, so the count and the highlights are both zero (the raw source
+  // would have wrongly counted 1).
+  await load(page, 'See [the link](https://example.com/page).');
+  await page.locator('.tb-search input').fill('example');
+  await page.waitForTimeout(250);
+  await expect(page.locator('.markdown-body mark.search-hl')).toHaveCount(0);
+  await expect(page.locator('.tb-count')).toHaveText('0/0');
+});
+
 // ── Cmd+A does not hijack text inputs (#11) ───────────────────────────────────
 
 test('Cmd+A selects the focused input, not the document', async ({ page }) => {

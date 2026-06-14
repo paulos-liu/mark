@@ -10,6 +10,8 @@ const defaults = {
   customCSS: '',          // user-defined CSS injected into the document
   vscodeTheme: null,      // imported VS Code theme: { name, type, vars } | null
   sidebarOnStart: false,  // open the sidebar / table of contents on launch
+  editorMode: 'live',     // 'live' (rendered-in-place) | 'source' (raw markdown)
+  defaultMode: 'read',    // 'read' | 'edit' — which view documents open in
 };
 
 const CONTENT_WIDTHS = [560, 680, 820, 9999];
@@ -29,6 +31,12 @@ function migrate(s) {
   }
   if (!['light', 'dark', 'system'].includes(s.theme)) {
     s.theme = defaults.theme;
+  }
+  if (!['live', 'source'].includes(s.editorMode)) {
+    s.editorMode = defaults.editorMode;
+  }
+  if (!['read', 'edit'].includes(s.defaultMode)) {
+    s.defaultMode = defaults.defaultMode;
   }
   return s;
 }

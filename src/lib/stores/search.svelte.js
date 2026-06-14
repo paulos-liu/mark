@@ -1,49 +1,31 @@
 export const searchState = $state({
   searchText: '',
-  matches: [],
+  /**
+   * Total number of matches in the rendered document. Counted from the DOM by
+   * the viewer (via `setMatchCount`) so the titlebar count and the highlighted
+   * `<mark>` elements always come from the same source and cannot disagree.
+   */
+  matchCount: 0,
   currentMatchIndex: 0,
 });
 
-/** Maximum number of matches to track to prevent UI freezing */
-const MAX_MATCHES = 10000;
-
 /**
- * Compute all match positions for the given text.
- * @param {string} content - Raw markdown content
- * @param {string} query - Search text
+ * Record the match count reported by the rendered view.
+ * @param {number} count
  */
-export function computeMatches(content, query) {
-  if (!query || !query.trim()) {
-    searchState.matches = [];
-    searchState.currentMatchIndex = 0;
-    return;
-  }
-
-  const lower = content.toLowerCase();
-  const search = query.toLowerCase();
-  const positions = [];
-  let start = 0;
-
-  while (positions.length < MAX_MATCHES) {
-    const idx = lower.indexOf(search, start);
-    if (idx === -1) break;
-    positions.push(idx);
-    start = idx + 1;
-  }
-
-  searchState.matches = positions;
-  searchState.currentMatchIndex = 0;
+export function setMatchCount(count) {
+  searchState.matchCount = count;
 }
 
 export function nextMatch() {
-  if (searchState.matches.length === 0) return;
+  if (searchState.matchCount === 0) return;
   searchState.currentMatchIndex =
-    (searchState.currentMatchIndex + 1) % searchState.matches.length;
+    (searchState.currentMatchIndex + 1) % searchState.matchCount;
 }
 
 export function prevMatch() {
-  if (searchState.matches.length === 0) return;
+  if (searchState.matchCount === 0) return;
   searchState.currentMatchIndex =
-    (searchState.currentMatchIndex - 1 + searchState.matches.length) %
-    searchState.matches.length;
+    (searchState.currentMatchIndex - 1 + searchState.matchCount) %
+    searchState.matchCount;
 }

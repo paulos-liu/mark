@@ -1,5 +1,5 @@
 import { open } from '@tauri-apps/plugin-dialog';
-import { readTextFile } from '@tauri-apps/plugin-fs';
+import { readTextFile, writeTextFile } from '@tauri-apps/plugin-fs';
 
 /**
  * Open a file dialog and return the selected file's content and path.
@@ -51,4 +51,21 @@ export async function readFile(filePath) {
 
   const fileName = filePath.split('/').pop() || 'Untitled';
   return { content, filePath, fileName };
+}
+
+/**
+ * Write text content to a file path. Throws a descriptive error on failure
+ * (e.g. the path is outside the app's allowed write scope).
+ * @param {string} filePath
+ * @param {string} content
+ */
+export async function writeFile(filePath, content) {
+  if (!filePath || typeof filePath !== 'string') {
+    throw new Error('Invalid file path');
+  }
+  try {
+    await writeTextFile(filePath, content);
+  } catch (/** @type {any} */ err) {
+    throw new Error(`Could not save file "${filePath}": ${err?.message ?? err}`);
+  }
 }

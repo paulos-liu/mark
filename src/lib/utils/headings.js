@@ -105,19 +105,3 @@ export function extractHeadings(markdown) {
 
   return roots;
 }
-
-/**
- * Flatten heading tree into a list (for search context).
- * @param {Heading[]} headings
- * @returns {Heading[]}
- */
-export function flattenHeadings(headings) {
-  const result = [];
-  for (const h of headings) {
-    result.push(h);
-    if (h.children.length > 0) {
-      result.push(...flattenHeadings(h.children));
-    }
-  }
-  return result;
-}

@@ -1,14 +1,15 @@
 # Mark
 
-A fast, beautiful Markdown reader for macOS.
+A fast, beautiful Markdown reader and editor for macOS.
 
-Mark is a native desktop app built with [Tauri](https://tauri.app) and [SvelteKit](https://kit.svelte.dev). It renders Markdown with GitHub-flavored styling, math, diagrams, and a live table of contents — designed to be a clean, distraction-free way to read documentation and notes.
+Mark is a native desktop app built with [Tauri](https://tauri.app) and [SvelteKit](https://kit.svelte.dev). It renders Markdown with GitHub-flavored styling, math, diagrams, and a live table of contents — a clean, distraction-free way to read documentation and notes, with a one-keystroke toggle into an editor when you want to make changes.
 
 ## Features
 
 - **GitHub-flavored Markdown** rendering with sanitized HTML output (`marked` + `DOMPurify` + `github-markdown-css`)
 - **Math** typesetting via [KaTeX](https://katex.org)
 - **Diagrams** via [Mermaid](https://mermaid.js.org), theme-aware
+- **Read ↔ Edit toggle** — flip the rendered view into a [CodeMirror](https://codemirror.net) source editor (`⌘E`), edit the raw Markdown, and save back to disk (`⌘S`); an unsaved-changes indicator and a prompt before switching files keep edits safe
 - **Table of contents** generated from headings, with scroll syncing
 - **File tree / folder browsing** — open a folder and navigate its Markdown files in a sidebar
 - **Quick Open** fuzzy file switcher
@@ -28,7 +29,9 @@ Mark is a native desktop app built with [Tauri](https://tauri.app) and [SvelteKi
 | `⌘O` | Open file |
 | `⌘⇧O` | Open folder |
 | `⌘P` | Quick Open |
-| `⌘F` | Find in document |
+| `⌘E` | Toggle Read / Edit mode |
+| `⌘S` | Save (in edit mode) |
+| `⌘F` | Find in document (in edit mode, the editor's own search) |
 | `⌘\` | Toggle sidebar / table of contents |
 | `⌘,` | Settings |
 | `⌘⇧E` | Export to PDF |
@@ -92,7 +95,7 @@ src/
   routes/+page.svelte     # Main app shell, keyboard shortcuts, layout
   lib/
     components/           # Svelte UI (viewer, TOC, file tree, search, settings)
-    stores/               # App state (document, settings, search, recents)
+    stores/               # App state (document, editor, settings, search, recents)
     utils/                # Markdown rendering, headings, frontmatter, theming
     themes/               # Built-in theme presets
 src-tauri/                # Rust backend, Tauri config, native integration
@@ -104,6 +107,7 @@ tests/                    # Playwright end-to-end specs
 - **Frontend:** Svelte 5 + SvelteKit (static adapter), Vite
 - **Backend / shell:** Tauri v2 (Rust)
 - **Markdown:** marked, DOMPurify, github-markdown-css, KaTeX, Mermaid
+- **Editor:** CodeMirror 6 (`@codemirror/lang-markdown`)
 
 ## License
 
