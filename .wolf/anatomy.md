@@ -1,11 +1,16 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-14T06:01:20.866Z
-> Files: 201 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-14T06:44:57.847Z
+> Files: 203 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
 - `mark-cu-verify.md` — alpha overview (~48 tok)
+- `mark-toc-verify.md` — Introduction (~102 tok)
+
+## ../../.claude/plans/
+
+- `zany-growing-shell.md` — Make the sidebar TOC work in Edit mode (full parity with Read) (~1621 tok)
 
 ## ./
 
@@ -279,7 +284,7 @@
 
 - `DirectoryBrowser.svelte` — Svelte: DirectoryBrowser, 2 stores (~318 tok)
 - `FileTreeNode.svelte` — Svelte: FileTreeNode, 3 stores (~943 tok)
-- `MarkdownEditor.svelte` — Svelte: MarkdownEditor (~3122 tok)
+- `MarkdownEditor.svelte` — Svelte: MarkdownEditor (~3333 tok)
 - `MarkdownViewer.svelte` — Svelte: MarkdownViewer (~4966 tok)
 - `QuickOpen.svelte` — Svelte: QuickOpen, 8 stores (~1775 tok)
 - `SettingsDialog.svelte` — Svelte: SettingsDialog, 7 stores (~4662 tok)
@@ -309,8 +314,8 @@
 - `fileTree.test.js` — Declares drafts (~596 tok)
 - `frontmatter.js` — Parse and strip YAML frontmatter from markdown content. (~424 tok)
 - `frontmatter.test.js` — Declares doc (~631 tok)
-- `headings.js` — Heading extraction and hierarchy building. (~816 tok)
-- `headings.test.js` — Declares md (~573 tok)
+- `headings.js` — Heading extraction and hierarchy building. (~924 tok)
+- `headings.test.js` — Declares md (~700 tok)
 - `livePreview.js` — Live Preview decoration layer for the Markdown editor. (~5447 tok)
 - `markdown.js` — Exports renderMarkdown (~800 tok)
 - `markdown.test.js` — Declares html (~535 tok)
@@ -321,7 +326,7 @@
 ## src/routes/
 
 - `+layout.js` — Tauri doesn't have a Node.js server to do proper SSR (~83 tok)
-- `+page.svelte` — Svelte: +page (~13097 tok)
+- `+page.svelte` — Svelte: +page (~13672 tok)
 
 ## test-results/
 
@@ -329,7 +334,7 @@
 
 ## tests/
 
-- `edit.spec.js` — Load markdown content into the viewer via the dev test hook. (~3415 tok)
+- `edit.spec.js` — Load markdown content into the viewer via the dev test hook. (~4170 tok)
 - `features.spec.js` — @ts-check (~1302 tok)
 - `mark.spec.js` — @ts-check (~2932 tok)
 - `perf.spec.js` — Build a large, realistic markdown document (~5k lines). (~779 tok)

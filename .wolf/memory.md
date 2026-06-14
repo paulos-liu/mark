@@ -1210,3 +1210,33 @@ Added an Obsidian-style **Read ↔ Edit toggle** (Part A) to the previously read
 | 23:03 | Session end: 24 writes across 8 files (search.svelte.js, +page.svelte, MarkdownViewer.svelte, review.spec.js, livePreview.js) | 21 reads | ~40634 tok |
 | 23:04 | Session end: 24 writes across 8 files (search.svelte.js, +page.svelte, MarkdownViewer.svelte, review.spec.js, livePreview.js) | 21 reads | ~40634 tok |
 | 23:04 | Session end: 24 writes across 8 files (search.svelte.js, +page.svelte, MarkdownViewer.svelte, review.spec.js, livePreview.js) | 22 reads | ~40634 tok |
+| 23:08 | Session end: 24 writes across 8 files (search.svelte.js, +page.svelte, MarkdownViewer.svelte, review.spec.js, livePreview.js) | 22 reads | ~40634 tok |
+| 23:17 | Created ../../.claude/plans/zany-growing-shell.md | — | ~1730 |
+| 23:17 | Edited src/lib/utils/headings.js | 7→8 lines | ~74 |
+| 23:18 | Edited src/lib/utils/headings.js | modified extractHeadings() | ~244 |
+| 23:18 | Edited src/lib/utils/headings.js | 7→8 lines | ~43 |
+| 23:18 | Edited src/lib/components/MarkdownEditor.svelte | added 1 condition(s) | ~163 |
+| 23:18 | Edited src/lib/components/MarkdownEditor.svelte | added 1 condition(s) | ~71 |
+| 23:18 | Edited src/lib/components/MarkdownEditor.svelte | added optional chaining | ~68 |
+| 23:18 | Edited src/routes/+page.svelte | added 2 import(s) | ~61 |
+| 23:18 | Edited src/routes/+page.svelte | added 1 condition(s) | ~223 |
+| 23:19 | Edited src/routes/+page.svelte | added optional chaining | ~282 |
+| 23:19 | Edited src/routes/+page.svelte | inline fix | ~10 |
+| 23:19 | Edited src/routes/+page.svelte | 9→11 lines | ~111 |
+| 23:19 | Edited src/lib/utils/headings.test.js | expanded (+13 lines) | ~200 |
+| 23:21 | Edited tests/edit.spec.js | added 1 condition(s) | ~140 |
+| 23:21 | Edited tests/edit.spec.js | expanded (+45 lines) | ~764 |
+| 23:26 | Edited tests/edit.spec.js | added optional chaining | ~175 |
+| 23:27 | Edited src/routes/+page.svelte | modified if() | ~174 |
+| 23:29 | Edited src/routes/+page.svelte | added 1 condition(s) | ~122 |
+| 23:29 | Edited tests/edit.spec.js | 7→8 lines | ~108 |
+| 23:32 | Edited src/routes/+page.svelte | 6→6 lines | ~46 |
+| 23:32 | Edited src/routes/+page.svelte | modified if() | ~90 |
+| 23:32 | Edited tests/edit.spec.js | reduced (-9 lines) | ~66 |
+| 23:37 | /simplify review of editor-TOC diff (4 angles); no changes applied — diff already clean | headings.js, MarkdownEditor.svelte, +page.svelte | reviewed, 72 vitest + 20 playwright green | ~9k |
+| 23:41 | Edited src/routes/+page.svelte | 2→3 lines | ~43 |
+| 23:41 | Edited src/routes/+page.svelte | modified handleEditorCursor() | ~171 |
+| 23:44 | Created ../../mark-toc-verify.md | — | ~109 |
+| 23:45 | TOC works in Edit mode: live tocHeadings derived, extractHeadings line+offset, gotoLine, cursor-spy effect; fixed missed replace_all binding + code-review staleness finding | headings.js, MarkdownEditor.svelte, +page.svelte, headings.test.js, edit.spec.js | 72 unit + 62 e2e green; 2x code-review clean | ~14000 |
+| 23:45 | Session end: 49 writes across 12 files (search.svelte.js, +page.svelte, MarkdownViewer.svelte, review.spec.js, livePreview.js) | 27 reads | ~50659 tok |
+| 23:49 | Session end: 49 writes across 12 files (search.svelte.js, +page.svelte, MarkdownViewer.svelte, review.spec.js, livePreview.js) | 27 reads | ~50659 tok |
