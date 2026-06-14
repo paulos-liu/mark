@@ -16,6 +16,15 @@ async function load(page, content) {
   await page.waitForTimeout(350);
 }
 
+/** Open the sidebar (starts collapsed) so the TOC renders. */
+async function openSidebar(page) {
+  const btn = page.locator('.tb-toggle');
+  if (!(await btn.evaluate((el) => el.classList.contains('on')))) {
+    await btn.click();
+    await page.waitForTimeout(150);
+  }
+}
+
 test('the Read/Edit toggle appears once a document is open', async ({ page }) => {
   // No toggle on the empty state.
   await expect(page.locator('.tb-modes')).toHaveCount(0);
@@ -243,4 +252,49 @@ test('⌘E toggles between Read and Edit', async ({ page }) => {
   await expect(page.locator('.cm-editor')).toBeVisible();
   await page.keyboard.press('Meta+e');
   await expect(page.locator('.markdown-viewer')).toBeVisible();
+});
+
+// ── Sidebar TOC works while editing (full parity with Read) ───────────────────
+
+test('Edit mode: the TOC list tracks the edit buffer live', async ({ page }) => {
+  await load(page, 'Just a paragraph, no headings.');
+  await page.evaluate(() => window.__markTest.setSetting('editorMode', 'live'));
+  await page.evaluate(() => window.__markTest.enterEdit());
+  await openSidebar(page);
+
+  await expect(page.locator('.toc-item')).toHaveCount(0);
+  // Adding a heading in the buffer shows it in the TOC…
+  await page.evaluate(() => window.__markTest.setBuffer('# Fresh Heading\n\nbody'));
+  await expect(page.locator('.toc-item', { hasText: 'Fresh Heading' })).toBeVisible();
+  // …and removing it updates the list back.
+  await page.evaluate(() => window.__markTest.setBuffer('no heading now'));
+  await expect(page.locator('.toc-item')).toHaveCount(0);
+});
+
+test('Edit mode: the active TOC heading follows the editor cursor', async ({ page }) => {
+  await load(page, '# First\n\nalpha\n\n# Second\n\nbeta');
+  await page.evaluate(() => window.__markTest.setSetting('editorMode', 'live'));
+  await page.evaluate(() => window.__markTest.enterEdit());
+  await openSidebar(page);
+
+  // Cursor starts at the top → First is the active heading.
+  await expect(page.locator('.toc-item.active')).toHaveText('First');
+  // Click the second heading in the editor to move the cursor into its section.
+  await page.locator('.cm-lp-h1', { hasText: 'Second' }).click();
+  await expect(page.locator('.toc-item.active')).toHaveText('Second');
+});
+
+test('Edit mode: clicking a TOC heading scrolls the editor to it', async ({ page }) => {
+  // A heading far below the fold so it isn't in the initial viewport/DOM.
+  const filler = Array.from({ length: 60 }, (_, i) => `line ${i}`).join('\n');
+  await load(page, `# Top\n\n${filler}\n\n# Far Target\n\nend`);
+  await page.evaluate(() => window.__markTest.setSetting('editorMode', 'source'));
+  await page.evaluate(() => window.__markTest.enterEdit());
+  await openSidebar(page);
+
+  // The far heading is below the fold — not rendered yet.
+  await expect(page.locator('.cm-content')).not.toContainText('# Far Target');
+  // Clicking its TOC entry scrolls the editor so the line renders.
+  await page.locator('.toc-text', { hasText: 'Far Target' }).click();
+  await expect(page.locator('.cm-content')).toContainText('# Far Target');
 });

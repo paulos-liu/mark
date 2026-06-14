@@ -27,6 +27,8 @@
     prevMatch,
   } from '$lib/stores/search.svelte.js';
   import { openMarkdownFile, openFolderDialog, readFile, writeFile } from '$lib/utils/fileHandler.js';
+  import { extractHeadings } from '$lib/utils/headings.js';
+  import { parseFrontmatter } from '$lib/utils/frontmatter.js';
 
   const ALLOWED_EXTENSIONS = ['.md', '.markdown', '.txt'];
   const READ_FONTS = {
@@ -45,7 +47,22 @@
   let sbTab = $state('toc');
   let activeAnchor = $state('');
   let searchInputEl = $state(null);
+  let editorRef = $state(/** @type {{ gotoLine: (line: number) => void } | null} */ (null));
+  let editorCursorLine = $state(1);
   let openError = $state('');
+
+  // Headings for the sidebar TOC. While editing, derive them live from the edit
+  // buffer (frontmatter-stripped, like the reader) so the list tracks edits and
+  // each heading's `line` maps back to the full buffer for navigation. Gated on an
+  // open sidebar so it does no work when the TOC is hidden.
+  let tocHeadings = $derived.by(() => {
+    if (editorState.mode === 'edit' && uiState.showTOC) {
+      const { body } = parseFrontmatter(editorState.buffer);
+      const offset = editorState.buffer.split('\n').length - body.split('\n').length;
+      return extractHeadings(body, offset);
+    }
+    return documentState.headings;
+  });
 
   // Edit mode: the last content we wrote to disk (to ignore the watcher event
   // our own save triggers), the discard-confirmation modal, and a "file changed
@@ -111,13 +128,51 @@
     searchState.currentMatchIndex = 0;
   });
 
+  /** In-order (document-order) DFS over the heading tree. */
+  function walkHeadings(nodes, fn) {
+    for (const h of nodes) {
+      fn(h);
+      walkHeadings(h.children, fn);
+    }
+  }
+
   function scrollToHeading(anchor) {
+    if (editorState.mode === 'edit') {
+      // No rendered DOM to scroll — jump the editor to the heading's line.
+      let line = null;
+      walkHeadings(tocHeadings, (h) => {
+        if (line == null && h.anchor === anchor) line = h.line;
+      });
+      if (line != null) {
+        editorRef?.gotoLine(line);
+        activeAnchor = anchor;
+      }
+      return;
+    }
     const el = document.getElementById(anchor);
     if (el) {
       el.scrollIntoView({ behavior: 'smooth', block: 'start' });
       activeAnchor = anchor;
     }
   }
+
+  // Editor scroll-spy: record the cursor line; the effect below maps it to the
+  // active heading. Splitting record-vs-compute lets the highlight refresh when
+  // the sidebar opens (not only on the next cursor move) and avoids walking a
+  // stale, sidebar-closed heading set on the typing hot path.
+  function handleEditorCursor(line) {
+    editorCursorLine = line;
+  }
+
+  $effect(() => {
+    if (editorState.mode !== 'edit' || !uiState.showTOC) return;
+    const line = editorCursorLine;
+    let active = '';
+    walkHeadings(tocHeadings, (h) => {
+      if (h.line <= line) active = h.anchor;
+    });
+    activeAnchor = active;
+  });
 
   async function openFile(content, filePath, fileName) {
     await loadDocument(content, filePath, fileName);
@@ -794,7 +849,7 @@
           </div>
           {#if sbTab === 'toc'}
             <TableOfContents
-              headings={documentState.headings}
+              headings={tocHeadings}
               onselect={scrollToHeading}
               activeAnchor={activeAnchor}
             />
@@ -807,7 +862,7 @@
           {/if}
         {:else}
           <TableOfContents
-            headings={documentState.headings}
+            headings={tocHeadings}
             onselect={scrollToHeading}
             activeAnchor={activeAnchor}
           />
@@ -835,6 +890,7 @@
       {:else if documentState.content}
         {#if editorState.mode === 'edit'}
           <MarkdownEditor
+            bind:this={editorRef}
             value={editorState.buffer}
             effectiveTheme={effectiveTheme}
             fontSize={settings.fontSize}
@@ -842,6 +898,7 @@
             readFont={readFontCss}
             livePreview={settings.editorMode === 'live'}
             onchange={setBuffer}
+            oncursorline={handleEditorCursor}
           />
         {:else}
           <MarkdownViewer

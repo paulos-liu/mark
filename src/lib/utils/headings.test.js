@@ -66,4 +66,17 @@ describe('extractHeadings', () => {
     const anchors = extractHeadings(md).map((h) => h.anchor);
     expect(anchors).toEqual(['notes', 'notes-1', 'notes-2']);
   });
+
+  it('records 1-based line numbers', () => {
+    const h = extractHeadings('# A\n\n## B\n\ntext\n# C');
+    expect(h[0].line).toBe(1); // # A
+    expect(h[0].children[0].line).toBe(3); // ## B
+    expect(h[1].line).toBe(6); // # C
+  });
+
+  it('applies lineOffset to every heading line (frontmatter mapping)', () => {
+    const h = extractHeadings('# A\n## B', 3);
+    expect(h[0].line).toBe(4);
+    expect(h[0].children[0].line).toBe(5);
+  });
 });

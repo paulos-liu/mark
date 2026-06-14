@@ -9,6 +9,7 @@
  * @property {number} level
  * @property {string} text
  * @property {string} anchor
+ * @property {number} line  1-based line number (plus `lineOffset`) of the heading
  * @property {Heading[]} children
  */
 
@@ -39,9 +40,12 @@ export function slugify(text) {
  * Extract headings from raw markdown and build hierarchical tree.
  * Ignores headings inside fenced code blocks.
  * @param {string} markdown
+ * @param {number} [lineOffset=0] added to each heading's 1-based line number, so
+ *   headings parsed from frontmatter-stripped body still point at the right line
+ *   in the original buffer (used by the editor's TOC navigation).
  * @returns {Heading[]}
  */
-export function extractHeadings(markdown) {
+export function extractHeadings(markdown, lineOffset = 0) {
   const roots = [];
   const stack = [];
   const lines = markdown.split('\n');
@@ -51,8 +55,8 @@ export function extractHeadings(markdown) {
   /** @type {Record<string, number>} */
   const anchorCounts = {};
 
-  for (const line of lines) {
-    const trimmed = line.trim();
+  for (let i = 0; i < lines.length; i++) {
+    const trimmed = lines[i].trim();
 
     // Track fenced code blocks (``` or ~~~)
     if (trimmed.startsWith('```') || trimmed.startsWith('~~~')) {
@@ -86,6 +90,7 @@ export function extractHeadings(markdown) {
       level,
       text,
       anchor,
+      line: i + 1 + lineOffset,
       children: [],
     };
 

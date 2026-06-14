@@ -9,7 +9,17 @@
     readFont = '"Newsreader", Georgia, serif',
     livePreview = false,
     onchange = /** @type {((value: string) => void) | undefined} */ (undefined),
+    oncursorline = /** @type {((line: number) => void) | undefined} */ (undefined),
   } = $props();
+
+  /** Scroll the editor to a 1-based line and place the cursor there (TOC nav). */
+  export function gotoLine(line1) {
+    if (!view || !EditorViewMod) return;
+    const n = Math.max(1, Math.min(line1, view.state.doc.lines));
+    const pos = view.state.doc.line(n).from;
+    view.dispatch({ selection: { anchor: pos }, effects: EditorViewMod.scrollIntoView(pos, { y: 'start' }) });
+    view.focus();
+  }
 
   /** @type {HTMLDivElement | undefined} */
   let hostEl;
@@ -144,6 +154,9 @@
         keymap.of([...defaultKeymap, ...historyKeymap, ...searchKeymap, indentWithTab]),
         EditorView.updateListener.of((u) => {
           if (u.docChanged) onchange?.(u.state.doc.toString());
+          if (u.docChanged || u.selectionSet) {
+            oncursorline?.(u.state.doc.lineAt(u.state.selection.main.head).number);
+          }
         }),
         themeComp.of(
           makeTheme(EditorView, {
@@ -159,6 +172,8 @@
     view = new EditorView({ state, parent: hostEl });
     ready = true;
     view.focus();
+    // Initialize the TOC active-heading highlight for the starting cursor.
+    oncursorline?.(view.state.doc.lineAt(view.state.selection.main.head).number);
   });
 
   onDestroy(() => view?.destroy());
