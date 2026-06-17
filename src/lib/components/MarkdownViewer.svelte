@@ -326,12 +326,13 @@
     line-height: 1.72;
   }
 
-  /* Headings */
+  /* Headings — inherit the reading font so they follow the "Reading font"
+     setting (serif/sans/mono), matching the body and the editor's headings. */
   .markdown-body :global(h1),
   .markdown-body :global(h2),
   .markdown-body :global(h3),
   .markdown-body :global(h4) {
-    font-family: var(--ui, system-ui);
+    font-family: inherit;
     color: var(--ink, #272320);
     line-height: 1.2;
     letter-spacing: -0.018em;

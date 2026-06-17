@@ -145,3 +145,23 @@ test('Cmd+A selects the focused input, not the document', async ({ page }) => {
   );
   expect(fullySelected).toBe(true);
 });
+
+// ── Read-view headings follow the "Reading font" setting ──────────────────────
+
+test('Read headings use the reading font (serif), not the UI sans font', async ({ page }) => {
+  await load(page, '# Heading\n\nBody paragraph.');
+  // Switch to sans then serif to prove headings track the setting, not a fixed font.
+  await page.evaluate(() => window.__markTest.setSetting('readFont', 'sans'));
+  await page.waitForTimeout(100);
+  await page.evaluate(() => window.__markTest.setSetting('readFont', 'serif'));
+  await page.waitForTimeout(100);
+
+  const fonts = await page.evaluate(() => ({
+    h1: getComputedStyle(/** @type {Element} */ (document.querySelector('.markdown-body h1'))).fontFamily,
+    p: getComputedStyle(/** @type {Element} */ (document.querySelector('.markdown-body p'))).fontFamily,
+  }));
+  // The heading uses the serif reading font and matches the body (previously it
+  // was pinned to the UI sans font regardless of the setting).
+  expect(fonts.h1).toContain('Newsreader');
+  expect(fonts.h1).toBe(fonts.p);
+});
