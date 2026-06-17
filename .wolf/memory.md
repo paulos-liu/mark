@@ -1261,3 +1261,11 @@ Added an Obsidian-style **Read ↔ Edit toggle** (Part A) to the previously read
 | 10:50 | Edited tests/review.spec.js | added nullish coalescing | ~395 |
 | 10:55 | Fix mermaid diagram stuck in old theme on switch: html $effect transitively tracked effectiveTheme via renderMermaid, clearing mermaidSources; untrack the read + theme effect reads theme as arg | MarkdownViewer.svelte, review.spec.js | repro+regression test pass; 72 unit + 63 e2e green; code-review clean | ~12000 |
 | 10:56 | Session end: 66 writes across 13 files (search.svelte.js, +page.svelte, MarkdownViewer.svelte, review.spec.js, livePreview.js) | 28 reads | ~58243 tok |
+| 11:02 | Session end: 66 writes across 13 files (search.svelte.js, +page.svelte, MarkdownViewer.svelte, review.spec.js, livePreview.js) | 28 reads | ~58243 tok |
+| 11:05 | Session end: 66 writes across 13 files (search.svelte.js, +page.svelte, MarkdownViewer.svelte, review.spec.js, livePreview.js) | 28 reads | ~58243 tok |
+| 11:09 | Edited src/lib/components/MarkdownViewer.svelte | modified global() | ~89 |
+| 11:10 | Edited tests/review.spec.js | expanded (+20 lines) | ~350 |
+| 11:14 | Created ../../mark-font-verify.md | — | ~48 |
+| 11:14 | Read-view headings (h1-h4) now follow the Reading-font setting (inherit instead of var(--ui)); serif setting → serif headings, matching body + editor | MarkdownViewer.svelte, review.spec.js | 72 unit + 64 e2e green; code-review clean | ~3000 |
+| 11:15 | Session end: 69 writes across 14 files (search.svelte.js, +page.svelte, MarkdownViewer.svelte, review.spec.js, livePreview.js) | 29 reads | ~61706 tok |
+| 11:15 | Verified read-view heading font fix via computer-use (Serif/Sans/Mono) | MarkdownViewer.svelte | PASS all 3 states | ~12k |

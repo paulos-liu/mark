@@ -1,11 +1,12 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-17T17:50:09.780Z
-> Files: 204 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-17T18:14:26.402Z
+> Files: 205 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
 - `mark-cu-verify.md` — alpha overview (~48 tok)
+- `mark-font-verify.md` — Big Heading One (~45 tok)
 - `mark-toc-verify.md` — Introduction (~102 tok)
 
 ## ../../.claude/plans/
@@ -285,7 +286,7 @@
 - `DirectoryBrowser.svelte` — Svelte: DirectoryBrowser, 2 stores (~318 tok)
 - `FileTreeNode.svelte` — Svelte: FileTreeNode, 3 stores (~943 tok)
 - `MarkdownEditor.svelte` — Svelte: MarkdownEditor (~3333 tok)
-- `MarkdownViewer.svelte` — Svelte: MarkdownViewer (~5140 tok)
+- `MarkdownViewer.svelte` — Svelte: MarkdownViewer (~5173 tok)
 - `QuickOpen.svelte` — Svelte: QuickOpen, 8 stores (~1775 tok)
 - `SettingsDialog.svelte` — Svelte: SettingsDialog, 7 stores (~4662 tok)
 - `TableOfContents.svelte` — Svelte: TableOfContents, 3 stores (~1150 tok)
@@ -339,5 +340,5 @@
 - `features.spec.js` — @ts-check (~1302 tok)
 - `mark.spec.js` — @ts-check (~2932 tok)
 - `perf.spec.js` — Build a large, realistic markdown document (~5k lines). (~779 tok)
-- `review.spec.js` — Load markdown content into the viewer via the dev test hook. (~1941 tok)
+- `review.spec.js` — Load markdown content into the viewer via the dev test hook. (~2237 tok)
 - `titlebar-sidebar.spec.js` — @ts-check (~750 tok)

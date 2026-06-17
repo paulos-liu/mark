@@ -8,12 +8,12 @@
       "first_read": "2026-06-14T05:04:03.867Z"
     },
     "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownViewer.svelte": {
-      "count": 10,
-      "tokens": 5140,
+      "count": 13,
+      "tokens": 5173,
       "first_read": "2026-06-14T05:04:04.171Z"
     },
     "/Users/paulosliu/Projects/mark/src/routes/+page.svelte": {
-      "count": 33,
+      "count": 36,
       "tokens": 13672,
       "first_read": "2026-06-14T05:04:19.243Z"
     },
@@ -141,6 +141,11 @@
       "count": 1,
       "tokens": 4662,
       "first_read": "2026-06-17T17:53:29.717Z"
+    },
+    "/Users/paulosliu/Projects/mark/tests/mark.spec.js": {
+      "count": 1,
+      "tokens": 2932,
+      "first_read": "2026-06-17T18:09:46.719Z"
     }
   },
   "files_written": [
@@ -539,13 +544,31 @@
       "action": "edit",
       "tokens": 395,
       "at": "2026-06-17T17:50:09.790Z"
+    },
+    {
+      "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownViewer.svelte",
+      "action": "edit",
+      "tokens": 96,
+      "at": "2026-06-17T18:09:38.164Z"
+    },
+    {
+      "file": "/Users/paulosliu/Projects/mark/tests/review.spec.js",
+      "action": "edit",
+      "tokens": 350,
+      "at": "2026-06-17T18:10:29.540Z"
+    },
+    {
+      "file": "/Users/paulosliu/mark-font-verify.md",
+      "action": "create",
+      "tokens": 52,
+      "at": "2026-06-17T18:14:26.412Z"
     }
   ],
   "edit_counts": {
     "src/lib/stores/search.svelte.js": 1,
     "src/routes/+page.svelte": 19,
-    "src/lib/components/MarkdownViewer.svelte": 17,
-    "tests/review.spec.js": 3,
+    "src/lib/components/MarkdownViewer.svelte": 18,
+    "tests/review.spec.js": 4,
     "src/lib/utils/livePreview.js": 2,
     "../../mark-cu-verify.md": 1,
     "src/lib/components/MarkdownEditor.svelte": 7,
@@ -554,11 +577,12 @@
     "src/lib/utils/headings.js": 3,
     "src/lib/utils/headings.test.js": 1,
     "../../mark-toc-verify.md": 1,
-    "tests/_repro.spec.js": 4
+    "tests/_repro.spec.js": 4,
+    "../../mark-font-verify.md": 1
   },
-  "anatomy_hits": 22,
+  "anatomy_hits": 23,
   "anatomy_misses": 5,
-  "repeated_reads_warned": 71,
+  "repeated_reads_warned": 77,
   "cerebrum_warnings": 0,
-  "stop_count": 13
+  "stop_count": 16
 }
