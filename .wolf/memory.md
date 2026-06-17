@@ -1269,3 +1269,6 @@ Added an Obsidian-style **Read ↔ Edit toggle** (Part A) to the previously read
 | 11:14 | Read-view headings (h1-h4) now follow the Reading-font setting (inherit instead of var(--ui)); serif setting → serif headings, matching body + editor | MarkdownViewer.svelte, review.spec.js | 72 unit + 64 e2e green; code-review clean | ~3000 |
 | 11:15 | Session end: 69 writes across 14 files (search.svelte.js, +page.svelte, MarkdownViewer.svelte, review.spec.js, livePreview.js) | 29 reads | ~61706 tok |
 | 11:15 | Verified read-view heading font fix via computer-use (Serif/Sans/Mono) | MarkdownViewer.svelte | PASS all 3 states | ~12k |
+| 11:16 | Session end: 69 writes across 14 files (search.svelte.js, +page.svelte, MarkdownViewer.svelte, review.spec.js, livePreview.js) | 29 reads | ~61706 tok |
+| 11:17 | Session end: 69 writes across 14 files (search.svelte.js, +page.svelte, MarkdownViewer.svelte, review.spec.js, livePreview.js) | 29 reads | ~61706 tok |
+| 11:19 | Session end: 69 writes across 14 files (search.svelte.js, +page.svelte, MarkdownViewer.svelte, review.spec.js, livePreview.js) | 29 reads | ~61706 tok |
