@@ -8,18 +8,18 @@
       "first_read": "2026-06-14T05:04:03.867Z"
     },
     "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownViewer.svelte": {
-      "count": 7,
-      "tokens": 4966,
+      "count": 10,
+      "tokens": 5140,
       "first_read": "2026-06-14T05:04:04.171Z"
     },
     "/Users/paulosliu/Projects/mark/src/routes/+page.svelte": {
-      "count": 31,
+      "count": 33,
       "tokens": 13672,
       "first_read": "2026-06-14T05:04:19.243Z"
     },
     "/Users/paulosliu/Projects/mark/tests/review.spec.js": {
-      "count": 2,
-      "tokens": 1187,
+      "count": 3,
+      "tokens": 1570,
       "first_read": "2026-06-14T05:06:13.767Z"
     },
     "/Users/paulosliu/Projects/mark/package.json": {
@@ -48,7 +48,7 @@
       "first_read": "2026-06-14T05:14:09.982Z"
     },
     "/Users/paulosliu/Projects/mark/src/lib/utils/mermaid.js": {
-      "count": 3,
+      "count": 4,
       "tokens": 309,
       "first_read": "2026-06-14T05:14:10.414Z"
     },
@@ -136,6 +136,11 @@
       "count": 1,
       "tokens": 38,
       "first_read": "2026-06-14T06:29:07.548Z"
+    },
+    "/Users/paulosliu/Projects/mark/src/lib/components/SettingsDialog.svelte": {
+      "count": 1,
+      "tokens": 4662,
+      "first_read": "2026-06-17T17:53:29.717Z"
     }
   },
   "files_written": [
@@ -432,13 +437,115 @@
       "action": "create",
       "tokens": 116,
       "at": "2026-06-14T06:44:57.856Z"
+    },
+    {
+      "file": "/Users/paulosliu/Projects/mark/tests/_repro.spec.js",
+      "action": "create",
+      "tokens": 664,
+      "at": "2026-06-17T17:39:58.217Z"
+    },
+    {
+      "file": "/Users/paulosliu/Projects/mark/tests/_repro.spec.js",
+      "action": "edit",
+      "tokens": 156,
+      "at": "2026-06-17T17:41:38.336Z"
+    },
+    {
+      "file": "/Users/paulosliu/Projects/mark/tests/_repro.spec.js",
+      "action": "edit",
+      "tokens": 109,
+      "at": "2026-06-17T17:41:40.971Z"
+    },
+    {
+      "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownViewer.svelte",
+      "action": "edit",
+      "tokens": 135,
+      "at": "2026-06-17T17:43:39.463Z"
+    },
+    {
+      "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownViewer.svelte",
+      "action": "edit",
+      "tokens": 122,
+      "at": "2026-06-17T17:43:42.687Z"
+    },
+    {
+      "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownViewer.svelte",
+      "action": "edit",
+      "tokens": 108,
+      "at": "2026-06-17T17:43:46.279Z"
+    },
+    {
+      "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownViewer.svelte",
+      "action": "edit",
+      "tokens": 48,
+      "at": "2026-06-17T17:45:31.668Z"
+    },
+    {
+      "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownViewer.svelte",
+      "action": "edit",
+      "tokens": 56,
+      "at": "2026-06-17T17:45:33.231Z"
+    },
+    {
+      "file": "/Users/paulosliu/Projects/mark/tests/_repro.spec.js",
+      "action": "edit",
+      "tokens": 212,
+      "at": "2026-06-17T17:45:46.384Z"
+    },
+    {
+      "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownViewer.svelte",
+      "action": "edit",
+      "tokens": 51,
+      "at": "2026-06-17T17:47:00.077Z"
+    },
+    {
+      "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownViewer.svelte",
+      "action": "edit",
+      "tokens": 63,
+      "at": "2026-06-17T17:47:01.995Z"
+    },
+    {
+      "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownViewer.svelte",
+      "action": "edit",
+      "tokens": 52,
+      "at": "2026-06-17T17:48:46.066Z"
+    },
+    {
+      "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownViewer.svelte",
+      "action": "edit",
+      "tokens": 22,
+      "at": "2026-06-17T17:48:47.950Z"
+    },
+    {
+      "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownViewer.svelte",
+      "action": "edit",
+      "tokens": 23,
+      "at": "2026-06-17T17:48:49.824Z"
+    },
+    {
+      "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownViewer.svelte",
+      "action": "edit",
+      "tokens": 123,
+      "at": "2026-06-17T17:48:53.897Z"
+    },
+    {
+      "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownViewer.svelte",
+      "action": "edit",
+      "tokens": 26,
+      "at": "2026-06-17T17:48:55.466Z"
+    },
+    {
+      "file": "/Users/paulosliu/Projects/mark/tests/review.spec.js",
+      "action": "edit",
+      "tokens": 395,
+      "at": "2026-06-17T17:50:09.790Z"
     }
   ],
   "edit_counts": {
     "src/lib/stores/search.svelte.js": 1,
     "src/routes/+page.svelte": 19,
-    "src/lib/components/MarkdownViewer.svelte": 5,
-    "tests/review.spec.js": 2,
+    "src/lib/components/MarkdownViewer.svelte": 17,
+    "tests/review.spec.js": 3,
     "src/lib/utils/livePreview.js": 2,
     "../../mark-cu-verify.md": 1,
     "src/lib/components/MarkdownEditor.svelte": 7,
@@ -446,11 +553,12 @@
     "../../.claude/plans/zany-growing-shell.md": 1,
     "src/lib/utils/headings.js": 3,
     "src/lib/utils/headings.test.js": 1,
-    "../../mark-toc-verify.md": 1
+    "../../mark-toc-verify.md": 1,
+    "tests/_repro.spec.js": 4
   },
-  "anatomy_hits": 21,
+  "anatomy_hits": 22,
   "anatomy_misses": 5,
-  "repeated_reads_warned": 64,
+  "repeated_reads_warned": 71,
   "cerebrum_warnings": 0,
-  "stop_count": 10
+  "stop_count": 13
 }

@@ -2,14 +2,14 @@
   "version": 1,
   "created_at": "2026-04-10T22:46:54.648Z",
   "lifetime": {
-    "total_tokens_estimated": 4188868,
-    "total_reads": 3153,
-    "total_writes": 5524,
+    "total_tokens_estimated": 4348429,
+    "total_reads": 3235,
+    "total_writes": 5688,
     "total_sessions": 39,
-    "anatomy_hits": 2359,
-    "anatomy_misses": 775,
-    "repeated_reads_blocked": 3043,
-    "estimated_savings_vs_bare_cli": 9478305
+    "anatomy_hits": 2423,
+    "anatomy_misses": 790,
+    "repeated_reads_blocked": 3242,
+    "estimated_savings_vs_bare_cli": 11022136
   },
   "sessions": [
     {
@@ -49996,6 +49996,1369 @@
         "writes_count": 49,
         "repeated_reads_blocked": 64,
         "anatomy_lookups": 21
+      }
+    },
+    {
+      "id": "session-2026-06-14-2202",
+      "started": "2026-06-14T05:02:49.400Z",
+      "ended": "2026-06-14T07:27:24.648Z",
+      "reads": [
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/stores/search.svelte.js",
+          "tokens_estimated": 256,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownViewer.svelte",
+          "tokens_estimated": 4966,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+          "tokens_estimated": 13672,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/tests/review.spec.js",
+          "tokens_estimated": 1187,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/package.json",
+          "tokens_estimated": 388,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/playwright.config.js",
+          "tokens_estimated": 114,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownEditor.svelte",
+          "tokens_estimated": 3333,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/stores/editor.svelte.js",
+          "tokens_estimated": 495,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/utils/livePreview.js",
+          "tokens_estimated": 5447,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/utils/mermaid.js",
+          "tokens_estimated": 309,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/scripts/gen-stress-md.mjs",
+          "tokens_estimated": 652,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/.claude/projects/-Users-paulosliu-Projects-mark/b932a144-b476-418f-a991-c1c78c920724/tool-results/b56df2sjo.txt",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/utils/markdown.js",
+          "tokens_estimated": 800,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/stores/editor.test.js",
+          "tokens_estimated": 861,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/tests/perf.spec.js",
+          "tokens_estimated": 779,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/stores/document.svelte.js",
+          "tokens_estimated": 631,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/tests/edit.spec.js",
+          "tokens_estimated": 3494,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/private/tmp/claude-501/-Users-paulosliu-Projects-mark/d96fbc40-4385-41f4-9a38-03c47b862cd1/tasks/brvhvpor3.output",
+          "tokens_estimated": 0,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/stores/settings.svelte.js",
+          "tokens_estimated": 677,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/private/tmp/claude-501/-Users-paulosliu-Projects-mark/d96fbc40-4385-41f4-9a38-03c47b862cd1/tasks/be2zfotpr.output",
+          "tokens_estimated": 0,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/private/tmp/claude-501/-Users-paulosliu-Projects-mark/d96fbc40-4385-41f4-9a38-03c47b862cd1/tasks/bz1wewpd0.output",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/private/tmp/claude-501/-Users-paulosliu-Projects-mark/d96fbc40-4385-41f4-9a38-03c47b862cd1/tasks/b62009fh2.output",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/components/TableOfContents.svelte",
+          "tokens_estimated": 1150,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/utils/headings.js",
+          "tokens_estimated": 924,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/utils/frontmatter.js",
+          "tokens_estimated": 424,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/utils/headings.test.js",
+          "tokens_estimated": 573,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/stores/ui.svelte.js",
+          "tokens_estimated": 38,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        }
+      ],
+      "writes": [
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/stores/search.svelte.js",
+          "tokens_estimated": 256,
+          "action": "create"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+          "tokens_estimated": 34,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+          "tokens_estimated": 94,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+          "tokens_estimated": 200,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+          "tokens_estimated": 54,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownViewer.svelte",
+          "tokens_estimated": 20,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownViewer.svelte",
+          "tokens_estimated": 75,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownViewer.svelte",
+          "tokens_estimated": 156,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownViewer.svelte",
+          "tokens_estimated": 57,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/tests/review.spec.js",
+          "tokens_estimated": 436,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/tests/review.spec.js",
+          "tokens_estimated": 382,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/utils/livePreview.js",
+          "tokens_estimated": 84,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/utils/livePreview.js",
+          "tokens_estimated": 271,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+          "tokens_estimated": 230,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+          "tokens_estimated": 51,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+          "tokens_estimated": 132,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+          "tokens_estimated": 42,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownViewer.svelte",
+          "tokens_estimated": 22,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/mark-cu-verify.md",
+          "tokens_estimated": 55,
+          "action": "create"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownEditor.svelte",
+          "tokens_estimated": 138,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownEditor.svelte",
+          "tokens_estimated": 263,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownEditor.svelte",
+          "tokens_estimated": 229,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownEditor.svelte",
+          "tokens_estimated": 289,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/tests/edit.spec.js",
+          "tokens_estimated": 386,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/.claude/plans/zany-growing-shell.md",
+          "tokens_estimated": 1853,
+          "action": "create"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/utils/headings.js",
+          "tokens_estimated": 74,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/utils/headings.js",
+          "tokens_estimated": 244,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/utils/headings.js",
+          "tokens_estimated": 43,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownEditor.svelte",
+          "tokens_estimated": 175,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownEditor.svelte",
+          "tokens_estimated": 76,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownEditor.svelte",
+          "tokens_estimated": 73,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+          "tokens_estimated": 65,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+          "tokens_estimated": 239,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+          "tokens_estimated": 302,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+          "tokens_estimated": 11,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+          "tokens_estimated": 119,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/utils/headings.test.js",
+          "tokens_estimated": 200,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/tests/edit.spec.js",
+          "tokens_estimated": 140,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/tests/edit.spec.js",
+          "tokens_estimated": 764,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/tests/edit.spec.js",
+          "tokens_estimated": 175,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+          "tokens_estimated": 186,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+          "tokens_estimated": 130,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/tests/edit.spec.js",
+          "tokens_estimated": 108,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+          "tokens_estimated": 49,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+          "tokens_estimated": 96,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/tests/edit.spec.js",
+          "tokens_estimated": 66,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+          "tokens_estimated": 46,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+          "tokens_estimated": 183,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/mark-toc-verify.md",
+          "tokens_estimated": 116,
+          "action": "create"
+        }
+      ],
+      "totals": {
+        "input_tokens_estimated": 41170,
+        "output_tokens_estimated": 9489,
+        "reads_count": 27,
+        "writes_count": 49,
+        "repeated_reads_blocked": 64,
+        "anatomy_lookups": 21
+      }
+    },
+    {
+      "id": "session-2026-06-14-2202",
+      "started": "2026-06-14T05:02:49.400Z",
+      "ended": "2026-06-14T07:29:09.849Z",
+      "reads": [
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/stores/search.svelte.js",
+          "tokens_estimated": 256,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownViewer.svelte",
+          "tokens_estimated": 4966,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+          "tokens_estimated": 13672,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/tests/review.spec.js",
+          "tokens_estimated": 1187,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/package.json",
+          "tokens_estimated": 388,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/playwright.config.js",
+          "tokens_estimated": 114,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownEditor.svelte",
+          "tokens_estimated": 3333,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/stores/editor.svelte.js",
+          "tokens_estimated": 495,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/utils/livePreview.js",
+          "tokens_estimated": 5447,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/utils/mermaid.js",
+          "tokens_estimated": 309,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/scripts/gen-stress-md.mjs",
+          "tokens_estimated": 652,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/.claude/projects/-Users-paulosliu-Projects-mark/b932a144-b476-418f-a991-c1c78c920724/tool-results/b56df2sjo.txt",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/utils/markdown.js",
+          "tokens_estimated": 800,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/stores/editor.test.js",
+          "tokens_estimated": 861,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/tests/perf.spec.js",
+          "tokens_estimated": 779,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/stores/document.svelte.js",
+          "tokens_estimated": 631,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/tests/edit.spec.js",
+          "tokens_estimated": 3494,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/private/tmp/claude-501/-Users-paulosliu-Projects-mark/d96fbc40-4385-41f4-9a38-03c47b862cd1/tasks/brvhvpor3.output",
+          "tokens_estimated": 0,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/stores/settings.svelte.js",
+          "tokens_estimated": 677,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/private/tmp/claude-501/-Users-paulosliu-Projects-mark/d96fbc40-4385-41f4-9a38-03c47b862cd1/tasks/be2zfotpr.output",
+          "tokens_estimated": 0,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/private/tmp/claude-501/-Users-paulosliu-Projects-mark/d96fbc40-4385-41f4-9a38-03c47b862cd1/tasks/bz1wewpd0.output",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/private/tmp/claude-501/-Users-paulosliu-Projects-mark/d96fbc40-4385-41f4-9a38-03c47b862cd1/tasks/b62009fh2.output",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/components/TableOfContents.svelte",
+          "tokens_estimated": 1150,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/utils/headings.js",
+          "tokens_estimated": 924,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/utils/frontmatter.js",
+          "tokens_estimated": 424,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/utils/headings.test.js",
+          "tokens_estimated": 573,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/stores/ui.svelte.js",
+          "tokens_estimated": 38,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        }
+      ],
+      "writes": [
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/stores/search.svelte.js",
+          "tokens_estimated": 256,
+          "action": "create"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+          "tokens_estimated": 34,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+          "tokens_estimated": 94,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+          "tokens_estimated": 200,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+          "tokens_estimated": 54,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownViewer.svelte",
+          "tokens_estimated": 20,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownViewer.svelte",
+          "tokens_estimated": 75,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownViewer.svelte",
+          "tokens_estimated": 156,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownViewer.svelte",
+          "tokens_estimated": 57,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/tests/review.spec.js",
+          "tokens_estimated": 436,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/tests/review.spec.js",
+          "tokens_estimated": 382,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/utils/livePreview.js",
+          "tokens_estimated": 84,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/utils/livePreview.js",
+          "tokens_estimated": 271,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+          "tokens_estimated": 230,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+          "tokens_estimated": 51,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+          "tokens_estimated": 132,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+          "tokens_estimated": 42,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownViewer.svelte",
+          "tokens_estimated": 22,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/mark-cu-verify.md",
+          "tokens_estimated": 55,
+          "action": "create"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownEditor.svelte",
+          "tokens_estimated": 138,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownEditor.svelte",
+          "tokens_estimated": 263,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownEditor.svelte",
+          "tokens_estimated": 229,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownEditor.svelte",
+          "tokens_estimated": 289,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/tests/edit.spec.js",
+          "tokens_estimated": 386,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/.claude/plans/zany-growing-shell.md",
+          "tokens_estimated": 1853,
+          "action": "create"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/utils/headings.js",
+          "tokens_estimated": 74,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/utils/headings.js",
+          "tokens_estimated": 244,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/utils/headings.js",
+          "tokens_estimated": 43,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownEditor.svelte",
+          "tokens_estimated": 175,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownEditor.svelte",
+          "tokens_estimated": 76,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownEditor.svelte",
+          "tokens_estimated": 73,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+          "tokens_estimated": 65,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+          "tokens_estimated": 239,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+          "tokens_estimated": 302,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+          "tokens_estimated": 11,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+          "tokens_estimated": 119,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/utils/headings.test.js",
+          "tokens_estimated": 200,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/tests/edit.spec.js",
+          "tokens_estimated": 140,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/tests/edit.spec.js",
+          "tokens_estimated": 764,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/tests/edit.spec.js",
+          "tokens_estimated": 175,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+          "tokens_estimated": 186,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+          "tokens_estimated": 130,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/tests/edit.spec.js",
+          "tokens_estimated": 108,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+          "tokens_estimated": 49,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+          "tokens_estimated": 96,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/tests/edit.spec.js",
+          "tokens_estimated": 66,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+          "tokens_estimated": 46,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+          "tokens_estimated": 183,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/mark-toc-verify.md",
+          "tokens_estimated": 116,
+          "action": "create"
+        }
+      ],
+      "totals": {
+        "input_tokens_estimated": 41170,
+        "output_tokens_estimated": 9489,
+        "reads_count": 27,
+        "writes_count": 49,
+        "repeated_reads_blocked": 64,
+        "anatomy_lookups": 21
+      }
+    },
+    {
+      "id": "session-2026-06-14-2202",
+      "started": "2026-06-14T05:02:49.400Z",
+      "ended": "2026-06-17T17:56:02.120Z",
+      "reads": [
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/stores/search.svelte.js",
+          "tokens_estimated": 256,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownViewer.svelte",
+          "tokens_estimated": 5140,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+          "tokens_estimated": 13672,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/tests/review.spec.js",
+          "tokens_estimated": 1570,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/package.json",
+          "tokens_estimated": 388,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/playwright.config.js",
+          "tokens_estimated": 114,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownEditor.svelte",
+          "tokens_estimated": 3333,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/stores/editor.svelte.js",
+          "tokens_estimated": 495,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/utils/livePreview.js",
+          "tokens_estimated": 5447,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/utils/mermaid.js",
+          "tokens_estimated": 309,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/scripts/gen-stress-md.mjs",
+          "tokens_estimated": 652,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/.claude/projects/-Users-paulosliu-Projects-mark/b932a144-b476-418f-a991-c1c78c920724/tool-results/b56df2sjo.txt",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/utils/markdown.js",
+          "tokens_estimated": 800,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/stores/editor.test.js",
+          "tokens_estimated": 861,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/tests/perf.spec.js",
+          "tokens_estimated": 779,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/stores/document.svelte.js",
+          "tokens_estimated": 631,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/tests/edit.spec.js",
+          "tokens_estimated": 3494,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/private/tmp/claude-501/-Users-paulosliu-Projects-mark/d96fbc40-4385-41f4-9a38-03c47b862cd1/tasks/brvhvpor3.output",
+          "tokens_estimated": 0,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/stores/settings.svelte.js",
+          "tokens_estimated": 677,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/private/tmp/claude-501/-Users-paulosliu-Projects-mark/d96fbc40-4385-41f4-9a38-03c47b862cd1/tasks/be2zfotpr.output",
+          "tokens_estimated": 0,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/private/tmp/claude-501/-Users-paulosliu-Projects-mark/d96fbc40-4385-41f4-9a38-03c47b862cd1/tasks/bz1wewpd0.output",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/private/tmp/claude-501/-Users-paulosliu-Projects-mark/d96fbc40-4385-41f4-9a38-03c47b862cd1/tasks/b62009fh2.output",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/components/TableOfContents.svelte",
+          "tokens_estimated": 1150,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/utils/headings.js",
+          "tokens_estimated": 924,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/utils/frontmatter.js",
+          "tokens_estimated": 424,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/utils/headings.test.js",
+          "tokens_estimated": 573,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/stores/ui.svelte.js",
+          "tokens_estimated": 38,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/components/SettingsDialog.svelte",
+          "tokens_estimated": 4662,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        }
+      ],
+      "writes": [
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/stores/search.svelte.js",
+          "tokens_estimated": 256,
+          "action": "create"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+          "tokens_estimated": 34,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+          "tokens_estimated": 94,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+          "tokens_estimated": 200,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+          "tokens_estimated": 54,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownViewer.svelte",
+          "tokens_estimated": 20,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownViewer.svelte",
+          "tokens_estimated": 75,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownViewer.svelte",
+          "tokens_estimated": 156,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownViewer.svelte",
+          "tokens_estimated": 57,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/tests/review.spec.js",
+          "tokens_estimated": 436,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/tests/review.spec.js",
+          "tokens_estimated": 382,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/utils/livePreview.js",
+          "tokens_estimated": 84,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/utils/livePreview.js",
+          "tokens_estimated": 271,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+          "tokens_estimated": 230,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+          "tokens_estimated": 51,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+          "tokens_estimated": 132,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+          "tokens_estimated": 42,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownViewer.svelte",
+          "tokens_estimated": 22,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/mark-cu-verify.md",
+          "tokens_estimated": 55,
+          "action": "create"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownEditor.svelte",
+          "tokens_estimated": 138,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownEditor.svelte",
+          "tokens_estimated": 263,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownEditor.svelte",
+          "tokens_estimated": 229,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownEditor.svelte",
+          "tokens_estimated": 289,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/tests/edit.spec.js",
+          "tokens_estimated": 386,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/.claude/plans/zany-growing-shell.md",
+          "tokens_estimated": 1853,
+          "action": "create"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/utils/headings.js",
+          "tokens_estimated": 74,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/utils/headings.js",
+          "tokens_estimated": 244,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/utils/headings.js",
+          "tokens_estimated": 43,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownEditor.svelte",
+          "tokens_estimated": 175,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownEditor.svelte",
+          "tokens_estimated": 76,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownEditor.svelte",
+          "tokens_estimated": 73,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+          "tokens_estimated": 65,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+          "tokens_estimated": 239,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+          "tokens_estimated": 302,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+          "tokens_estimated": 11,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+          "tokens_estimated": 119,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/utils/headings.test.js",
+          "tokens_estimated": 200,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/tests/edit.spec.js",
+          "tokens_estimated": 140,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/tests/edit.spec.js",
+          "tokens_estimated": 764,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/tests/edit.spec.js",
+          "tokens_estimated": 175,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+          "tokens_estimated": 186,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+          "tokens_estimated": 130,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/tests/edit.spec.js",
+          "tokens_estimated": 108,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+          "tokens_estimated": 49,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+          "tokens_estimated": 96,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/tests/edit.spec.js",
+          "tokens_estimated": 66,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+          "tokens_estimated": 46,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/routes/+page.svelte",
+          "tokens_estimated": 183,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/mark-toc-verify.md",
+          "tokens_estimated": 116,
+          "action": "create"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/tests/_repro.spec.js",
+          "tokens_estimated": 664,
+          "action": "create"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/tests/_repro.spec.js",
+          "tokens_estimated": 156,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/tests/_repro.spec.js",
+          "tokens_estimated": 109,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownViewer.svelte",
+          "tokens_estimated": 135,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownViewer.svelte",
+          "tokens_estimated": 122,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownViewer.svelte",
+          "tokens_estimated": 108,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownViewer.svelte",
+          "tokens_estimated": 48,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownViewer.svelte",
+          "tokens_estimated": 56,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/tests/_repro.spec.js",
+          "tokens_estimated": 212,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownViewer.svelte",
+          "tokens_estimated": 51,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownViewer.svelte",
+          "tokens_estimated": 63,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownViewer.svelte",
+          "tokens_estimated": 52,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownViewer.svelte",
+          "tokens_estimated": 22,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownViewer.svelte",
+          "tokens_estimated": 23,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownViewer.svelte",
+          "tokens_estimated": 123,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/src/lib/components/MarkdownViewer.svelte",
+          "tokens_estimated": 26,
+          "action": "edit"
+        },
+        {
+          "file": "/Users/paulosliu/Projects/mark/tests/review.spec.js",
+          "tokens_estimated": 395,
+          "action": "edit"
+        }
+      ],
+      "totals": {
+        "input_tokens_estimated": 46389,
+        "output_tokens_estimated": 11854,
+        "reads_count": 28,
+        "writes_count": 66,
+        "repeated_reads_blocked": 71,
+        "anatomy_lookups": 22
       }
     }
   ],

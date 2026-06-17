@@ -1240,3 +1240,24 @@ Added an Obsidian-style **Read ↔ Edit toggle** (Part A) to the previously read
 | 23:45 | TOC works in Edit mode: live tocHeadings derived, extractHeadings line+offset, gotoLine, cursor-spy effect; fixed missed replace_all binding + code-review staleness finding | headings.js, MarkdownEditor.svelte, +page.svelte, headings.test.js, edit.spec.js | 72 unit + 62 e2e green; 2x code-review clean | ~14000 |
 | 23:45 | Session end: 49 writes across 12 files (search.svelte.js, +page.svelte, MarkdownViewer.svelte, review.spec.js, livePreview.js) | 27 reads | ~50659 tok |
 | 23:49 | Session end: 49 writes across 12 files (search.svelte.js, +page.svelte, MarkdownViewer.svelte, review.spec.js, livePreview.js) | 27 reads | ~50659 tok |
+| 00:27 | Session end: 49 writes across 12 files (search.svelte.js, +page.svelte, MarkdownViewer.svelte, review.spec.js, livePreview.js) | 27 reads | ~50659 tok |
+| 00:29 | Session end: 49 writes across 12 files (search.svelte.js, +page.svelte, MarkdownViewer.svelte, review.spec.js, livePreview.js) | 27 reads | ~50659 tok |
+| 10:39 | Created tests/_repro.spec.js | — | ~664 |
+| 10:41 | Edited tests/_repro.spec.js | 13→14 lines | ~156 |
+| 10:41 | Edited tests/_repro.spec.js | 7→8 lines | ~109 |
+| 10:43 | Edited src/lib/components/MarkdownViewer.svelte | 5→8 lines | ~126 |
+| 10:43 | Edited src/lib/components/MarkdownViewer.svelte | modified renderMermaid() | ~114 |
+| 10:43 | Edited src/lib/components/MarkdownViewer.svelte | modified rerenderMermaidTheme() | ~101 |
+| 10:45 | Edited src/lib/components/MarkdownViewer.svelte | 3→5 lines | ~45 |
+| 10:45 | Edited src/lib/components/MarkdownViewer.svelte | modified rerenderMermaidTheme() | ~52 |
+| 10:45 | Edited tests/_repro.spec.js | 14→18 lines | ~212 |
+| 10:47 | Edited src/lib/components/MarkdownViewer.svelte | 4→5 lines | ~47 |
+| 10:47 | Edited src/lib/components/MarkdownViewer.svelte | 2→3 lines | ~59 |
+| 10:48 | Edited src/lib/components/MarkdownViewer.svelte | added 1 import(s) | ~49 |
+| 10:48 | Edited src/lib/components/MarkdownViewer.svelte | 5→3 lines | ~21 |
+| 10:48 | Edited src/lib/components/MarkdownViewer.svelte | 5→4 lines | ~22 |
+| 10:48 | Edited src/lib/components/MarkdownViewer.svelte | modified renderMermaid() | ~115 |
+| 10:48 | Edited src/lib/components/MarkdownViewer.svelte | modified rerenderMermaidTheme() | ~24 |
+| 10:50 | Edited tests/review.spec.js | added nullish coalescing | ~395 |
+| 10:55 | Fix mermaid diagram stuck in old theme on switch: html $effect transitively tracked effectiveTheme via renderMermaid, clearing mermaidSources; untrack the read + theme effect reads theme as arg | MarkdownViewer.svelte, review.spec.js | repro+regression test pass; 72 unit + 63 e2e green; code-review clean | ~12000 |
+| 10:56 | Session end: 66 writes across 13 files (search.svelte.js, +page.svelte, MarkdownViewer.svelte, review.spec.js, livePreview.js) | 28 reads | ~58243 tok |

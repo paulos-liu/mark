@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-14T06:44:57.847Z
-> Files: 203 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-17T17:50:09.780Z
+> Files: 204 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -285,7 +285,7 @@
 - `DirectoryBrowser.svelte` — Svelte: DirectoryBrowser, 2 stores (~318 tok)
 - `FileTreeNode.svelte` — Svelte: FileTreeNode, 3 stores (~943 tok)
 - `MarkdownEditor.svelte` — Svelte: MarkdownEditor (~3333 tok)
-- `MarkdownViewer.svelte` — Svelte: MarkdownViewer (~4966 tok)
+- `MarkdownViewer.svelte` — Svelte: MarkdownViewer (~5140 tok)
 - `QuickOpen.svelte` — Svelte: QuickOpen, 8 stores (~1775 tok)
 - `SettingsDialog.svelte` — Svelte: SettingsDialog, 7 stores (~4662 tok)
 - `TableOfContents.svelte` — Svelte: TableOfContents, 3 stores (~1150 tok)
@@ -334,9 +334,10 @@
 
 ## tests/
 
+- `_repro.spec.js` — A theme fingerprint of the rendered mermaid SVG (its embedded <style> + first rect fill). (~778 tok)
 - `edit.spec.js` — Load markdown content into the viewer via the dev test hook. (~4170 tok)
 - `features.spec.js` — @ts-check (~1302 tok)
 - `mark.spec.js` — @ts-check (~2932 tok)
 - `perf.spec.js` — Build a large, realistic markdown document (~5k lines). (~779 tok)
-- `review.spec.js` — Load markdown content into the viewer via the dev test hook. (~1570 tok)
+- `review.spec.js` — Load markdown content into the viewer via the dev test hook. (~1941 tok)
 - `titlebar-sidebar.spec.js` — @ts-check (~750 tok)

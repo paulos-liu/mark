@@ -3270,6 +3270,70 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-14T06:41:46.963Z"
+    },
+    {
+      "id": "bug-203",
+      "timestamp": "2026-06-17T17:43:39.464Z",
+      "error_message": "Significant refactor of ",
+      "file": "src/lib/components/MarkdownViewer.svelte",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 5→8 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "svelte"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-17T17:43:39.464Z"
+    },
+    {
+      "id": "bug-204",
+      "timestamp": "2026-06-17T17:48:46.067Z",
+      "error_message": "Incorrect value in code",
+      "file": "src/lib/components/MarkdownViewer.svelte",
+      "root_cause": "Had '$lib/stores/scrollMemory.js'",
+      "fix": "Changed to 'svelte'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "svelte"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-17T17:48:46.067Z"
+    },
+    {
+      "id": "bug-205",
+      "timestamp": "2026-06-17T17:48:47.952Z",
+      "error_message": "Significant refactor of ",
+      "file": "src/lib/components/MarkdownViewer.svelte",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 5→3 lines (3 removed) | Also: const dark = effectiveTheme === 'dark';; (/** @type {any} */ (window).__mmd ??= []).push({ ",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "svelte"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-17T17:48:53.899Z"
+    },
+    {
+      "id": "bug-206",
+      "timestamp": "2026-06-17T17:50:09.792Z",
+      "error_message": "Null/undefined access in ",
+      "file": "tests/review.spec.js",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-17T17:50:09.792Z"
     }
   ]
 }
