@@ -101,6 +101,36 @@ test('a term that exists only in markdown syntax is counted as zero', async ({ p
   await expect(page.locator('.tb-count')).toHaveText('0/0');
 });
 
+// ── Mermaid diagrams re-theme on a theme switch (don't get stuck) ─────────────
+
+test('a mermaid diagram re-themes on Nord -> Light (not stuck dark)', async ({ page }) => {
+  await load(page, '# Diagram\n\n```mermaid\ngraph TD\n  A[Component A] --> B[Component B]\n```\n');
+  await page.waitForSelector('.mermaid-diagram svg', { timeout: 5000 });
+
+  const nodeFill = () =>
+    page
+      .locator('.mermaid-diagram svg .node rect, .mermaid-diagram svg rect')
+      .first()
+      .evaluate((el) => getComputedStyle(el).fill);
+  const brightness = (rgb) => (rgb.match(/\d+/g) ?? ['0']).reduce((a, n) => a + +n, 0);
+
+  await page.locator('button[aria-label="Settings"]').click();
+  const sel = page.locator('[role="dialog"][aria-label="Settings"] select[aria-label="Editor theme"]');
+
+  await sel.selectOption('preset:Nord'); // a dark VS Code theme
+  await page.waitForTimeout(500);
+  const darkFill = await nodeFill();
+
+  await sel.selectOption('light');
+  await page.waitForTimeout(500);
+  const lightFill = await nodeFill();
+
+  // The node fill must follow the theme — the bug left it frozen on the dark
+  // palette because the re-theme effect couldn't see the diagram any more.
+  expect(lightFill).not.toBe(darkFill);
+  expect(brightness(lightFill)).toBeGreaterThan(brightness(darkFill));
+});
+
 // ── Cmd+A does not hijack text inputs (#11) ───────────────────────────────────
 
 test('Cmd+A selects the focused input, not the document', async ({ page }) => {

@@ -1,4 +1,5 @@
 <script>
+  import { untrack } from 'svelte';
   import { getScrollPosition, saveScrollPosition } from '$lib/stores/scrollMemory.js';
   import { renderMermaidSvg } from '$lib/utils/mermaid.js';
 
@@ -60,10 +61,13 @@
   let frontmatterOpen = $state(true);
   let hasFrontmatter = $derived(showFrontmatter && Object.keys(frontmatter).length > 0);
 
-  // Re-render existing diagrams with the new theme when it changes.
+  // Re-render existing diagrams with the new theme when it changes. Read the
+  // theme as the call argument (not a bare statement) so it's always tracked as a
+  // dependency — otherwise, on the first run (before any diagram is rendered)
+  // rerenderMermaidTheme early-returns without reading it and the effect never
+  // re-runs on a theme switch, leaving diagrams stuck in the old palette.
   $effect(() => {
-    effectiveTheme;
-    rerenderMermaidTheme();
+    rerenderMermaidTheme(effectiveTheme === 'dark');
   });
   let viewerEl;
 
@@ -93,13 +97,17 @@
 
   async function renderMermaid() {
     if (!viewerEl) return;
+    // untrack: this runs inside the `html` $effect, which must NOT re-run on a
+    // theme change (it would clear mermaidSources, and there are no <pre> blocks
+    // left to re-render). Re-theming is handled by the effect above.
+    const dark = untrack(() => effectiveTheme === 'dark');
     const blocks = viewerEl.querySelectorAll('pre > code.language-mermaid');
     for (const code of blocks) {
       const pre = code.parentElement;
       if (!pre || pre.dataset.mermaidRendered) continue;
       const source = code.textContent ?? '';
       try {
-        const svg = await renderMermaidSvg(source, effectiveTheme === 'dark');
+        const svg = await renderMermaidSvg(source, dark);
         const wrapper = document.createElement('div');
         wrapper.className = 'mermaid-diagram';
         wrapper.innerHTML = svg;
@@ -111,7 +119,8 @@
     }
   }
 
-  async function rerenderMermaidTheme() {
+  /** @param {boolean} dark */
+  async function rerenderMermaidTheme(dark) {
     if (mermaidSources.size === 0) return;
     for (const [wrapper, source] of mermaidSources) {
       if (!wrapper.isConnected) {
@@ -119,7 +128,7 @@
         continue;
       }
       try {
-        wrapper.innerHTML = await renderMermaidSvg(source, effectiveTheme === 'dark');
+        wrapper.innerHTML = await renderMermaidSvg(source, dark);
       } catch {}
     }
   }
